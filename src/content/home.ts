@@ -5,7 +5,7 @@ export const home = {
   // The headline is split around the interactive word.
   headlineBefore: {
     en: 'Inaiá designs products for every screen size, with an absurd number of ',
-    pt: 'Inaiá desenha produtos para todos os tamanhos de tela, com um número absurdo de ',
+    pt: 'Inaiá cria produtos para todos os tamanhos de tela, com um número absurdo de ',
   } as L10n,
   word: { en: 'frames', pt: 'frames' } as L10n,
   headlineAfter: { en: '.', pt: '.' } as L10n,

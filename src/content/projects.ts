@@ -56,7 +56,7 @@ export const projects: Project[] = [
     title: { en: 'Bar Tabs System', pt: 'Sistema de Comandas' },
     line: {
       en: 'A bar-tab product for hospitality and food service businesses across North America, designed within an established point-of-sale platform and its design system.',
-      pt: 'Um produto de comandas para bares e restaurantes na América do Norte, desenhado dentro de uma plataforma de PDV já estabelecida e do seu design system.',
+      pt: 'Um produto de comandas para bares e restaurantes na América do Norte, criado dentro de uma plataforma de PDV já estabelecida e do seu design system.',
     },
     context: { en: 'POS · Hospitality', pt: 'PDV · Hospitalidade' },
     role: { en: 'UX/UI designer', pt: 'UX/UI designer' },
@@ -177,7 +177,7 @@ export const projects: Project[] = [
     title: { en: 'Sabi', pt: 'Sabi' },
     line: {
       en: 'Turning any dish or menu into the right allergen question: an app still in UX research, being designed one careful step at a time.',
-      pt: 'Transformando qualquer prato ou cardápio na pergunta certa sobre alérgenos: um app ainda em pesquisa de UX, sendo desenhado com calma, passo a passo.',
+      pt: 'Transformando qualquer prato ou cardápio na pergunta certa sobre alérgenos: um app ainda em pesquisa de UX, sendo criado com calma, passo a passo.',
     },
     context: { en: 'Product · app', pt: 'Produto · app' },
     role: unknown,
@@ -199,7 +199,7 @@ export const projects: Project[] = [
     title: { en: 'Pocabin', pt: 'Pocabin' },
     line: {
       en: 'A digital binder for organizing and tracking K-pop photocard collections, a side project designed and vibe-coded as a website, still developing.',
-      pt: 'Um binder digital para organizar e acompanhar coleções de photocards de K-pop, um projeto pessoal desenhado e vibe-codado como website, ainda em desenvolvimento.',
+      pt: 'Um binder digital para organizar e acompanhar coleções de photocards de K-pop, um projeto pessoal criado e vibe-codado como website, ainda em desenvolvimento.',
     },
     context: { en: 'Side project', pt: 'Projeto pessoal' },
     role: unknown,

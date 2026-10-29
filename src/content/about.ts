@@ -12,7 +12,7 @@ export const about = {
     title: l('Curiosity about people and things led me here.', 'A curiosidade por pessoas e coisas me trouxe até aqui.'),
     body: l(
       'I design with attention to detail, to make things clearer and more meaningful.',
-      'Eu desenho com atenção aos detalhes, para deixar as coisas mais claras e com mais sentido.',
+      'Eu crio com atenção aos detalhes, para deixar as coisas mais claras e com mais sentido.',
     ),
   },
 
