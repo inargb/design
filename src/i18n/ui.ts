@@ -56,6 +56,7 @@ export const ui = {
     prev: { en: 'Previous image', pt: 'Imagem anterior' },
     next: { en: 'Next image', pt: 'Próxima imagem' },
     nextCase: { en: 'Next project', pt: 'Próximo projeto' },
+    toTop: { en: 'Back to top', pt: 'Voltar ao topo' },
   },
 
   gate: {
