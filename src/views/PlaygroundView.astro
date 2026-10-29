@@ -1,7 +1,7 @@
 ---
 // The playground: the shelf from inasilva.com on one screen-high page
 // (top bar, no footer). Objects open things: the camera a roll of film,
-// the iPod a working iPod, the films and magazines their pages.
+// the iPod a working iPod, the films their pages.
 import Base from '../layouts/Base.astro';
 import Shelf from '../components/playground/Shelf.astro';
 import FilmViewer from '../components/playground/FilmViewer.astro';
@@ -38,6 +38,6 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
   @media (min-width: 64.0625rem) {
     .pg { height: calc(100svh - var(--nav-height)); overflow: hidden; }
     /* The shelf scales to fit the height of the screen. */
-    .pg__shelf :global(.shelf) { width: min(100%, calc((100svh - var(--nav-height) - 10rem) / 0.62)); margin-inline: auto; }
+    .pg__shelf :global(.shelf) { --shelf-w: calc((100svh - var(--nav-height) - 14rem) / 0.93); }
   }
 </style>

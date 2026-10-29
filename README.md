@@ -62,14 +62,14 @@ public/covers/             project covers (stills and videos)
 ## Playground
 
 `/playground` (+ `/pt-br/playground`) is the shelf from inasilva.com on one
-screen-high page, with the top bar and no footer. Drag objects onto the
-shelf or let "tidy up for me" do it; a click (or Enter) opens one:
+screen-high page, with the top bar and no footer. The shelf starts tidy and
+centred; objects can be dragged off and back. A click (or Enter) opens one:
 
 - the camera → a roll of film with the About page's art note (`components/playground/FilmViewer.astro`)
 - the iPod → a working iPod classic (`components/playground/IPod.astro`): Music, Extras (photos),
   Settings (shuffle, repeat, about), Shuffle Songs, Backlight, Now Playing; songs play through a hidden
   YouTube player, loaded on the first press of play
-- films, magazines and shoes → their page in a new tab; the plant → its note
+- the DVDs → Inaiá's Letterboxd profile in a new tab; magazines, shoes and the plant → their note
 
 Objects, links and the iPod's songs live in `src/content/playground.ts`.
 

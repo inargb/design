@@ -3,9 +3,7 @@
 //   click / tap / Enter without dragging → opens the object (an overlay, a
 //              link or its note) via an `ina:shelf-open` event
 //   hover / focus → shows the object's note
-// "tidy up for me" puts everything in its place. The arrangement is
-// remembered, so the shelf is how you left it.
-import { motionOn } from './prefs';
+// The shelf starts tidy on every visit.
 
 type Where = { kind: 'pile' } | { kind: 'slot'; slot: number } | { kind: 'free'; fx: number; fy: number };
 export type ShelfOpen = { id: string; action: { kind: string; href?: string } };
@@ -18,34 +16,19 @@ function init(root: HTMLElement) {
   const img = root.querySelector<HTMLImageElement>('[data-shelf-img]')!;
   const pile = root.querySelector<HTMLElement>('[data-pile]')!;
   const live = root.querySelector<HTMLElement>('[data-shelf-live]')!;
-  const sayEl = root.querySelector<HTMLElement>('[data-say]')!;
   const bubble = root.querySelector<HTMLElement>('[data-note-bubble]')!;
-  const countEl = root.querySelector<HTMLElement>('[data-count]')!;
-  const tidyBtn = root.querySelector<HTMLButtonElement>('[data-tidy]')!;
-  const messBtn = root.querySelector<HTMLButtonElement>('[data-mess]')!;
   const slots: [number, number][] = JSON.parse(root.dataset.slots!);
   const s: Record<string, string> = JSON.parse(root.dataset.strings!);
   const items = Array.from(root.querySelectorAll<HTMLElement>('.shelf__item'));
-  const KEY = 'ina:shelf';
 
   const state = new Map<HTMLElement, Where>();
-  let saved: Record<string, Where> = {};
-  try { saved = JSON.parse(localStorage.getItem(KEY) ?? '{}'); } catch { /* ignore */ }
-  items.forEach((it) => {
-    const w = saved[it.dataset.id!];
-    state.set(it, w && (w.kind !== 'slot' || w.slot < slots.length) ? w : { kind: 'pile' });
-  });
+  // Every visit starts tidy: each object in its own place.
+  items.forEach((it) => state.set(it, { kind: 'slot', slot: Number(it.dataset.home) }));
 
   // First placement happens out of sight (no gliding in from the corner);
   // then the objects just fade in. See .is-settling in Shelf.astro.
   root.classList.add('is-live', 'is-settling');
 
-  let sayTimer = 0;
-  function say(text: string) {
-    sayEl.textContent = text;
-    clearTimeout(sayTimer);
-    sayTimer = window.setTimeout(() => (sayEl.textContent = ''), 4500);
-  }
 
   const occupied = (except?: HTMLElement) =>
     new Set(items.filter((i) => i !== except).map((i) => state.get(i)!).filter((w): w is { kind: 'slot'; slot: number } => w.kind === 'slot').map((w) => w.slot));
@@ -80,25 +63,8 @@ function init(root: HTMLElement) {
   }
   const layout = () => items.forEach(place);
 
-  function save() {
-    const out: Record<string, Where> = {};
-    items.forEach((it) => (out[it.dataset.id!] = state.get(it)!));
-    try { localStorage.setItem(KEY, JSON.stringify(out)); } catch { /* ignore */ }
-  }
-
   const putAwayCount = () => items.filter((i) => state.get(i)!.kind === 'slot').length;
-
-  function refresh(announce?: string, byHand = true) {
-    const n = putAwayCount();
-    countEl.textContent = String(n);
-    const done = n === items.length;
-    root.classList.toggle('is-tidy', done);
-    tidyBtn.hidden = done;
-    messBtn.hidden = !done;
-    if (announce) live.textContent = announce;
-    save();
-    if (done && byHand) say(s.done);
-  }
+  const refresh = (announce?: string) => { if (announce) live.textContent = announce; };
 
   const nameOf = (it: HTMLElement) => (it.firstElementChild as HTMLElement).getAttribute('aria-label') ?? '';
   const fill = (tpl: string, vars: Record<string, string | number>) => tpl.replace(/\{(\w+)\}/g, (_, k) => String(vars[k]));
@@ -188,32 +154,6 @@ function init(root: HTMLElement) {
     btn.addEventListener('mouseleave', () => { if (document.activeElement !== btn) hideNote(); });
   });
 
-  // Tidy puts everything in its own place (data-home), including things
-  // already put away somewhere else, then settles them one by one.
-  tidyBtn.addEventListener('click', () => {
-    const moving = items.filter((it) => {
-      const w = state.get(it)!;
-      return !(w.kind === 'slot' && w.slot === Number(it.dataset.home));
-    });
-    moving.forEach((it) => state.set(it, { kind: 'slot', slot: Number(it.dataset.home) }));
-    moving.forEach((it, i) => {
-      window.setTimeout(() => {
-        place(it);
-        if (i === moving.length - 1) {
-          refresh(undefined, false);
-          say(s.lazy);
-          messBtn.focus();
-        }
-      }, motionOn() ? i * 140 : 0);
-    });
-  });
-  messBtn.addEventListener('click', () => {
-    items.forEach((it) => state.set(it, { kind: 'pile' }));
-    layout();
-    refresh();
-    tidyBtn.focus();
-  });
-
   const ro = new ResizeObserver(layout);
   ro.observe(stage);
   const settle = () => requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove('is-settling')));
@@ -223,5 +163,4 @@ function init(root: HTMLElement) {
     img.addEventListener('load', () => { layout(); settle(); }, { once: true });
     window.setTimeout(settle, 2500); // never stay hidden if the image fails
   }
-  refresh(undefined, false);
 }
