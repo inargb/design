@@ -37,7 +37,5 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
   .pg__shelf { display: grid; align-content: center; }
   @media (min-width: 64.0625rem) {
     .pg { height: calc(100svh - var(--nav-height)); overflow: hidden; }
-    /* The shelf scales to fit the height of the screen. */
-    .pg__shelf :global(.shelf) { --shelf-w: calc((100svh - var(--nav-height) - 14rem) / 0.93); }
   }
 </style>

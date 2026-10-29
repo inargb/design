@@ -49,10 +49,11 @@ const strings = Object.fromEntries(Object.entries(u).map(([k, v]) => [k, v[local
     position: relative;
     display: grid;
     justify-items: center;
-    padding-top: 7rem;
+    padding-top: 4.5rem;
   }
   /* The real photo: no filters, no blend modes. */
-  .shelf__img { width: min(100%, var(--shelf-w, 34rem)); height: auto; user-select: none; pointer-events: none; }
+  /* Small, like the objects on helin.design: they come out about 60–90px wide. */
+  .shelf__img { width: min(100%, 24rem); height: auto; user-select: none; pointer-events: none; }
   .shelf__pile { position: absolute; inset: 0; pointer-events: none; }
 
   /* No-JS / pre-JS: a simple row of objects. */
@@ -109,7 +110,7 @@ const strings = Object.fromEntries(Object.entries(u).map(([k, v]) => [k, v[local
   .shelf__note.is-on { opacity: 1; }
 
   @media (max-width: 40rem) {
-    .shelf__stage { padding-top: 5rem; }
+    .shelf__stage { padding-top: 4rem; }
   }
 </style>
 
