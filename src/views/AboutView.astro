@@ -77,6 +77,10 @@ const parts = (q: string) => q.split(/\[\[|\]\]/).map((text, i) => ({ text, key:
         <h3 class="group__title">{about.tools.label[locale]}</h3>
         <ul class="tools" role="list">{about.tools.items.map((tool) => <li>{tool.name}</li>)}</ul>
       </div>
+      <div class="group">
+        <h3 class="group__title">{about.design.label[locale]}</h3>
+        <ul class="tools" role="list">{about.design.items.map((d) => <li>{d[locale]}</li>)}</ul>
+      </div>
     </div>
   </section>
 

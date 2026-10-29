@@ -1,4 +1,4 @@
-import type { L10n } from '../i18n/config';
+import { withBase, type L10n } from '../i18n/config';
 
 export const site = {
   name: 'Inaiá Silva',
@@ -8,10 +8,10 @@ export const site = {
     pt: 'Inaiá Silva é product designer e cria sistemas, specs e interfaces para todos os tamanhos de tela, com um número absurdo de frames.',
   } as L10n,
   links: {
-    // Each language opens its own resume.
+    // Each language opens its own resume, a PDF in public/resume/.
     resume: {
-      en: 'https://drive.google.com/file/d/1g-sNGnzcLcNO6taE88FnIpAk_ZzDGrWk/view',
-      pt: 'https://drive.google.com/file/d/1gXMu1hnaAE2WaqIbyM6UyTFFYaD0Hi7i/view',
+      en: withBase('/resume/inaia-silva-resume.pdf'),
+      pt: withBase('/resume/inaia-silva-curriculo.pdf'),
     } as L10n,
     linkedin: 'https://www.linkedin.com/in/inaia-silva/',
     instagram: 'https://www.instagram.com/inaimg/',
