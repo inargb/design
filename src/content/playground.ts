@@ -109,7 +109,7 @@ export const ipodContent = {
     song('7nSataGo54Le0IfcFQCFLN', 'Love Love', 'Gilsons', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/52/41/de/5241def9-1a9b-a9be-8978-19bf028e677d/mzaf_14738843196800230461.plus.aac.p.m4a'),
     song('5ocSQW5sIUIOFojwXEz9Ki', 'Supernatural', 'NewJeans', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/41/ce/f9/41cef96a-6b48-2ddd-72a8-f479e7a1c752/mzaf_5570335600994446876.plus.aac.p.m4a'),
     song('3px2rAPu74ltbkf9eZsZ8h', 'Emperor’s New Clothes', 'Panic! At The Disco', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/59/16/45/591645f1-bb64-6a3c-baed-38ffdb730c0d/mzaf_12028274114546274041.plus.aac.p.m4a'),
-    song('5bJ1DrEM4hNCafcDd1oxHx', 'Self Care', 'Mac Miller'), // no Apple preview found
+    { title: 'Come Back to Earth', artist: 'Mac Miller', preview: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/04/bf/10/04bf10ed-0dae-fe63-94bc-eba16a7b8faa/mzaf_4512545557535985538.plus.aac.p.m4a', spotify: 'https://open.spotify.com/search/Come%20Back%20to%20Earth%20Mac%20Miller' }, // swap in its Spotify track link
   ] as Song[],
   ui: {
     label: l('iPod', 'iPod'),
