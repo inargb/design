@@ -74,8 +74,8 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
       <nav class="case-index" aria-label={c.contents[locale]} data-case-index>
         <a class="case-index__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a>
         {sealed ? <div data-sealed-index></div> : <CaseIndex study={study} locale={locale} />}
-        <button class="case-index__top" type="button" data-to-top tabindex="-1" aria-hidden="true"><span aria-hidden="true">↑</span> {c.toTop[locale]}</button>
       </nav>
+      <button class="case-index__top" type="button" data-to-top tabindex="-1" aria-hidden="true"><span aria-hidden="true">↑</span> {c.toTop[locale]}</button>
 
       <div class="case-main">
         <a class="case__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a>
@@ -217,10 +217,13 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
     .case-index { display: none; }
   }
   .case-index ol { display: grid; }
-  /* Back to top: under the index, once the header has scrolled away. */
+  /* Back to top: pinned to the bottom of the screen, in line with the index
+     column (a fixed box with no left set keeps its place in the grid), once
+     the header has scrolled away. */
   .case-index__top {
-    justify-self: start;
-    margin-top: var(--space-4);
+    position: fixed;
+    bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+    z-index: 30;
     padding: var(--space-1) var(--space-2);
     border: 0;
     background: var(--color-paper-deep);
@@ -382,13 +385,16 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   import { initReveals } from '../scripts/motion';
   import { motionOn } from '../scripts/prefs';
 
-  // ---- Back to top: shows once the header is out of view ------------------
+  // ---- Back to top: shows between the header and the footer --------------
   const topBtn = document.querySelector<HTMLButtonElement>('[data-to-top]');
   if (topBtn) {
     const btn: HTMLButtonElement = topBtn;
     let on = false;
+    const footer = document.querySelector<HTMLElement>('.footer');
     const update = () => {
-      const next = scrollY > innerHeight * 0.6;
+      // Out of the way at the top, and again once the footer is in view.
+      const atFooter = footer ? footer.getBoundingClientRect().top < innerHeight : false;
+      const next = scrollY > innerHeight * 0.6 && !atFooter;
       if (next === on) return;
       on = next;
       btn.classList.toggle('is-on', on);
@@ -396,6 +402,7 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
       btn.setAttribute('aria-hidden', String(!on));
     };
     addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update);
     update();
     btn.addEventListener('click', () => {
       scrollTo({ top: 0, behavior: motionOn() ? 'smooth' : 'auto' });
