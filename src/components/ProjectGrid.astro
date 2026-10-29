@@ -3,8 +3,10 @@
 // answers the same questions in the same place: cover · title / context ·
 // a one-line description · role, period and status.
 // Open projects link to their case; protected ones open the password gate;
-// projects still in progress are shown, quieter, without a link.
+// projects still in progress are shown, quieter, without a link. Over a
+// card, the pointer becomes a viewfinder that says what a click does.
 import ProjectCover from './ProjectCover.astro';
+import ProjectCursor from './ProjectCursor.astro';
 import { caseHref, type Locale } from '../i18n/config';
 import { ui } from '../i18n/ui';
 import { projects } from '../content/projects';
@@ -22,7 +24,7 @@ const known = (v: string) => v !== '—';
     const meta = [proj.role[locale], proj.period[locale]].filter(known);
     return (
       <li class="card" data-state={proj.state} data-reveal>
-        <Tag class="card__hit" {...linkProps}>
+        <Tag class="card__hit" {...linkProps} data-pcursor-host={proj.state}>
           <div class="card__cover">
             <ProjectCover media={proj.media} label="" locale={locale} sizes="(max-width: 40rem) 100vw, (max-width: 64rem) 50vw, 29rem" />
           </div>
@@ -49,6 +51,7 @@ const known = (v: string) => v !== '—';
     );
   })}
 </ul>
+<ProjectCursor locale={locale} />
 
 <style>
   .work-grid {

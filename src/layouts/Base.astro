@@ -63,8 +63,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <main id="main" class="page__main" tabindex="-1">
         <slot />
       </main>
-      <Footer locale={locale} />
     </div>
+    <Footer locale={locale} />
     <script>
       import '../scripts/prefs';
       import '../scripts/motion';
@@ -73,6 +73,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 </html>
 
 <style is:global>
-  /* The page: the top bar, then one centred column (content, footer). */
+  /* The page: the top bar, one centred column, then the footer. */
   .page__main { outline: none; }
 </style>

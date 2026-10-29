@@ -23,10 +23,14 @@ export const ui = {
   },
 
   footer: {
-    signature: { en: 'Designed and built by me', pt: 'Design e código feitos por mim' },
-    greeting: { en: 'Nice to meet you.', pt: 'Prazer em te conhecer.' },
-    elsewhere: { en: 'Elsewhere', pt: 'Por aí' },
-    design: { en: 'Visual design', pt: 'Design visual' },
+    signature: { en: 'designed by me <3', pt: 'design feito por mim <3' },
+    greeting: { en: 'nice to meet you', pt: 'prazer em te conhecer' },
+    elsewhere: { en: 'elsewhere', pt: 'por aí' },
+  },
+
+  controls: {
+    group: { en: 'Display settings', pt: 'Preferências de exibição' },
+    spec: { en: 'Spec mode', pt: 'Modo spec' },
   },
 
   project: {

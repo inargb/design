@@ -1,0 +1,145 @@
+---
+// The viewfinder cursor, only over the project cards: corners open around
+// the pointer with a label (view project · protected case · coming soon).
+// Purely decorative (each card says the same in its own text) and only on
+// fine pointers; everywhere else the system cursor is untouched.
+import type { Locale } from '../i18n/config';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const labels = {
+  open: { en: 'view project', pt: 'ver projeto' },
+  locked: { en: 'protected case', pt: 'case protegido' },
+  soon: { en: 'coming soon', pt: 'em breve' },
+};
+---
+
+<div
+  class="pcursor"
+  aria-hidden="true"
+  data-pcursor
+  data-l-open={labels.open[locale]}
+  data-l-locked={labels.locked[locale]}
+  data-l-soon={labels.soon[locale]}
+>
+  <div class="pcursor__frame"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+  <div class="pcursor__dot"></div>
+  <span class="pcursor__label"></span>
+</div>
+
+<style>
+  .pcursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    display: none;
+    pointer-events: none;
+    color: var(--color-ink);
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-soft);
+  }
+  :global(.has-pcursor) .pcursor { display: block; }
+  .pcursor.is-on { opacity: 1; }
+
+  .pcursor__frame {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    translate: -50% -50%;
+    transition: width var(--duration-settle) var(--ease-settle), height var(--duration-settle) var(--ease-settle), scale var(--duration-instant);
+  }
+  .pcursor.is-on .pcursor__frame { width: 96px; height: 60px; }
+  /* A thin light halo keeps the ink corners visible on dark covers too. */
+  .pcursor__frame, .pcursor__dot { filter: drop-shadow(0 0 1px rgb(255 255 255 / 0.9)) drop-shadow(0 0 1px rgb(255 255 255 / 0.6)); }
+  .pcursor__frame i { position: absolute; width: 10px; height: 10px; border: 0 solid currentColor; }
+  .pcursor__frame .tl { top: 0; left: 0; border-top-width: 1.5px; border-left-width: 1.5px; }
+  .pcursor__frame .tr { top: 0; right: 0; border-top-width: 1.5px; border-right-width: 1.5px; }
+  .pcursor__frame .bl { bottom: 0; left: 0; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+  .pcursor__frame .br { bottom: 0; right: 0; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+  .pcursor__dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    translate: -50% -50%;
+    background:
+      linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat,
+      linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat;
+  }
+
+  .pcursor__label {
+    position: absolute;
+    top: 38px;
+    left: 0;
+    translate: -50% 0;
+    padding: 3px 8px;
+    white-space: nowrap;
+    font-family: var(--font-system);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .pcursor[data-state='locked'] .pcursor__label { background: var(--color-accent); color: var(--color-on-accent); }
+  .pcursor[data-state='soon'] .pcursor__frame i { border-style: dashed; }
+  .pcursor[data-state='soon'] .pcursor__label { background: var(--color-paper-deep); color: var(--color-ink); }
+
+  /* Press: the shutter closes a little. */
+  .pcursor.is-down .pcursor__frame { scale: 0.88; }
+
+  /* While it shows, the system cursor steps aside. */
+  :global(.has-pcursor [data-pcursor-host]) { cursor: none; }
+</style>
+
+<script>
+  import { motionOn } from '../scripts/prefs';
+
+  const el = document.querySelector<HTMLElement>('[data-pcursor]');
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  if (el) {
+    const cursor: HTMLElement = el;
+    const label = cursor.querySelector<HTMLElement>('.pcursor__label')!;
+    const keys: Record<string, string> = { open: 'lOpen', locked: 'lLocked', soon: 'lSoon' };
+    let x = 0, y = 0, cx = 0, cy = 0, raf = 0, placed = false;
+
+    function frame() {
+      // Follows with a little lag; none at all with reduced motion.
+      const k = motionOn() ? 0.25 : 1;
+      cx += (x - cx) * k;
+      cy += (y - cy) * k;
+      cursor.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+      raf = Math.abs(x - cx) + Math.abs(y - cy) > 0.1 ? requestAnimationFrame(frame) : 0;
+    }
+
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return;
+      x = e.clientX; y = e.clientY;
+      // First move over a card: start right under the pointer, not from a corner.
+      if (!placed) { cx = x; cy = y; placed = true; }
+      const host = (e.target as Element).closest<HTMLElement>('[data-pcursor-host]');
+      if (host) {
+        const state = host.dataset.pcursorHost!;
+        cursor.dataset.state = state;
+        label.textContent = cursor.dataset[keys[state]] ?? '';
+      }
+      cursor.classList.toggle('is-on', !!host);
+      if (!host) placed = false;
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+    const onDown = () => cursor.classList.add('is-down');
+    const onUp = () => cursor.classList.remove('is-down');
+    const onLeave = () => { cursor.classList.remove('is-on'); placed = false; };
+
+    const sync = () => {
+      const on = fine.matches;
+      document.documentElement.classList.toggle('has-pcursor', on);
+      const fn = on ? 'addEventListener' : 'removeEventListener';
+      window[fn]('pointermove', onMove as EventListener, { passive: true } as AddEventListenerOptions);
+      window[fn]('pointerdown', onDown);
+      window[fn]('pointerup', onUp);
+      document.documentElement[fn]('pointerleave', onLeave);
+    };
+    fine.addEventListener('change', sync);
+    sync();
+  }
+</script>

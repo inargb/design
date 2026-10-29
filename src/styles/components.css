@@ -19,3 +19,44 @@
 .crop { position: relative; }
 .crop::before,
 .crop::after { content: none; }
+
+/* ---- Spec mode overlay (scripts/spec-mode.ts) ------------------------------ */
+.spec-layer { position: absolute; inset: 0 auto auto 0; width: 100%; z-index: 70; pointer-events: none; }
+.spec-box {
+  position: absolute;
+  outline: 1px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 5%, transparent);
+}
+.spec-tag {
+  position: absolute;
+  left: -1px;
+  bottom: 100%;
+  padding: 1px 5px;
+  font-family: var(--font-system);
+  font-size: 10px;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+}
+.spec-grid {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--layout-gap);
+  margin-inline: auto;
+}
+.spec-grid i { background: color-mix(in srgb, var(--color-accent) 6%, transparent); border-inline: 1px dashed color-mix(in srgb, var(--color-accent) 35%, transparent); }
+@media (max-width: 64rem) { .spec-grid { grid-template-columns: repeat(6, 1fr); } .spec-grid i:nth-child(n + 7) { display: none; } }
+@media (max-width: 40rem) { .spec-grid { grid-template-columns: repeat(4, 1fr); } .spec-grid i:nth-child(n + 5) { display: none; } }
+.spec-ruler {
+  position: fixed;
+  right: var(--space-4);
+  top: calc(var(--nav-height) + var(--space-2));
+  padding: 2px 6px;
+  font-family: var(--font-system);
+  font-size: 10px;
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+}

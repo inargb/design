@@ -6,7 +6,9 @@ off-white paper, slate ink, IBM Plex Mono for headings and labels, Inter for
 reading, the top bar from inasilva.com (same type, order and EN/PT switch, in
 capitals) and one centred content column.
 The headline keeps the interactive word "frames" (Figma frame, film frame,
-frames per second); the doodles, custom cursor, film reel and easter eggs are gone.
+frames per second), project cards keep the viewfinder cursor, and the footer
+keeps spec mode (the ruler, or press S); the doodles, film reel and other
+easter eggs are gone.
 
 Static site built with [Astro](https://astro.build), plain CSS custom
 properties and a little TypeScript.
@@ -37,12 +39,13 @@ src/
   i18n/ui.ts               interface strings (EN / PT)
   content/*.ts             page content, bilingual, typed (projects, home, about, photos)
   components/              Nav (top bar + phone menu), Footer, LanguageSwitch,
-                           FramesWord, ProjectGrid, ProjectCover
+                           FramesWord, ProjectGrid, ProjectCover, ProjectCursor
   components/case/         case-study blocks, figures, sections, index
   layouts/Base.astro       the page shell: top bar, content column, footer
   views/                   one view per page, rendered by thin EN/PT page files
   pages/                   routes: /, /about, /works/[slug] (+ /pt-br/…)
-  scripts/                 prefs (reduced motion), motion (reveals), sealed (gate)
+  scripts/                 prefs (reduced motion), motion (reveals), sealed (gate),
+                           spec-mode (redlines overlay)
 public/covers/             project covers (stills and videos)
 ```
 
