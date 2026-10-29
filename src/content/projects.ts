@@ -109,7 +109,7 @@ export const projects: Project[] = [
     },
     context: { en: 'Internal tool · Handoff', pt: 'Ferramenta interna · Handoff' },
     role: { en: 'Design lead', pt: 'Líder de design' },
-    period: unknown,
+    period: { en: '2025', pt: '2025' },
     duration: { en: '2 months', pt: '2 meses' },
     status: { en: 'in use every sprint', pt: 'em uso a cada sprint' },
     statusKind: 'live',
