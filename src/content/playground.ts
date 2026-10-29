@@ -78,33 +78,19 @@ export const playground = {
 
 // ---- The iPod --------------------------------------------------------------
 // Inaiá's 18 songs, as on her Framer iPod (inassilva.framer.website/about).
-// Each plays through YouTube (the video stays hidden; only the audio is
-// used), loaded only once someone presses play. Titles are tidied from the
-// YouTube ones. To change the music, edit this list: `id` is the part
-// after v= in a YouTube link.
-export interface Song { id: string; title: string; artist: string }
+// The iPod plays Apple Music's official 30-second previews (`preview`, from
+// the iTunes Search API: no ads, nothing hosted here) and links to the full
+// song on Spotify. A song without a preview is greyed out and skipped.
+export interface Song { title: string; artist: string; preview?: string; spotify: string }
+
+const spotify = (title: string, artist: string) =>
+  `https://open.spotify.com/search/${encodeURIComponent(`${title} ${artist}`)}`;
+const song = (title: string, artist: string, preview?: string): Song => ({ title, artist, preview, spotify: spotify(title, artist) });
 
 export const ipodContent = {
   owner: 'inaia_',
   songs: [
-    { id: 'y14F2RQW7h4', title: 'Sweet Life', artist: 'Frank Ocean' },
-    { id: 's6MZKRKQvzc', title: 'Rain Drop', artist: 'NCT 127' },
-    { id: 'oplra1FJxWI', title: 'Don’t Look Back In Anger', artist: 'Oasis' },
-    { id: 'RDuzszjrdcc', title: 'Seven Nation Army', artist: 'The White Stripes' },
-    { id: 'HAJ_06-eTbk', title: 'Camera Lights', artist: 'HAECHAN' },
-    { id: '1irwugJ8W8A', title: 'Human', artist: 'The Killers' },
-    { id: '1ZZQuj6htF4', title: 'P.Y.T. (Pretty Young Thing)', artist: 'Michael Jackson' },
-    { id: 'sCTxboZul5c', title: 'BIRDS', artist: 'Turnstile' },
-    { id: 'COYkXwMc4ck', title: 'Be My Own Boyfriend', artist: 'Olivia Dean' },
-    { id: 'zF3PKGftlj4', title: 'Can I Call You Rose', artist: 'Thee Sacred Souls' },
-    { id: 'Y0a0QuLEC8A', title: 'Chega de Saudade', artist: 'João Gilberto' },
-    { id: 'siO6dkqidc4', title: 'There Is a Light That Never Goes Out', artist: 'The Smiths' },
-    { id: 'Dlz_XHeUUis', title: 'White Ferrari', artist: 'Frank Ocean' },
-    { id: 'yaxgwLyN8AM', title: 'poppop', artist: 'NCT WISH' },
-    { id: '2EGXgmoYtgA', title: 'Love Love', artist: 'Gilsons' },
-    { id: 'cT9wIINtBwA', title: 'Supernatural', artist: 'NewJeans' },
-    { id: 'piKG6j4E65E', title: 'Emperor’s New Clothes', artist: 'Panic! At The Disco' },
-    { id: '1MukrWDeX7E', title: 'Oblivion', artist: 'Mac Miller' },
+    song('Sweet Life', 'Frank Ocean'),
   ] as Song[],
   ui: {
     label: l('iPod', 'iPod'),
@@ -114,5 +100,7 @@ export const ipodContent = {
       '⏭ e ⏮ descem e sobem nos menus, e fora deles passam para a próxima música ou voltam para a anterior. O botão do meio seleciona nos menus e dá play ou pause na música. MENU abre o menu. A parte de baixo da roda dá play ou pause. Também dá para girar a roda (arraste em volta ou role) e usar as setas, Enter, Backspace e Espaço; Esc fecha.',
     ),
     hint: l('i love music <3', 'eu amo música <3'),
+    spotify: l('Listen on Spotify', 'Ouvir no Spotify'),
+    opens: l('(opens in a new tab)', '(abre em outra aba)'),
   },
 };

@@ -3,8 +3,8 @@
 // Framer iPod. Menus: Music (All Songs, Artists), Extras (her film photos),
 // Settings (Shuffle, Repeat, About), Shuffle Songs, Backlight and Now
 // Playing. The click wheel turns by dragging around it or scrolling; the
-// keyboard works too (arrows, Enter, Backspace, Space). Songs play through
-// a hidden YouTube player, loaded when the iPod is first opened.
+// keyboard works too (arrows, Enter, Backspace, Space). Songs play as
+// 30-second Apple Music previews, with the full song a link away on Spotify.
 import { getImage } from 'astro:assets';
 import type { Locale } from '../../i18n/config';
 import { ipodContent as ip } from '../../content/playground';
@@ -43,6 +43,9 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
       <button class="ipod__center" type="button" data-key="select" aria-label="Select"></button>
     </div>
   </div>
+  <a class="ipodv__spotify" href="https://open.spotify.com/" target="_blank" rel="noopener" hidden data-spotify>
+    <span data-spotify-label>{u.spotify[locale]}</span><span aria-hidden="true">&thinsp;↗</span><span class="visually-hidden"> {u.opens[locale]}</span>
+  </a>
   <p class="ipodv__hint" aria-hidden="true">{u.hint[locale]}</p>
 </dialog>
 
@@ -74,6 +77,28 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
+  /* The full song, on Spotify: under the iPod, for the song that's on. */
+  .ipodv__spotify {
+    position: absolute;
+    left: 50%;
+    bottom: var(--space-6);
+    translate: -50% 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap-min);
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-pill);
+    background: #1db954;
+    color: #0b0b0b;
+    font-family: var(--font-system);
+    font-size: var(--type-caption);
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .ipodv__spotify:hover { background: #1ed760; }
+  .ipodv__spotify[hidden] { display: none; }
   .ipodv__hint {
     position: absolute;
     right: var(--space-6);
@@ -229,7 +254,7 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
 <script>
   import { motionOn } from '../../scripts/prefs';
 
-  type Song = { id: string; title: string; artist: string };
+  type Song = { title: string; artist: string; preview?: string; spotify: string };
   type Data = { owner: string; songs: Song[]; photos: { src: string; alt: string }[] };
   type Row = { label: string; to?: () => View; run?: () => void; chev?: boolean; off?: boolean };
   type View =
@@ -249,6 +274,9 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
     const titleEl = root.querySelector<HTMLElement>('[data-title]')!;
     const stateEl = root.querySelector<HTMLElement>('[data-state]')!;
     const wheel = root.querySelector<HTMLElement>('[data-wheel]')!;
+    const spotify = dialog.querySelector<HTMLAnchorElement>('[data-spotify]')!;
+    const spotifyLabel = spotify.querySelector<HTMLElement>('[data-spotify-label]')!;
+    const spotifyText = spotifyLabel.textContent ?? '';
     const ROWS = 6;
     const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
     const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -262,7 +290,7 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
     let lit = true;
     let volume = 70;
     let volUntil = 0;
-    const broken = new Set<number>();         // songs YouTube won't embed
+    const broken = new Set<number>();         // songs without a playable preview
 
     const current = () => (pos >= 0 ? d.songs[queue[pos]] : undefined);
 
@@ -301,7 +329,11 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
     // ---- rendering -----------------------------------------------------
     function render() {
       const v = top();
-      stateEl.textContent = current() ? (playing ? '▶' : '❚❚') : '';
+      const cur = current();
+      stateEl.textContent = cur ? (playing ? '▶' : '❚❚') : '';
+      // The full song lives on Spotify; the iPod only plays a 30s preview.
+      spotify.hidden = !cur;
+      if (cur) { spotify.href = cur.spotify; spotifyLabel.textContent = `${spotifyText}: ${cur.title}`; }
       if (v.kind === 'list') {
         const rows = v.rows();
         v.sel = Math.min(v.sel, rows.length - 1);
@@ -314,8 +346,8 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
         titleEl.textContent = 'Now Playing';
         const s = current();
         if (!s) { view.innerHTML = ''; return; }
-        const t = player?.getCurrentTime?.() ?? 0;
-        const dur = player?.getDuration?.() || 0;
+        const t = audio.currentTime || 0;
+        const dur = Number.isFinite(audio.duration) ? audio.duration : 0;
         const showVol = performance.now() < volUntil;
         view.innerHTML = `<div class="np">
           <p class="np__count">${pos + 1} of ${queue.length}</p>
@@ -346,7 +378,7 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
         if (n) v.sel = (v.sel + dir + n) % n;
       } else if (v.kind === 'now') {
         volume = Math.max(0, Math.min(100, volume + dir * 5));
-        player?.setVolume?.(volume);
+        audio.volume = volume / 100;
         volUntil = performance.now() + 1500;
       } else if (v.kind === 'photo') {
         v.i = (v.i + dir + d.photos.length) % d.photos.length;
@@ -382,53 +414,15 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
       else { r.run?.(); render(); }
     }
 
-    // ---- playback (YouTube, hidden) --------------------------------------
-    type YTPlayer = {
-      loadVideoById(id: string): void; cueVideoById(id: string): void; playVideo(): void; pauseVideo(): void;
-      seekTo(s: number, allowSeekAhead: boolean): void; getPlayerState(): number;
-      getCurrentTime(): number; getDuration(): number; setVolume(v: number): void; destroy(): void;
-    };
-    let player: YTPlayer | null = null;
-    let ready: Promise<void> | null = null;
-
-    function ensurePlayer(): Promise<void> {
-      if (ready) return ready;
-      ready = new Promise((resolve) => {
-        const w = window as unknown as { YT?: any; onYouTubeIframeAPIReady?: () => void };
-        const host = document.createElement('div');
-        host.setAttribute('aria-hidden', 'true');
-        host.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
-        const slot = document.createElement('div');
-        host.append(slot);
-        document.body.append(host);
-        const make = () => {
-          player = new w.YT.Player(slot, {
-            host: 'https://www.youtube-nocookie.com',
-            width: 1, height: 1,
-            playerVars: { autoplay: 0, controls: 0, playsinline: 1, rel: 0, iv_load_policy: 3, fs: 0, disablekb: 1 },
-            events: {
-              onReady: () => { player!.setVolume(volume); resolve(); },
-              // The player is the source of truth for playing / paused.
-              onStateChange: (e: { data: number }) => {
-                if (e.data === 1) { playing = true; render(); }
-                if (e.data === 2) { playing = false; render(); }
-                if (e.data === 0) ended();
-              },
-              // A song YouTube won't play here: grey it out and move on.
-              onError: () => { if (pos >= 0) broken.add(queue[pos]); advance(1, true); },
-            },
-          }) as YTPlayer;
-        };
-        if (w.YT?.Player) make();
-        else {
-          w.onYouTubeIframeAPIReady = make;
-          const s = document.createElement('script');
-          s.src = 'https://www.youtube.com/iframe_api';
-          document.head.append(s);
-        }
-      });
-      return ready;
-    }
+    // ---- playback: 30-second Apple Music previews, in a plain <audio> -----
+    const audio = new Audio();
+    audio.preload = 'auto';
+    audio.volume = volume / 100;
+    audio.addEventListener('playing', () => { playing = true; render(); });
+    audio.addEventListener('pause', () => { playing = false; render(); });
+    audio.addEventListener('ended', () => ended());
+    // A preview that won't load: grey it out and move on.
+    audio.addEventListener('error', () => { if (pos >= 0 && audio.src) { broken.add(queue[pos]); advance(1, true); } });
 
     function rebuildQueue(fresh = false) {
       const keep = current();
@@ -437,13 +431,14 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
       if (!fresh && keep) pos = queue.indexOf(d.songs.indexOf(keep));
     }
     // Load the current song and play it (or just cue it, paused).
-    async function load(play: boolean) {
+    function load(play: boolean) {
       const s = current();
       if (!s) return;
+      if (!s.preview) { broken.add(queue[pos]); advance(1, true); return; }
+      audio.src = s.preview;
       playing = play;
+      if (play) audio.play().catch(() => { playing = false; render(); });
       render();
-      await ensurePlayer();
-      if (play) player!.loadVideoById(s.id); else player!.cueVideoById(s.id);
     }
     function playFrom(idxs: number[], i: number) {
       if (shuffle) { const rest = idxs.filter((x) => x !== i).sort(() => Math.random() - 0.5); queue = [i, ...rest]; pos = 0; }
@@ -470,23 +465,18 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
       load(true);
     }
     function ended() {
-      if (repeat === 'one') { player?.seekTo(0, true); player?.playVideo(); return; }
+      if (repeat === 'one') { audio.currentTime = 0; audio.play().catch(() => {}); return; }
       advance(1, true);
     }
-    async function playPause() {
+    function playPause() {
       if (!current()) { pos = 0; load(true); push({ kind: 'now' }); return; }
-      await ensurePlayer();
-      // Ask the player, not our own guess: 1 = playing, 3 = buffering.
-      const st = player!.getPlayerState();
-      if (st === 1 || st === 3) { player!.pauseVideo(); playing = false; }
-      else if (st === 5 || st === -1 || st === 0) { player!.loadVideoById(current()!.id); playing = true; }
-      else { player!.playVideo(); playing = true; }
-      render();
+      if (!audio.src) { load(true); return; }
+      if (audio.paused) audio.play().catch(() => {}); else audio.pause();
     }
     function prev() {
       // Like the real thing: a few seconds in, ⏮ goes back to the start of
       // the song; at the start, it goes to the previous one.
-      if ((player?.getCurrentTime?.() ?? 0) > 3) { player!.seekTo(0, true); render(); return; }
+      if (audio.currentTime > 3) { audio.currentTime = 0; render(); return; }
       advance(-1);
     }
 
@@ -574,12 +564,11 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
       render();
       dialog.showModal();
       root.querySelector<HTMLElement>('.ipod__center')!.focus({ preventScroll: true });
-      ensurePlayer(); // ready by the time play is pressed
     });
     dialog.querySelector('[data-ipod-close]')!.addEventListener('click', () => dialog.close());
     dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
     // Closing the iPod stops the music.
-    dialog.addEventListener('close', () => { player?.pauseVideo(); playing = false; });
+    dialog.addEventListener('close', () => { audio.pause(); playing = false; });
     if (!motionOn()) screen.style.transition = 'none';
     render();
   }
