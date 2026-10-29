@@ -59,9 +59,9 @@ public/covers/             project covers (stills and videos)
 - Content lives in `src/content`, one object per string with `en` and `pt`.
 - Protected case-study sources never go into the repo in plain text (`private/` is ignored).
 
-## Playground
+## Shelf
 
-`/playground` (+ `/pt-br/playground`) is the shelf from inasilva.com on one
+`/shelf` (+ `/pt-br/shelf`; the old `/playground` addresses redirect) is the shelf from inasilva.com on one
 screen-high page, with the top bar and no footer. The shelf starts tidy and
 centred; objects can be dragged off and back. A click (or Enter) opens one:
 

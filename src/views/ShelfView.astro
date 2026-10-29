@@ -1,5 +1,5 @@
 ---
-// The playground: the shelf from inasilva.com on one screen-high page
+// Shelf: the shelf from inasilva.com on one screen-high page
 // (top bar, no footer). Objects open things: the camera a roll of film,
 // the iPod a working iPod, the films their pages.
 import Base from '../layouts/Base.astro';
@@ -14,7 +14,7 @@ const { locale } = Astro.props;
 const other: Locale = locale === 'en' ? 'pt' : 'en';
 ---
 
-<Base locale={locale} route="playground" altHref={href('playground', other)} pageId="playground" title={pg.title[locale]} description={pg.intro[locale]}>
+<Base locale={locale} route="shelf" altHref={href('shelf', other)} pageId="shelf" title={pg.title[locale]} description={pg.intro[locale]}>
   <section class="pg" aria-labelledby="pg-title">
     <h1 id="pg-title" class="visually-hidden">{pg.title[locale]}</h1>
     <div class="pg__shelf">

@@ -1,4 +1,16 @@
 ---
-import PlaygroundView from '../views/PlaygroundView.astro';
+// The page was renamed: /playground → /shelf. Old links still land.
+import { withBase } from '../i18n/config';
+const to = withBase('/shelf');
 ---
-<PlaygroundView locale="en" />
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+    <link rel="canonical" href={to} />
+    <title>Shelf</title>
+  </head>
+  <body><a href={to}>Shelf</a></body>
+</html>

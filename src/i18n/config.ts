@@ -14,7 +14,7 @@ export const htmlLang: Record<Locale, string> = { en: 'en', pt: 'pt-BR' };
 export const routes = {
   home: { en: '/', pt: '/pt-br' },
   about: { en: '/about', pt: '/pt-br/sobre' },
-  playground: { en: '/playground', pt: '/pt-br/playground' },
+  shelf: { en: '/shelf', pt: '/pt-br/shelf' },
 } as const;
 export type RouteId = keyof typeof routes;
 

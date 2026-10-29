@@ -8,7 +8,7 @@ export const ui = {
     label: { en: 'Main', pt: 'Principal' },
     work: { en: 'Work', pt: 'Projetos' },
     about: { en: 'About', pt: 'Sobre' },
-    playground: { en: 'Playground', pt: 'Playground' },
+    shelf: { en: 'Shelf', pt: 'Shelf' },
     resume: { en: 'Resume', pt: 'Currículo' },
     home: { en: 'Inaiá Silva, home', pt: 'Inaiá Silva, início' },
     homeShort: { en: 'Home', pt: 'Início' },

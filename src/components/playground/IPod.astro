@@ -391,8 +391,11 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
       else select();
     }
     // MENU opens the menu: one level back, like the real thing (from a song,
-    // back to the list it was played from).
+    // back to the list it was played from); on the main menu it opens Now
+    // Playing.
     function menu() {
+      // Already on the main menu: MENU shows the song that's on, if any.
+      if (stack.length === 1) { if (current()) push({ kind: 'now' }); return; }
       back();
       if (top().kind !== 'list') { stack = [mainMenu()]; render(); }
     }

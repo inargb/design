@@ -1,4 +1,4 @@
-// The playground: Inaiá's shelf, brought back from inasilva.com, where
+// Shelf: Inaiá's shelf, brought back from inasilva.com, where
 // every object also opens something. Positions are fractions of the shelf
 // photo (slots) or of the pile area, as before.
 import type { ImageMetadata } from 'astro';
@@ -32,7 +32,7 @@ export interface ShelfObject {
 }
 
 export const playground = {
-  title: l('Playground', 'Playground'),
+  title: l('Shelf', 'Shelf'),
   intro: l(
     'Things on my shelf. Drag them into place, or click one to open it.',
     'Coisas da minha estante. Arraste para arrumar, ou clique para abrir.',
@@ -92,7 +92,7 @@ const song = (spotifyId: string, title: string, artist: string, preview?: string
 export const ipodContent = {
   owner: 'inaia_',
   songs: [
-    song('3OM6qQmdFV6uy61GIqpRtf', 'AMAZING', 'Rex Orange County', /*PREV:AMAZING*/),
+    song('3OM6qQmdFV6uy61GIqpRtf', 'AMAZING', 'Rex Orange County', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/73/3c/d5/733cd599-2a2b-2fd4-0926-f22ce19127db/mzaf_8363338420053129661.plus.aac.p.m4a'),
     song('4xDjeOpTMV3CkhrPrFXhVQ', 'Rain Drop', 'NCT 127', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e4/5c/f4/e45cf40c-78c0-fd03-c3c5-69fb259290c4/mzaf_17432267585482174066.plus.aac.p.m4a'),
     song('0UvCh63URrLFcPkKt99hHd', 'Don’t Look Back In Anger', 'Oasis', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/32/95/6d/32956de7-66cf-a0ee-3e22-7719fcb113c8/mzaf_8671835566530470258.plus.aac.p.m4a'),
     song('3dPQuX8Gs42Y7b454ybpMR', 'Seven Nation Army', 'The White Stripes', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fe/2d/58/fe2d587f-6344-3fb3-43f7-d318a6253dcc/mzaf_16825320951570507954.plus.aac.p.m4a'),
@@ -100,7 +100,7 @@ export const ipodContent = {
     song('1sTsuZTdANkiFd7T34H3nb', 'Human', 'The Killers', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/09/ed/cf/09edcf94-420e-2e75-c51f-259a9d4fb257/mzaf_7821723296315451145.plus.aac.p.m4a'),
     song('1CgmY8fVN7kstVDZmsdM5k', 'P.Y.T. (Pretty Young Thing)', 'Michael Jackson', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/32/b2/70/32b270f9-c07a-dfc3-0516-921a4b3932d0/mzaf_15483315381309393545.plus.aac.p.m4a'),
     song('0kshHISCRGn9MwpkbqafG4', 'BIRDS', 'Turnstile', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7d/dd/1b/7ddd1ba3-a13e-4326-8e73-71310ff0b321/mzaf_1706933049560492064.plus.aac.p.m4a'),
-    song('1qbmS6ep2hbBRaEZFpn7BX', 'The Man I Need', 'Olivia Dean', /*PREV:The Man I Need*/),
+    song('1qbmS6ep2hbBRaEZFpn7BX', 'Man I Need', 'Olivia Dean', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/42/bb/5b/42bb5b21-2550-6205-bf3c-334b0e7d6199/mzaf_17462928687872215879.plus.aac.p.m4a'),
     song('6IAuH3hgTRpUUdmOGubXGS', 'Can I Call You Rose', 'Thee Sacred Souls', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/86/07/2a/86072a8a-a8c8-09d6-3505-5399dfab12e4/mzaf_15704289805936940876.plus.aac.p.m4a'),
     song('380KZqSJVBziAQrvx7rdGW', 'Chega de Saudade', 'João Gilberto', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e9/34/fb/e934fbad-dbba-4ab7-01e9-090f7a6829a4/mzaf_4167164513099182753.plus.aac.p.m4a'),
     song('0WQiDwKJclirSYG9v5tayI', 'There Is a Light That Never Goes Out', 'The Smiths', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/4e/c9/1d/4ec91df8-8524-b6ac-812c-fb38054be09d/mzaf_3253228293752173874.plus.aac.p.m4a'),
@@ -109,7 +109,7 @@ export const ipodContent = {
     song('7nSataGo54Le0IfcFQCFLN', 'Love Love', 'Gilsons', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/52/41/de/5241def9-1a9b-a9be-8978-19bf028e677d/mzaf_14738843196800230461.plus.aac.p.m4a'),
     song('5ocSQW5sIUIOFojwXEz9Ki', 'Supernatural', 'NewJeans', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/41/ce/f9/41cef96a-6b48-2ddd-72a8-f479e7a1c752/mzaf_5570335600994446876.plus.aac.p.m4a'),
     song('3px2rAPu74ltbkf9eZsZ8h', 'Emperor’s New Clothes', 'Panic! At The Disco', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/59/16/45/591645f1-bb64-6a3c-baed-38ffdb730c0d/mzaf_12028274114546274041.plus.aac.p.m4a'),
-    song('5bJ1DrEM4hNCafcDd1oxHx', 'Self Care', 'Mac Miller', /*PREV:Self Care*/),
+    song('5bJ1DrEM4hNCafcDd1oxHx', 'Self Care', 'Mac Miller'), // no Apple preview found
   ] as Song[],
   ui: {
     label: l('iPod', 'iPod'),
