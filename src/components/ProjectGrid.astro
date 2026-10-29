@@ -1,7 +1,5 @@
 ---
-// The work: two columns that don't line up. Covers change shape from card to
-// card (wide, square, tall), so the columns run at their own pace, the way a
-// contact sheet gets laid out by hand. One column on phones, in list order.
+// The work: a two-column grid of landscape covers (one column on phones).
 // Each card says only: name / context · year.
 // Open projects link to their case; protected ones open the password gate;
 // projects still in progress are shown, quieter, without a link. Over a
@@ -16,63 +14,44 @@ interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const p = ui.project;
 
-// 1st, 3rd, 5th… project on the left, the others on the right; each column
-// has its own rhythm of shapes so the two never line up.
-const shapes = { left: ['3 / 2', '5 / 4', '3 / 2', '5 / 4'], right: ['1 / 1', '3 / 2', '4 / 5'] };
-const columns = (['left', 'right'] as const).map((side, c) =>
-  projects
-    .map((proj, i) => ({ proj, i }))
-    .filter(({ i }) => i % 2 === c)
-    .map((item, k) => ({ ...item, shape: shapes[side][k % shapes[side].length] })),
-);
 // "2024 — 2026" → "2024–2026"
 const year = (v: string) => (v === '—' ? '' : v.replace(/\s*—\s*/g, '–'));
 ---
 
-<div class="work-grid" data-stagger>
-  {columns.map((col) => (
-    <ul class="work-col" role="list">
-      {col.map(({ proj, i, shape }) => {
-        const Tag = proj.state === 'soon' ? 'div' : 'a';
-        const linkProps = proj.state === 'soon' ? {} : { href: caseHref(proj.slug, locale) };
-        const meta = [proj.context[locale], year(proj.period[locale])].filter(Boolean).join(' · ');
-        return (
-          <li class="card" data-state={proj.state} style={`--order:${i};--shape:${shape}`} data-reveal>
-            <Tag class="card__hit" {...linkProps} data-pcursor-host={proj.state}>
-              <div class="card__cover">
-                <ProjectCover media={proj.media} label="" locale={locale} sizes="(max-width: 40rem) 100vw, (max-width: 72rem) 50vw, 36rem" />
-              </div>
-              <h3 class="card__title">
-                <span class="card__name">{proj.title[locale]}</span>
-                <span class="card__sep" aria-hidden="true">/</span>
-                <span class="card__meta">{meta}</span>
-                {proj.state === 'locked' && <span class="visually-hidden"> ({p.locked[locale]})</span>}
-                {proj.state === 'soon' && <span class="visually-hidden"> ({p.soon[locale]})</span>}
-              </h3>
-            </Tag>
-          </li>
-        );
-      })}
-    </ul>
-  ))}
-</div>
+<ul class="work-grid" role="list" data-stagger>
+  {projects.map((proj) => {
+    const Tag = proj.state === 'soon' ? 'div' : 'a';
+    const linkProps = proj.state === 'soon' ? {} : { href: caseHref(proj.slug, locale) };
+    const meta = [proj.context[locale], year(proj.period[locale])].filter(Boolean).join(' · ');
+    return (
+      <li class="card" data-state={proj.state} data-reveal>
+        <Tag class="card__hit" {...linkProps} data-pcursor-host={proj.state}>
+          <div class="card__cover">
+            <ProjectCover media={proj.media} label="" locale={locale} sizes="(max-width: 40rem) 100vw, (max-width: 72rem) 50vw, 36rem" />
+          </div>
+          <h3 class="card__title">
+            <span class="card__name">{proj.title[locale]}</span>
+            <span class="card__sep" aria-hidden="true">/</span>
+            <span class="card__meta">{meta}</span>
+            {proj.state === 'locked' && <span class="visually-hidden"> ({p.locked[locale]})</span>}
+            {proj.state === 'soon' && <span class="visually-hidden"> ({p.soon[locale]})</span>}
+          </h3>
+        </Tag>
+      </li>
+    );
+  })}
+</ul>
 <ProjectCursor locale={locale} />
 
 <style>
-  /* Phones: one column in list order (the two lists dissolve into one). */
-  .work-grid { display: flex; flex-direction: column; gap: var(--space-12); }
-  .work-col { display: contents; }
-  .card { order: var(--order); --cover-ratio: 4 / 3; }
-
-  @media (min-width: 40.0625rem) {
-    .work-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      align-items: start;
-      gap: var(--layout-gap);
-    }
-    .work-col { display: grid; gap: var(--space-12); }
-    .card { --cover-ratio: var(--shape); }
+  .work-grid {
+    --cover-ratio: 16 / 10;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-12) var(--layout-gap);
+  }
+  @media (max-width: 40rem) {
+    .work-grid { grid-template-columns: 1fr; }
   }
 
   .card__hit {

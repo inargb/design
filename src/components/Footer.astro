@@ -24,8 +24,7 @@ const links = [
       </p>
 
       <div class="footer__mid">
-        <p class="t-label">{f.elsewhere[locale]}</p>
-        <ul class="footer__links" role="list">
+        <ul class="footer__links" role="list" aria-label={f.elsewhere[locale]}>
           {links.map((l) => (
             <li>
               <a class="footer__link" href={l.href} target="_blank" rel="noopener">
