@@ -7,9 +7,9 @@
 
 :root {
   /* ---- Color -------------------------------------------------------------- */
-  --color-paper: #f6f6f4;          /* page background                       */
-  --color-paper-shade: #ecece8;    /* secondary surface, placeholders       */
-  --color-paper-deep: #e2e2dd;     /* pressed / selected surface            */
+  --color-paper: #fefefc;          /* page background (under the grain)     */
+  --color-paper-shade: #f0f0ec;    /* secondary surface, placeholders       */
+  --color-paper-deep: #e4e4df;     /* pressed / selected surface            */
   --color-surface: #ffffff;        /* cards                                 */
   --color-ink: #1d2733;            /* primary text · 14:1 on paper          */
   --color-graphite: #4b5563;       /* secondary text · 7:1                  */
@@ -25,6 +25,9 @@
   --color-shadow: rgb(29 39 51 / 0.08);
   --color-scrim: rgb(29 39 51 / 0.6);
   --color-danger: #b3261e;
+
+  /* Paper grain: fine monochrome noise over the page colour, tiled. */
+  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.12  0 0 0 0 0.15  0.16 0 0 0 -0.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 
   color-scheme: light;
 
