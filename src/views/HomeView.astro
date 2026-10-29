@@ -1,9 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Doodle from '../components/Doodle.astro';
-import FramesWord from '../components/FramesWord.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
-import SectionLabel from '../components/ui/SectionLabel.astro';
 import { href, type Locale } from '../i18n/config';
 import { home } from '../content/home';
 
@@ -13,62 +10,50 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
 ---
 
 <Base locale={locale} route="home" altHref={href('home', other)} pageId="home">
-  <section class="hero container" aria-labelledby="hero-title">
-    <h1 id="hero-title" class="hero__title t-display" data-spec-label="display · clamp(2rem → 4.4rem)">
-      {home.headlineBefore[locale]}<FramesWord locale={locale} word={home.word[locale]} after={home.headlineAfter[locale]} />
-    </h1>
-
-    <div class="hero__doodles">
-      <div class="hero__doodle hero__doodle--happy" data-doodle-drag data-cursor="drag"><Doodle variant="happy" /></div>
-      <div class="hero__doodle hero__doodle--wonder" data-doodle-drag data-cursor="drag"><Doodle variant="wonder" /></div>
-    </div>
+  <section class="hero" aria-labelledby="hero-title">
+    <h1 id="hero-title" class="hero__title t-display">{home.headline[locale]}</h1>
+    <dl class="hero__now">
+      {home.now.map((n) => (
+        <div>
+          <dt>{n.label[locale]}</dt>
+          <dd>{n.body[locale]}</dd>
+        </div>
+      ))}
+    </dl>
   </section>
 
-  <section id="work" class="work container" aria-labelledby="work-title">
-    <header class="work__head">
-      <SectionLabel text={home.workLabel[locale]} />
-      <h2 id="work-title" class="visually-hidden">{home.workLabel[locale]}</h2>
-    </header>
+  <section id="work" class="work" aria-labelledby="work-title">
+    <h2 id="work-title" class="work__title t-label">{home.workLabel[locale]}</h2>
     <ProjectGrid locale={locale} />
   </section>
 </Base>
 
 <style>
   .hero {
-    position: relative;
     display: grid;
-    align-items: start;
-    gap: var(--space-8);
-    /* Fills the first screen but leaves a peek of the work below (~13rem). */
-    min-height: max(20rem, calc(100svh - var(--nav-height) - 13rem));
-    padding-block: clamp(var(--space-6), 11svh, 8rem) var(--space-4);
+    gap: var(--space-12);
+    padding-block: var(--space-16) var(--space-24);
   }
-  .hero__title { max-width: 22ch; position: relative; z-index: 2; }
+  .hero__title { max-width: 18em; font-size: clamp(2.25rem, 1.5rem + 2.6vw, 3.5rem); }
+  .hero__now {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: var(--space-6) var(--space-12);
+    max-width: 44rem;
+  }
+  .hero__now div { display: grid; gap: var(--space-1); align-content: start; }
+  .hero__now dt { font-size: var(--type-body-s); color: var(--color-graphite-soft); }
+  .hero__now dd { font-size: var(--type-body-s); line-height: 1.55; color: var(--color-ink); text-wrap: pretty; }
 
-  /* Two of Inaiá's doodles keep each other company on the right. */
-  .hero__doodles { position: absolute; inset: 0 var(--layout-gutter); pointer-events: none; }
-  /* They can be picked up and moved anywhere on the page (scripts/eggs/doodle.ts). */
-  .hero__doodle {
-    position: absolute;
-    z-index: 3;
-    pointer-events: auto;
-    touch-action: none;
-    user-select: none;
-    translate: var(--drag-x, 0px) var(--drag-y, 0px);
-    transition: scale var(--duration-quick) var(--ease-settle);
+  .work { scroll-margin-top: var(--space-8); }
+  .work__title { margin-bottom: var(--space-6); color: var(--color-graphite-soft); }
+
+  @media (min-width: 64.0625rem) {
+    /* Lines the headline up with the sidebar links. */
+    .hero { padding-top: var(--space-24); }
   }
-  .hero__doodle.is-held { scale: 1.08; }
-  .hero__doodle--happy { right: 2%; top: 8%; width: clamp(6rem, 4rem + 9vw, 13rem); rotate: 8deg; }
-  .hero__doodle--wonder { right: 17%; bottom: 8%; width: clamp(4.5rem, 3rem + 6vw, 9rem); rotate: -10deg; }
   @media (max-width: 40rem) {
-    .hero { min-height: auto; padding-top: var(--space-6); }
-    .hero__doodles { position: relative; inset: auto; display: flex; justify-content: flex-end; align-items: flex-end; gap: var(--space-3); order: -1; }
-    .hero__doodle { position: relative; right: auto; top: auto; bottom: auto; }
-    .hero__doodle--happy { width: 6rem; }
-    .hero__doodle--wonder { width: 4.5rem; order: -1; }
+    .hero { gap: var(--space-8); padding-block: var(--space-12) var(--space-16); }
+    .hero__now { grid-template-columns: 1fr; }
   }
-
-  .work { padding-top: var(--space-6); scroll-margin-top: var(--nav-height); }
-  .work__head { margin-bottom: var(--space-6); }
-
 </style>

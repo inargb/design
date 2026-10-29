@@ -10,7 +10,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-top: calc(var(--nav-height) + var(--space-4));
+  scroll-padding-top: var(--space-8);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -29,8 +29,6 @@ body {
   font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  transition: background-color var(--duration-slow) var(--ease-soft),
-    color var(--duration-slow) var(--ease-soft);
 }
 
 img, svg, video { display: block; max-width: 100%; }
@@ -66,10 +64,11 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
   font-weight: var(--weight-title);
   text-wrap: balance;
 }
-.t-heading-xl { font-size: var(--type-heading-xl); }
+.t-heading-xl { font-size: var(--type-heading-xl); line-height: var(--leading-tight); }
 .t-heading-l { font-size: var(--type-heading-l); }
 .t-heading-m { font-size: var(--type-heading-m); }
-.t-heading-s { font-size: var(--type-heading-s); letter-spacing: -0.01em; }
+.t-heading-s { font-size: var(--type-heading-s); letter-spacing: 0; }
+.t-lede { font-size: var(--type-lede); line-height: 1.55; color: var(--color-graphite); }
 .t-body { font-size: var(--type-body); line-height: var(--leading-body); }
 .t-body-s { font-size: var(--type-body-s); line-height: var(--leading-body); }
 .t-caption, .t-label, .t-nav, .t-meta, .t-code {
@@ -85,37 +84,17 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
   font-weight: var(--weight-system-strong);
 }
 .t-nav { font-size: var(--type-nav); }
-.t-meta { font-size: var(--type-meta); color: var(--color-graphite); }
-.t-code { font-size: var(--type-code); }
+.t-meta { font-size: var(--type-meta); color: var(--color-graphite-soft); }
+.t-code { font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; font-size: var(--type-code); }
 
 .t-muted { color: var(--color-graphite-soft); }
 .t-secondary { color: var(--color-graphite); }
 .t-italic { font-style: italic; }
 .t-pretty { text-wrap: pretty; }
 
-/* The underscore that ends labels like "works_". It blinks slowly,
-   like a cursor waiting for input, and stops when motion is off. */
-.caret::after {
-  content: '_';
-  animation: caret-blink 1.1s steps(1) infinite;
-}
-@keyframes caret-blink { 50% { opacity: 0; } }
-
-/* A marker stroke behind words. Hand-drawn feel via a skewed gradient. */
-.mark {
-  background: linear-gradient(
-      100deg,
-      transparent 0.2em,
-      var(--color-highlight) 0.25em,
-      var(--color-highlight) calc(100% - 0.2em),
-      transparent 100%
-    )
-    no-repeat 0 60% / 100% 62%;
-  color: inherit;
-  padding-inline: 0.08em;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
+/* Kept for markup shipped inside sealed (encrypted) cases: now silent. */
+.caret::after { content: none; }
+.mark { background: none; color: inherit; }
 
 /* ---- Links ---------------------------------------------------------------- */
 .link {
@@ -123,29 +102,18 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.22em;
-  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
-  transition: text-decoration-color var(--duration-quick) var(--ease-soft),
-    text-underline-offset var(--duration-quick) var(--ease-soft);
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  transition: text-decoration-color var(--duration-quick) var(--ease-soft);
 }
 .link:visited { color: var(--color-accent); }
-.link:hover, .link:active { color: var(--color-accent-hover); text-decoration-color: currentColor; text-underline-offset: 0.3em; }
+.link:hover, .link:active { color: var(--color-accent-hover); text-decoration-color: currentColor; }
 
 /* ---- Layout primitives --------------------------------------------------- */
-.container {
-  width: 100%;
-  max-width: calc(var(--layout-max) + 2 * var(--layout-gutter));
-  margin-inline: auto;
-  padding-inline: var(--layout-gutter);
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(var(--layout-columns), minmax(0, 1fr));
-  column-gap: var(--layout-gap);
-}
-@media (max-width: 64rem) { .grid { --layout-columns: 6; } }
-@media (max-width: 40rem) { .grid { --layout-columns: 4; } }
+/* Content already sits inside the page column (layouts/Base.astro), so
+   .container only keeps old markup aligned. */
+.container { width: 100%; }
 
-.section { padding-block: calc(var(--section-space) * 0.6); }
+.section { padding-block: calc(var(--section-space) * 0.5); }
 .measure { max-width: var(--layout-text); }
 
 .visually-hidden {
@@ -164,44 +132,23 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
   padding: var(--space-3) var(--space-4);
   background: var(--color-ink);
   color: var(--color-paper);
-  font-family: var(--font-system);
-  font-size: var(--type-nav);
+  font-size: var(--type-meta);
 }
 .skip-link:focus { top: var(--space-4); }
 
 /* ---- Shared motion classes (driven by scripts/motion.ts) ----------------- */
 /* Elements only hide once JS confirms it will reveal them (.js-reveal),
-   so content is never lost if scripts fail. */
-.js-reveal [data-reveal] {
+   so content is never lost if scripts fail. A short fade, nothing more. */
+.js-reveal [data-reveal],
+.js-reveal [data-develop] {
   opacity: 0;
-  transform: translateY(0.6rem);
+  transform: translateY(0.5rem);
   transition: opacity var(--duration-slow) var(--ease-soft),
     transform var(--duration-slow) var(--ease-settle);
   transition-delay: var(--reveal-delay, 0ms);
 }
-.js-reveal [data-reveal].is-revealed { opacity: 1; transform: none; }
-
-/* Images develop: pale and flat → full tone, like a print in the tray. */
-.js-reveal [data-develop] {
-  filter: grayscale(1) contrast(0.55) brightness(1.35) sepia(0.25);
-  opacity: 0.35;
-  transition: filter var(--duration-develop) var(--ease-develop),
-    opacity calc(var(--duration-develop) * 0.6) var(--ease-soft);
-  transition-delay: var(--reveal-delay, 0ms);
-}
-.js-reveal [data-develop].is-revealed { filter: none; opacity: 1; }
-
-/* Motion off: everything is simply there. */
-@media (prefers-reduced-motion: reduce) {
-  .caret::after { animation: none; }
-}
+.js-reveal [data-develop] { transform: none; }
+.js-reveal :is([data-reveal], [data-develop]).is-revealed { opacity: 1; transform: none; }
 
 /* ---- Overlays: while any dialog is open, the page behind stays put ------- */
 html:has(dialog[open]) { overflow: hidden; scrollbar-gutter: stable; }
-
-/* ---- Custom cursor: hide the native one only when ours is running -------- */
-.has-custom-cursor,
-.has-custom-cursor *,
-.has-custom-cursor ::backdrop { cursor: none; }
-.has-custom-cursor input,
-.has-custom-cursor textarea { cursor: text; }

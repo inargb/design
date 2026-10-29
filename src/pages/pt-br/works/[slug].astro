@@ -1,8 +1,7 @@
 ---
 // Built cases render the full study; protected ones render sealed (header +
-// password gate); the rest keep the placeholder page.
+// password gate).
 import CaseView from '../../../views/CaseView.astro';
-import CaseStubView from '../../../views/CaseStubView.astro';
 import { caseProjects, type Project } from '../../../content/projects';
 import { cases } from '../../../content/cases';
 import { sealedCases, publicStudy } from '../../../content/cases/sealed';
@@ -16,4 +15,4 @@ const sealed = project.state === 'locked' ? sealedCases[project.slug] : undefine
 ---
 {study ? <CaseView locale="pt" project={project} study={study} />
   : sealed ? <CaseView locale="pt" project={project} study={publicStudy(sealed)} sealed={sealed} />
-  : <CaseStubView locale="pt" project={project} />}
+  : null}

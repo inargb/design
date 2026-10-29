@@ -1,17 +1,6 @@
-// About page content. Sourced from the current inasilva.com About page.
+// About page content. Sourced from the inasilva.com About page.
 // Lines marked DRAFT are light rewrites of Inaiá's own words; review them.
-import type { ImageMetadata } from 'astro';
 import type { L10n } from '../i18n/config';
-import shelfImg from '../assets/shelf/shelf.png';
-import camera from '../assets/shelf/camera.png';
-import lalaland from '../assets/shelf/lalaland.jpg';
-import harry from '../assets/shelf/harry.png';
-import amelie from '../assets/shelf/amelie.png';
-import popeye from '../assets/shelf/popeye.jpg';
-import vogue from '../assets/shelf/vogue.jpg';
-import ipod from '../assets/shelf/ipod.png';
-import sneakers from '../assets/shelf/sneakers.png';
-import plant from '../assets/shelf/plant.png';
 import portrait from '../assets/about/portrait.jpg';
 
 const l = (en: string, pt: string): L10n => ({ en, pt });
@@ -19,17 +8,16 @@ const l = (en: string, pt: string): L10n => ({ en, pt });
 export const about = {
   portrait,
   intro: {
-    label: l('about', 'sobre'),
+    label: l('About', 'Sobre'),
     title: l('Curiosity about people and things led me here.', 'A curiosidade por pessoas e coisas me trouxe até aqui.'),
     body: l(
-      'I design with attention to detail, to make things clearer and more meaningful. So, with that in mind, I need your help…',
-      'Eu desenho com atenção aos detalhes, para deixar as coisas mais claras e com mais sentido. Então, pensando nisso, preciso da sua ajuda…',
+      'I design with attention to detail, to make things clearer and more meaningful.',
+      'Eu desenho com atenção aos detalhes, para deixar as coisas mais claras e com mais sentido.',
     ),
-    ask: l('can you organize my shelf for me? :)', 'você pode arrumar minha estante pra mim? :)'),
   },
 
   hello: {
-    title: l('hey, I’m Inaiá', 'oi, eu sou a Inaiá'),
+    title: l('Hey, I’m Inaiá', 'Oi, eu sou a Inaiá'),
     // DRAFT: rewritten from the current bio.
     body: [
       l(
@@ -45,31 +33,31 @@ export const about = {
   },
 
   disciplines: {
-    label: l('what I do', 'o que eu faço'),
+    label: l('What I do', 'O que eu faço'),
     items: [
-      { glyph: '▣', label: l('UI design', 'UI design') },
-      { glyph: '?', label: l('User research', 'Pesquisa com usuários') },
-      { glyph: '▦', label: l('Design systems', 'Design systems') },
-      { glyph: '⊛', label: l('Atomic design', 'Atomic design') },
-      { glyph: '◈', label: l('Design tokens', 'Design tokens') },
-      { glyph: '◐', label: l('Accessibility (WCAG)', 'Acessibilidade (WCAG)') },
-      { glyph: '↻', label: l('High-fidelity prototyping', 'Prototipação em alta fidelidade') },
-      { glyph: '⊞', label: l('Wireframing', 'Wireframes') },
-      { glyph: '↔', label: l('Responsive design', 'Design responsivo') },
-      { glyph: '¶', label: l('UX writing', 'UX writing') },
-      { glyph: '⇆', label: l('Benchmarking', 'Benchmarking') },
-      { glyph: 'Aa', label: l('Typography', 'Tipografia') },
-      { glyph: '❡', label: l('Editorial design', 'Design editorial') },
-      { glyph: '⋈', label: l('Cross-functional collaboration', 'Colaboração multidisciplinar') },
-      { glyph: '$', label: l('Enterprise financial systems', 'Sistemas financeiros corporativos') },
-      { glyph: '@', label: l('Social media', 'Redes sociais') },
-      { glyph: '※', label: l('Internal marketing', 'Marketing interno') },
-      { glyph: '✂', label: l('Mixed media art', 'Arte mista') },
+      { label: l('UI design', 'UI design') },
+      { label: l('User research', 'Pesquisa com usuários') },
+      { label: l('Design systems', 'Design systems') },
+      { label: l('Atomic design', 'Atomic design') },
+      { label: l('Design tokens', 'Design tokens') },
+      { label: l('Accessibility (WCAG)', 'Acessibilidade (WCAG)') },
+      { label: l('High-fidelity prototyping', 'Prototipação em alta fidelidade') },
+      { label: l('Wireframing', 'Wireframes') },
+      { label: l('Responsive design', 'Design responsivo') },
+      { label: l('UX writing', 'UX writing') },
+      { label: l('Benchmarking', 'Benchmarking') },
+      { label: l('Typography', 'Tipografia') },
+      { label: l('Editorial design', 'Design editorial') },
+      { label: l('Cross-functional collaboration', 'Colaboração multidisciplinar') },
+      { label: l('Enterprise financial systems', 'Sistemas financeiros corporativos') },
+      { label: l('Social media', 'Redes sociais') },
+      { label: l('Internal marketing', 'Marketing interno') },
+      { label: l('Mixed media art', 'Arte mista') },
     ],
   },
 
   tools: {
-    label: l('tools on my desk', 'ferramentas na mesa'),
+    label: l('Tools', 'Ferramentas'),
     items: [
       { key: 'Fi', name: 'Figma' },
       { key: 'No', name: 'Notion' },
@@ -84,7 +72,7 @@ export const about = {
   },
 
   experience: {
-    label: l('experience', 'experiência'),
+    label: l('Experience', 'Experiência'),
     items: [
       { org: 'Volanté Systems', role: l('UX/UI Designer', 'UX/UI Designer'), when: l('2024 → present', '2024 → hoje') },
       {
@@ -103,7 +91,7 @@ export const about = {
   // Newest first, in two groups. Course names stay in English in both
   // languages: they're the official titles recruiters search for.
   education: {
-    label: l('education', 'formação'),
+    label: l('Education', 'Formação'),
     groups: [
       {
         heading: l('Degrees', 'Formação'),
@@ -131,18 +119,8 @@ export const about = {
   },
 
   words: {
-    label: l('kind words', 'palavras gentis'),
+    label: l('Kind words', 'Palavras gentis'),
     title: l('Things people said, kept in a drawer.', 'Coisas que as pessoas disseram, guardadas numa gaveta.'),
-    drawer: {
-      front: l('kind words', 'palavras'),
-      open: l('open the drawer', 'abrir a gaveta'),
-      close: l('close drawer', 'fechar gaveta'),
-      read: l('read note', 'ler bilhete'),
-      putBack: l('put it back', 'guardar'),
-      prev: l('previous note', 'bilhete anterior'),
-      next: l('next note', 'próximo bilhete'),
-      of: l('of', 'de'),
-    },
     items: [
       {
         quote: l(
@@ -188,7 +166,7 @@ export const about = {
   },
 
   art: {
-    label: l('love for art', 'amor pela arte'),
+    label: l('Outside work', 'Fora do trabalho'),
     title: l('Design is my language, but art is where I charge.', 'Design é minha linguagem, mas é na arte que eu recarrego.'),
     body: [
       l(
@@ -204,55 +182,6 @@ export const about = {
         'O momento em que me sinto mais feliz é quando vejo fotos reveladas que eu nem lembro de ter tirado. É bom lembrar de momentos e pessoas :)',
       ),
     ],
-    strip: l('Film strip of photographs', 'Filme com fotografias'),
-  },
-};
-
-// ---- The shelf ------------------------------------------------------------
-// Positions are fractions of the shelf photo (slots) or of the pile area.
-// Notes: Inaiá, replace these with your own one-liners.
-
-export interface ShelfObject {
-  id: string;
-  src: ImageMetadata;
-  name: L10n;
-  note: L10n;
-  size: number;            // width as a fraction of the shelf photo width
-  home: number;            // the slot "tidy up for me" puts it in (0–8, top-left → bottom-right)
-  pile: [number, number, number]; // x, y (centre-bottom, fraction of pile) + rotation
-}
-
-export const shelf = {
-  image: shelfImg,
-  imageAlt: l('An empty metal wire shelf with three levels.', 'Uma estante de arame vazia, com três prateleiras.'),
-  // [x, y] = centre-bottom anchor on the photo, as fractions.
-  slots: [
-    [0.25, 0.1], [0.5, 0.1], [0.75, 0.1],
-    [0.25, 0.46], [0.5, 0.46], [0.75, 0.46],
-    [0.27, 0.84], [0.52, 0.84], [0.76, 0.84],
-  ] as [number, number][],
-  objects: [
-    { id: 'lalaland', src: lalaland, size: 0.17, home: 4, pile: [0.14, 0.34, -6], name: l('La La Land', 'La La Land'), note: l('La La Land (2016)', 'La La Land (2016)') },
-    { id: 'harry', src: harry, size: 0.17, home: 3, pile: [0.38, 0.3, 4], name: l('When Harry Met Sally…', 'Harry & Sally'), note: l('When Harry Met Sally… (1989)', 'Harry & Sally: Feitos um para o Outro (1989)') },
-    { id: 'camera', src: camera, size: 0.23, home: 2, pile: [0.66, 0.22, -3], name: l('Yashica camera', 'Câmera Yashica'), note: l('dad’s old Yashica. always in my bag.', 'a Yashica antiga do meu pai. sempre na bolsa.') },
-    { id: 'vogue', src: vogue, size: 0.17, home: 7, pile: [0.85, 0.38, 5], name: l('Vogue', 'Vogue'), note: l('Vogue', 'Vogue') },
-    { id: 'amelie', src: amelie, size: 0.16, home: 5, pile: [0.24, 0.7, 3], name: l('Amélie', 'O Fabuloso Destino de Amélie Poulain'), note: l('Amélie (2001)', 'O Fabuloso Destino de Amélie Poulain (2001)') },
-    { id: 'popeye', src: popeye, size: 0.17, home: 6, pile: [0.5, 0.64, -4], name: l('Popeye magazine', 'Revista Popeye'), note: l('Popeye magazine', 'revista Popeye') },
-    { id: 'ipod', src: ipod, size: 0.13, home: 1, pile: [0.76, 0.66, 6], name: l('iPod classic', 'iPod clássico'), note: l('iPod classic', 'iPod clássico') },
-    { id: 'sneakers', src: sneakers, size: 0.25, home: 8, pile: [0.3, 0.98, -2], name: l('Shoes', 'Sapatos'), note: l('Onitsuka Tiger shoes', 'sapatos Onitsuka Tiger') },
-    { id: 'plant', src: plant, size: 0.23, home: 0, pile: [0.72, 0.99, 0], name: l('A plant', 'Uma planta'), note: l('a plant', 'uma planta') },
-  ] as ShelfObject[],
-  ui: {
-    help: l(
-      'Drag things onto the shelf. With a keyboard, press Enter on an item to put it away or take it back.',
-      'Arraste as coisas para a estante. No teclado, aperte Enter em um item para guardar ou tirar de lá.',
-    ),
-    tidy: l('tidy up for me', 'arruma pra mim'),
-    mess: l('mess it up again', 'bagunçar de novo'),
-    placed: l('{name} is on the shelf. {n} of {total} put away.', '{name} está na estante. {n} de {total} guardados.'),
-    removed: l('{name} is back on the floor.', '{name} voltou pro chão.'),
-    done: l('thank you! it looks so much better :)', 'obrigada! ficou muito melhor :)'),
-    lazy: l('ok, I did it myself. thanks anyway :)', 'tá, eu mesma arrumei. obrigada mesmo assim :)'),
-    stars: l('city of stars ✦', 'cidade das estrelas ✦'),
+    strip: l('Film photographs by Inaiá', 'Fotografias em filme da Inaiá'),
   },
 };

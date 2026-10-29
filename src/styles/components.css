@@ -1,171 +1,21 @@
 /* ==========================================================================
-   Small shared components that are styled globally because scripts create
-   them at runtime (toasts, spec overlay) or they appear inside prose.
-   Everything else is scoped in its .astro file.
+   Shared surfaces that appear inside case-study markup. Styled globally
+   because protected cases are injected (decrypted) after load and still
+   carry the class names they were sealed with.
    ========================================================================== */
 
-/* ---- Keycap: tools and keyboard shortcuts ------------------------------ */
-.keycap {
-  display: inline-grid;
-  place-items: center;
-  min-width: 1.9em;
-  height: 1.9em;
-  padding: 0 0.45em;
-  font-family: var(--font-system);
-  font-size: var(--type-label);
-  font-weight: 500;
-  line-height: 1;
-  color: var(--color-ink);
-  background: var(--color-paper);
-  border: var(--rule-ink);
+/* ---- Card: a plain white surface with a hairline ---------------------------
+   Case text blocks use it (stats, steps, decisions). Sealed markup still sets
+   an inline --tilt; it is ignored on purpose. */
+.paper-card {
+  background: var(--color-surface);
+  border: var(--rule-hair);
   border-radius: var(--radius-soft);
-  box-shadow: 0 2px 0 var(--color-ink);
 }
 
-/* ---- Toast (egg messages) --------------------------------------------- */
-.egg-toast {
-  position: fixed;
-  left: 50%;
-  bottom: var(--space-6);
-  z-index: 80;
-  max-width: min(26rem, calc(100vw - 2rem));
-  padding: var(--space-3) var(--space-4);
-  translate: -50% 1rem;
-  font-family: var(--font-system);
-  font-size: var(--type-caption);
-  color: var(--color-ink);
-  background: #fff;
-  border: var(--rule-ink);
-  box-shadow: var(--shadow-offset);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--duration-settle) var(--ease-soft), translate var(--duration-settle) var(--ease-settle);
-}
-.egg-toast:empty { display: none; }
-.egg-toast.is-on { opacity: 1; translate: -50% 0; }
-@media (max-width: 40rem) { .egg-toast { bottom: calc(1.5rem + env(safe-area-inset-bottom)); } }
-
-/* ---- Shutter flash ("yashica") ------------------------------------------ */
-.shutter {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  pointer-events: none;
-  background: #fff;
-  animation: shutter 520ms var(--ease-soft) forwards;
-}
-@keyframes shutter {
-  0% { opacity: 0; }
-  12% { opacity: 0.7; }
-  100% { opacity: 0; }
-}
-
-/* ---- Spec mode overlay ----------------------------------------------------- */
-.spec-layer { position: absolute; inset: 0 auto auto 0; width: 100%; z-index: 70; pointer-events: none; }
-.spec-box {
-  position: absolute;
-  outline: 1px solid var(--color-accent);
-  background: color-mix(in srgb, var(--color-accent) 5%, transparent);
-}
-.spec-tag {
-  position: absolute;
-  left: -1px;
-  bottom: 100%;
-  padding: 1px 5px;
-  font-family: var(--font-system);
-  font-size: 10px;
-  line-height: 1.5;
-  white-space: nowrap;
-  color: var(--color-on-accent);
-  background: var(--color-accent);
-}
-.spec-grid {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: var(--layout-gap);
-  margin-inline: auto;
-}
-.spec-grid i { background: color-mix(in srgb, var(--color-accent) 6%, transparent); border-inline: 1px dashed color-mix(in srgb, var(--color-accent) 35%, transparent); }
-@media (max-width: 64rem) { .spec-grid { grid-template-columns: repeat(6, 1fr); } .spec-grid i:nth-child(n + 7) { display: none; } }
-@media (max-width: 40rem) { .spec-grid { grid-template-columns: repeat(4, 1fr); } .spec-grid i:nth-child(n + 5) { display: none; } }
-.spec-ruler {
-  position: fixed;
-  right: var(--space-4);
-  top: calc(var(--nav-height) + var(--space-2));
-  padding: 2px 6px;
-  font-family: var(--font-system);
-  font-size: 10px;
-  color: var(--color-on-accent);
-  background: var(--color-accent);
-}
-
-/* ---- Crop marks: frame corners, print-style ------------------------------ */
+/* ---- Lift / crop marks: retired. The classes stay in sealed markup, so
+   they are neutralised here instead of removed. */
+.lift { transition: border-color var(--duration-quick) var(--ease-soft); }
 .crop { position: relative; }
 .crop::before,
-.crop::after {
-  content: '';
-  position: absolute;
-  width: 0.75rem;
-  height: 0.75rem;
-  pointer-events: none;
-  border-color: var(--color-ink);
-  border-style: solid;
-}
-.crop::before { top: -0.45rem; left: -0.45rem; border-width: 1px 0 0 1px; }
-.crop::after { bottom: -0.45rem; right: -0.45rem; border-width: 0 1px 1px 0; }
-
-/* ---- Paper card: a note on the table -------------------------------------
-   The case-study surface: paper with a thin double frame, a hair off
-   straight (--tilt). Case text blocks use it (stats, steps, decisions);
-   images and the "how might we" keep their own look. With .lift, it lifts
-   like a print, but quieter: a small move and a thin hard shadow. */
-.paper-card {
-  background: var(--color-paper);
-  border: var(--rule-hair);
-  box-shadow: 0 0 0 7px var(--color-paper), 0 0 0 8px var(--color-rule);
-  rotate: var(--tilt, 0deg);
-}
-.paper-card.lift {
-  --lift-rest: var(--tilt, 0deg);
-  --lift-move: -2px;
-  --lift-shadow: 0 0 0 7px var(--color-paper), 0 0 0 8px var(--color-rule), 3px 3px 0 8px var(--color-shadow);
-}
-.paper-card.lift:hover { position: relative; z-index: 1; }
-
-/* ---- Print lift: a print picked up off the table -------------------------
-   The hover used by project covers, and meant for images in case studies.
-   On hover (of the image, or of the link / [data-lift-host] around it) the
-   print lifts up-left, tilts a hair, casts a hard offset shadow, and its
-   crop marks appear. Pair it with the cursor's frame state (data-cursor).
-     <figure class="lift crop" data-cursor="look">…</figure>
-   Tune per surface: --lift-mark (crop-mark colour), --lift-shadow, --lift-move, and
-   --lift-rest for a print that already sits tilted (the tilt adds to it). */
-.lift {
-  rotate: var(--lift-rest, 0deg);
-  transition: translate var(--duration-settle) var(--ease-settle), rotate var(--duration-settle) var(--ease-settle),
-    box-shadow var(--duration-settle) var(--ease-settle);
-}
-.lift.crop::before,
-.lift.crop::after { opacity: 0; border-color: var(--lift-mark, var(--color-ink)); transition: opacity var(--duration-quick); }
-.lift:hover,
-a:hover .lift,
-a:focus-visible .lift,
-[data-lift-host]:hover .lift {
-  translate: var(--lift-move, -4px) var(--lift-move, -4px);
-  rotate: calc(var(--lift-rest, 0deg) - 0.4deg);
-  box-shadow: var(--lift-shadow, var(--shadow-offset-lift));
-}
-.lift.crop:hover::before, .lift.crop:hover::after,
-a:hover .lift.crop::before, a:hover .lift.crop::after,
-a:focus-visible .lift.crop::before, a:focus-visible .lift.crop::after,
-[data-lift-host]:hover .lift.crop::before, [data-lift-host]:hover .lift.crop::after { opacity: 1; }
-/* A lift that also fades in on scroll: keep both transitions (the reveal's
-   delay applies only to the reveal, never to the hover). */
-.js-reveal .lift[data-reveal] {
-  transition: opacity var(--duration-slow) var(--ease-soft), transform var(--duration-slow) var(--ease-settle),
-    translate var(--duration-settle) var(--ease-settle), rotate var(--duration-settle) var(--ease-settle),
-    box-shadow var(--duration-settle) var(--ease-settle);
-  transition-delay: var(--reveal-delay, 0ms), var(--reveal-delay, 0ms), 0ms, 0ms, 0ms;
-}
+.crop::after { content: none; }

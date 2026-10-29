@@ -6,144 +6,58 @@ import { site } from '../content/site';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const f = ui.footer;
-const c = ui.controls;
 const links = [
-  { label: 'linkedin', href: site.links.linkedin },
-  { label: 'instagram', href: site.links.instagram },
+  { label: 'LinkedIn', href: site.links.linkedin },
+  { label: 'Instagram', href: site.links.instagram },
   { label: ui.nav.resume[locale], href: site.links.resume[locale] },
-  { label: 'design', href: site.links.design },
+  { label: f.design[locale], href: site.links.design },
 ];
+const year = new Date().getFullYear();
 ---
 
-<footer class="footer" data-spec-label="footer">
-  <div class="container">
-    <!-- The greeting on one end, the links on the other (stacked on phones). -->
-    <div class="footer__top">
-      <p class="footer__hello t-heading-xl">
-        {f.greeting[locale]}<span class="caret" aria-hidden="true"></span>
-      </p>
-
-      <div class="footer__mid">
-        <p class="t-label">{f.elsewhere[locale]}</p>
-        <ul class="footer__links" role="list">
-          {links.map((l) => (
-            <li>
-              <a class="footer__link t-nav" href={l.href} target="_blank" rel="noopener">
-                {l.label}<span aria-hidden="true"> ↗</span>
-                <span class="visually-hidden">{ui.nav.newTab[locale]}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer__base t-meta">
-      <p class="footer__sig">{f.signature[locale]}</p>
-      <!-- Dad's Yashica, drawn small: tap it for a picture (scripts/eggs/shutter.ts). -->
-      <button class="footer__camera" type="button" data-camera aria-label={ui.polaroid.camera[locale]} data-cursor="link" data-cursor-label={ui.polaroid.cursor[locale]}>
-        <svg viewBox="0 0 40 30" aria-hidden="true">
-          <path d="M4.2 9.1c-.1-1.6.9-2.6 2.4-2.7l6.3-.2 1.6-2.6c.4-.6.9-.8 1.6-.8l7.6.1c.7 0 1.1.3 1.5.9l1.5 2.4 7.4.1c1.6.1 2.4 1 2.4 2.6l-.3 14.6c0 1.5-.9 2.4-2.4 2.4L6.9 26.1c-1.5 0-2.4-.9-2.5-2.4z" />
-          <circle cx="20.3" cy="16" r="6.4" />
-          <circle cx="20.1" cy="16.2" r="3.1" />
-          <path d="M8.6 10.4h4.1M30.2 9.6l3.6.1" />
-          <path class="footer__camera-spark" d="M36 2.2l.6 1.9 1.9.5-1.9.6-.6 1.9-.5-1.9-1.9-.6 1.9-.5z" />
-        </svg>
-      </button>
-
-      <div class="footer__controls" role="group" aria-label={c.group[locale]}>
-        <button class="footer__ctl" type="button" aria-pressed="false" data-spec-toggle aria-label={c.spec[locale]} title={c.spec[locale]}>
-          <svg class="footer__ico footer__ruler" viewBox="0 0 24 8" aria-hidden="true">
-            <rect x="0.5" y="0.5" width="23" height="7" fill="none" stroke="currentColor" />
-            <path d="M4 1v3M8 1v4M12 1v3M16 1v4M20 1v3" stroke="currentColor" />
-          </svg>
-        </button>
-        <button class="footer__ctl" type="button" data-shortcuts-open aria-label={ui.shortcuts.title[locale]}>
-          <kbd class="keycap" aria-hidden="true">?</kbd>
-        </button>
-      </div>
-    </div>
+<footer class="footer">
+  <div class="footer__top">
+    <p class="footer__hello t-heading-l">{f.greeting[locale]}</p>
+    <ul class="footer__links" role="list" aria-label={f.elsewhere[locale]}>
+      {links.map((l) => (
+        <li>
+          <a class="footer__link" href={l.href} target="_blank" rel="noopener">
+            {l.label}<span aria-hidden="true">&thinsp;↗</span>
+            <span class="visually-hidden">{ui.nav.newTab[locale]}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </div>
+  <p class="footer__base t-meta">© {year} {site.name} · {f.signature[locale]}</p>
 </footer>
 
 <style>
-  /* Paper like the page, everything in ink. */
   .footer {
     margin-top: var(--section-space);
-    padding-block: var(--space-16) var(--space-8);
+    padding-block: var(--space-12) var(--space-8);
     border-top: var(--rule-hair);
-    background: var(--color-paper);
-    color: var(--color-ink);
   }
   .footer__top {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: var(--space-8);
-  }
-  .footer__hello { max-width: 12ch; }
-  .footer__mid {
-    display: flex;
-    gap: 0 var(--space-6);
-    align-items: baseline;
     flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4) var(--space-8);
   }
-  .footer__links { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); }
+  .footer__links { display: flex; flex-wrap: wrap; gap: 0 var(--space-6); }
   .footer__link {
     display: inline-flex;
     align-items: center;
     min-height: var(--tap-min);
-    color: var(--color-ink);
+    font-size: var(--type-body-s);
+    color: var(--color-graphite);
     text-decoration: none;
+    transition: color var(--duration-quick) var(--ease-soft);
   }
-  .footer__link:hover { text-decoration: underline; text-underline-offset: 0.25em; }
-  .footer__base {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-2) var(--space-6);
-    margin-top: var(--space-12);
-    padding-top: var(--space-4);
-    border-top: var(--rule-hair);
-  }
-  /* The ? key: white inside, black outline and glyph. */
-  .footer :global(.keycap) { background: #fff; color: var(--color-ink); border-color: var(--color-ink); }
-  .footer__sig { color: var(--color-ink); font-weight: 500; }
-  .footer__camera {
-    display: inline-grid;
-    place-items: center;
-    width: var(--tap-min);
-    height: var(--tap-min);
-    margin-left: calc(-1 * var(--space-4));
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--color-ink);
-  }
-  .footer__camera svg { width: 1.75rem; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; rotate: -6deg; transition: rotate var(--duration-settle) var(--ease-settle), scale var(--duration-settle) var(--ease-settle); }
-  .footer__camera-spark { fill: var(--color-highlight); stroke-width: 0.8; opacity: 0; transition: opacity 160ms var(--ease-soft); }
-  .footer__camera:hover svg { rotate: 4deg; scale: 1.12; }
-  .footer__camera:hover .footer__camera-spark { opacity: 1; }
-  .footer__camera:active svg { scale: 0.94; }
-  /* Flush right: the ? key lines up with the end of the links above. */
-  .footer__controls { display: flex; gap: var(--space-1); margin-left: auto; margin-right: calc(-1 * var(--space-3)); }
-  .footer__ctl {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    min-height: var(--tap-min);
-    padding: 0 var(--space-3);
-    border: 0;
-    background: none;
-    color: var(--color-ink);
-    font-family: var(--font-system);
-    font-size: var(--type-meta);
-  }
-  .footer__ctl[aria-pressed='true'] .footer__ico { color: var(--color-accent); }
-  .footer__ruler { width: 1.5rem; }
-
+  .footer__link:hover { color: var(--color-ink); }
+  .footer__base { margin-top: var(--space-8); }
   @media (max-width: 40rem) {
     .footer { padding-bottom: calc(var(--space-12) + env(safe-area-inset-bottom)); }
-    .footer__top { flex-direction: column; align-items: flex-start; gap: var(--space-8); }
   }
 </style>

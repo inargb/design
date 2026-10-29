@@ -1,6 +1,5 @@
 ---
-// "works_", "about_": the underscore label from the current portfolio,
-// kept as the site's section marker. Optional frame number in front.
+// A small section label, with an optional number in front.
 interface Props { text: string; frame?: string; as?: 'p' | 'span'; }
 const { text, frame, as: Tag = 'p' } = Astro.props;
 ---
@@ -15,10 +14,7 @@ const { text, frame, as: Tag = 'p' } = Astro.props;
     display: inline-flex;
     gap: var(--space-3);
     align-items: baseline;
-    color: var(--color-ink);
-    text-transform: lowercase;
-    letter-spacing: 0.04em;
-    font-size: var(--type-caption);
+    color: var(--color-graphite-soft);
   }
-  .section-label__no { color: var(--color-accent); }
+  .section-label__no { font-variant-numeric: tabular-nums; }
 </style>

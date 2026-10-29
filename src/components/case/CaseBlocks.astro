@@ -18,8 +18,8 @@ const numbered = blocks.map((b) => {
   return { b, first };
 });
 const two = (i: number) => String(i + 1).padStart(2, '0');
-// Cards sit like notes on a table: each a hair off straight.
-const tilt = (i: number) => [-1.1, 0.5, -0.4, 0.9][i % 4];
+// Cards no longer tilt; the inline --tilt stays harmless (sealed cases still carry it).
+const tilt = (_i: number) => 0;
 // Line icons, 24×24, stroke = currentColor.
 const icons: Record<string, string> = {
   layout: '<rect x="3.5" y="3.5" width="17" height="7" rx="2"/><rect x="3.5" y="13.5" width="7.5" height="7" rx="2"/><rect x="13" y="13.5" width="7.5" height="7" rx="2"/>',
@@ -68,7 +68,7 @@ const icons: Record<string, string> = {
       return (
         <figure class="cb-marquee" style={`--row-h:${b.height ?? 300}px;${b.background ? `--mq-bg:${b.background};` : ''}`} data-marquee>
           {b.rows.map((img, r) => (
-            <div class="cb-marquee__row" data-mq-row data-speed={b.speed ?? 35} data-dir={r % 2 ? 'right' : 'left'} data-cursor="drag" tabindex="0" role="region" aria-label={img.alt[locale]}>
+            <div class="cb-marquee__row" data-mq-row data-speed={b.speed ?? 35} data-dir={r % 2 ? 'right' : 'left'} tabindex="0" role="region" aria-label={img.alt[locale]}>
               <div class="cb-marquee__track">
                 {[0, 1].map((copy) => (
                   <Image src={img.src} alt={copy ? '' : img.alt[locale]} aria-hidden={copy ? 'true' : undefined} height={(b.height ?? 300) * 2} widths={[Math.round(img.src.width * ((b.height ?? 300) / img.src.height)), Math.min(img.src.width, Math.round(img.src.width * ((b.height ?? 300) * 2 / img.src.height)))]} sizes={`${Math.round(img.src.width * ((b.height ?? 300) / img.src.height))}px`} loading="lazy" draggable="false" />
@@ -255,7 +255,7 @@ const icons: Record<string, string> = {
 
     case 'timeline':
       return (
-        <div class="cb-timeline" tabindex="0" role="region" aria-label={b.items[0].date[locale] + ' – ' + b.items[b.items.length - 1].date[locale]} data-cursor="drag">
+        <div class="cb-timeline" tabindex="0" role="region" aria-label={b.items[0].date[locale] + ' – ' + b.items[b.items.length - 1].date[locale]}>
           <ol class="cb-timeline__line" role="list">
             {b.items.map((it, i) => (
               <>
@@ -348,7 +348,7 @@ const icons: Record<string, string> = {
   .js-reveal .cb-diamond.is-revealed .cb-diamond__svg path:nth-child(3) { transition-delay: 0.7s; }
   .cb-diamond__phases { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
   .cb-diamond__phases li { display: grid; gap: var(--space-1); align-content: start; padding-top: var(--space-3); border-top: var(--rule-hair); }
-  .cb-diamond__phases h3 { font-family: var(--font-system); font-size: var(--type-label); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-ink); }
+  .cb-diamond__phases h3 { font-weight: 500; font-size: var(--type-label); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-ink); }
   .cb-diamond__phases p { font-size: var(--type-body-s); color: var(--color-graphite); text-wrap: pretty; }
 
   /* Marquee: each row is two copies of an image strip that drifts one copy's
@@ -380,45 +380,44 @@ const icons: Record<string, string> = {
     gap: var(--space-3);
     max-width: 48rem;
     padding: var(--space-8);
-    background: var(--color-paper-shade);
+    background: var(--color-surface);
+    border: var(--rule-hair);
+    border-radius: var(--radius-soft);
   }
-  .cb-question__label { color: var(--color-accent); }
+  .cb-question__label { color: var(--color-graphite-soft); }
+  .cb-question__text { font-size: var(--type-heading-m); }
   .cb-question__text { color: var(--color-ink); text-wrap: pretty; }
 
-  /* Cards: paper notes with a double frame, each a hair off straight. */
-  .cb-cards { display: grid; gap: var(--space-6); padding: var(--space-2); }
+  /* Cards: white, hairline, square to the grid. */
+  .cb-cards { display: grid; gap: var(--layout-gap); }
   /* As many columns as fit: 3 stats, 3–4 decisions, 4–5 steps on desktop. */
   .cb-cards--4 { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
   .cb-cards--3 { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
   .cb-cards--compare { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  /* The surface (paper, double frame, tilt) is .paper-card in components.css. */
+  /* The surface is .paper-card in components.css. */
   .cb-card {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    min-height: 22rem;
-    padding: var(--space-8) var(--space-6);
+    padding: var(--space-6);
   }
   .cb-card--stat { min-height: 0; gap: var(--space-2); }
   .cb-card__no { color: var(--color-ink); margin-bottom: var(--space-2); }
-  .cb-card__icon { width: 2rem; height: 2rem; fill: none; stroke: var(--color-ink); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; margin-bottom: var(--space-2); }
+  .cb-card__icon { width: 1.5rem; height: 1.5rem; fill: none; stroke: var(--color-graphite); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; margin-bottom: var(--space-2); }
   .cb-card__title { color: var(--color-ink); text-wrap: balance; }
   .cb-card__title--sans { font-family: var(--font-body); font-size: var(--type-heading-s); font-weight: 500; letter-spacing: -0.01em; line-height: 1.25; }
   .cb-card__body { font-size: var(--type-body-s); line-height: var(--leading-body); color: var(--color-graphite); text-wrap: pretty; }
   .cb-card__note { color: var(--color-graphite-soft); }
-  .cb-card__tag { margin-top: var(--space-1); font-size: var(--type-meta); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-graphite-soft); }
+  .cb-card__tag { margin-top: var(--space-1); font-size: var(--type-label); font-weight: 500; letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-graphite-soft); }
 
   .cb-decisions { display: grid; gap: var(--space-8); }
-  /* Options weighed: rejected ones are faded, dashed prints; the chosen one is
-     ink-framed with a blue tab, same language as before/after. */
-  .cb-card--rejected { background: var(--color-paper-shade); border-style: dashed; box-shadow: 0 0 0 7px var(--color-paper-shade), 0 0 0 8px var(--color-rule); }
-  .cb-card--rejected.lift { --lift-shadow: 0 0 0 7px var(--color-paper-shade), 0 0 0 8px var(--color-rule), 3px 3px 0 8px var(--color-shadow); }
+  /* Options weighed: rejected ones are faded and dashed; the chosen one has
+     an ink border and an accent tab, same language as before/after. */
+  .cb-card--rejected { background: transparent; border-style: dashed; }
   .cb-card--rejected .cb-card__title, .cb-card--rejected .cb-card__body { color: var(--color-graphite-soft); }
   .cb-card--rejected .cb-card__icon { stroke: var(--color-graphite-soft); }
   .cb-card--rejected .cb-card__tag { margin-top: auto; text-decoration: line-through; }
-  .cb-card--chosen { border-color: var(--color-ink); box-shadow: 0 0 0 7px var(--color-paper), 0 0 0 8px var(--color-ink); }
-  .cb-card--chosen.lift { --lift-shadow: 0 0 0 7px var(--color-paper), 0 0 0 8px var(--color-ink), 3px 3px 0 8px var(--color-shadow); }
-  .cb-card--rejected.lift:hover, .cb-card--chosen.lift:hover { box-shadow: var(--lift-shadow); }
+  .cb-card--chosen { border-color: var(--color-ink); }
   .cb-card--chosen .cb-card__icon { stroke: var(--color-accent); }
   .cb-card--chosen .cb-card__tag {
     align-self: flex-start;
@@ -447,23 +446,22 @@ const icons: Record<string, string> = {
 
   .cb-swatches { display: grid; gap: var(--space-4); }
   .cb-swatches__label { color: var(--color-graphite-soft); }
-  .cb-swatches__row { display: flex; flex-wrap: wrap; gap: var(--space-6); padding: var(--space-2); }
+  .cb-swatches__row { display: flex; flex-wrap: wrap; gap: var(--space-4); }
   .cb-swatch { display: grid; gap: var(--space-2); width: 8.5rem; padding: var(--space-2) var(--space-2) var(--space-3); }
   .cb-swatch__chip { display: block; height: 5.5rem; }
-  .cb-swatch__hex { font-family: var(--font-system); font-size: var(--type-meta); color: var(--color-ink); }
+  .cb-swatch__chip { border-radius: 2px; }
+  .cb-swatch__hex { font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; font-size: var(--type-caption); color: var(--color-ink); }
 
   .cb-card--compare { min-height: 0; gap: var(--space-4); }
-  /* Before: a faded, dashed print. After: crisp, ink-framed, with a blue tab. */
-  .cb-card--compare:not(.is-after) { background: var(--color-paper-shade); border-style: dashed; box-shadow: 0 0 0 7px var(--color-paper-shade), 0 0 0 8px var(--color-rule); }
-  .cb-card--compare.is-after { border-color: var(--color-ink); box-shadow: 0 0 0 7px var(--color-paper), 0 0 0 8px var(--color-ink); }
-  .cb-card--compare:not(.is-after).lift { --lift-shadow: 0 0 0 7px var(--color-paper-shade), 0 0 0 8px var(--color-rule), 3px 3px 0 8px var(--color-shadow); }
-  .cb-card--compare.is-after.lift { --lift-shadow: 0 0 0 7px var(--color-paper), 0 0 0 8px var(--color-ink), 3px 3px 0 8px var(--color-shadow); }
-  .cb-card--compare.lift:hover { box-shadow: var(--lift-shadow); }
+  /* Before: faded and dashed. After: ink border, with an accent tab. */
+  .cb-card--compare:not(.is-after) { background: transparent; border-style: dashed; }
+  .cb-card--compare.is-after { border-color: var(--color-ink); }
   .cb-compare__label {
     justify-self: start;
     align-self: start;
     padding: var(--space-1) var(--space-2);
     border: 1px solid currentColor;
+    border-radius: 2px;
     color: var(--color-graphite-soft);
   }
   .cb-card--compare.is-after .cb-compare__label { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); }
@@ -473,7 +471,7 @@ const icons: Record<string, string> = {
   .cb-compare__rows dt { font-family: var(--font-system); font-size: var(--type-meta); letter-spacing: 0.04em; color: var(--color-graphite-soft); }
   .cb-compare__rows dd { font-size: var(--type-body); color: var(--color-graphite-soft); }
   .cb-card--compare.is-after dd { color: var(--color-ink); font-weight: 500; }
-  .cb-gallery__no { font-family: var(--font-system); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-ink); }
+  .cb-gallery__no { font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-graphite); }
 
   /* Image slots: the shape and place of an image still to come. */
   .cb-slots { display: grid; gap: var(--space-3); margin: 0; }
@@ -486,6 +484,7 @@ const icons: Record<string, string> = {
     padding: var(--space-3);
     background: var(--color-paper-shade);
     border: 1px dashed var(--color-rule);
+    border-radius: var(--radius-soft);
     overflow: hidden;
   }
   .cb-slot__id, .cb-slot__soon { font-family: var(--font-system); font-size: var(--type-meta); letter-spacing: 0.04em; color: var(--color-graphite); }
@@ -524,10 +523,10 @@ const icons: Record<string, string> = {
 
   .cb-cards-wrap { display: grid; gap: var(--space-4); }
   .cb-card--plain { min-height: 0; }
-  .cb-card__pill { align-self: flex-start; margin-top: auto; padding: 2px var(--space-2); border: 1px solid var(--color-ink); font-family: var(--font-system); font-size: var(--type-meta); color: var(--color-ink); }
-  .cb-cards__loop { justify-self: start; padding: var(--space-1) var(--space-3); border: 1px dashed var(--color-accent); color: var(--color-accent); }
+  .cb-card__pill { align-self: flex-start; margin-top: auto; padding: 2px var(--space-2); border: var(--rule-hair); border-radius: var(--radius-pill); font-size: var(--type-caption); color: var(--color-graphite); }
+  .cb-cards__loop { justify-self: start; padding: var(--space-1) var(--space-3); border: 1px dashed var(--color-rule); border-radius: var(--radius-pill); color: var(--color-graphite); }
 
-  .cb-pull { max-width: 28ch; padding-left: var(--space-6); border-left: 3px solid var(--color-accent); color: var(--color-ink); text-wrap: balance; }
+  .cb-pull { max-width: 28ch; padding-left: var(--space-6); border-left: 2px solid var(--color-ink); color: var(--color-ink); text-wrap: balance; }
 
   .cb-map { position: relative; aspect-ratio: 16 / 9; margin: 0; }
   .cb-map__lines { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -536,11 +535,12 @@ const icons: Record<string, string> = {
     position: absolute; left: 50%; top: 50%; translate: -50% -50%;
     padding: var(--space-3) var(--space-5, 1.25rem);
     background: var(--color-ink); color: var(--color-paper);
+    border-radius: var(--radius-soft);
   }
   .cb-map__items li {
     position: absolute; left: var(--x); top: var(--y); translate: -50% -50%;
     max-width: 11rem; padding: var(--space-1) var(--space-3);
-    background: var(--color-paper); border: 1px solid var(--color-ink);
+    background: var(--color-surface); border: var(--rule-hair); border-radius: var(--radius-soft);
     font-size: var(--type-body-s); line-height: 1.35; text-align: center; color: var(--color-ink);
   }
 
@@ -563,7 +563,7 @@ const icons: Record<string, string> = {
     .cb-cards--4, .cb-cards--3 { grid-template-columns: 1fr; }
     .cb-gallery__row { flex-direction: column; }
     .cb-gallery__row li { width: 100%; }
-    .cb-cards { gap: var(--space-8); padding-inline: var(--space-2); }
+    .cb-cards { gap: var(--space-4); }
     .cb-question { padding: var(--space-6); }
   }
 
@@ -574,6 +574,8 @@ const icons: Record<string, string> = {
     width: 100%;
     padding: 0;
     border: var(--rule-hair);
+    border-radius: var(--radius-soft);
+    overflow: hidden;
     background: var(--color-paper-shade);
     cursor: zoom-in;
   }
@@ -583,7 +585,7 @@ const icons: Record<string, string> = {
   @media (prefers-reduced-motion: reduce) { .cfig__print video { pointer-events: auto; } }
   .cfig__print:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
   .cfig__cap { max-width: var(--layout-text); text-wrap: pretty; }
-  .cfig__no { font-family: var(--font-system); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-ink); }
+  .cfig__no { font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-graphite); }
 </style>
 
 <script>

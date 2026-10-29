@@ -1,6 +1,5 @@
 ---
-// A case-study image. It's a print: it lifts on hover (the print lift) and
-// opens larger in the lightbox on click or Enter. The caption is numbered
+// A case-study image. It opens larger in the lightbox on click or Enter. The caption is numbered
 // like a figure in a spec sheet: FIG. 02.
 import { Image, getImage } from 'astro:assets';
 import type { Locale, L10n } from '../../i18n/config';
@@ -39,7 +38,6 @@ const Wrap = bare ? 'div' : 'figure';
     data-full={full.src}
     data-alt={alt}
     data-caption={caption ? `${no} · ${caption[locale]}` : no}
-    data-cursor="look"
     aria-label={`${ui.case.enlarge[locale]}: ${alt}`}
   >
     {phone ? (

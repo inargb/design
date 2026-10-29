@@ -1,71 +1,68 @@
 /* ==========================================================================
    Design tokens: the single source of truth for the visual system.
-   Naming mirrors the dotted token names in docs (color.paper → --color-paper)
-   so each one maps 1:1 to a Framer variable later.
-   Every text/background pairing below is WCAG AA or better (see /playground).
+   Quiet and editorial: off-white paper, slate ink, one accent used sparingly,
+   a serif for headings and a sans for everything else.
+   Every text/background pairing below is WCAG AA or better.
    ========================================================================== */
 
 :root {
-  /* ---- Color: paper theme (default) ------------------------------------ */
-  --color-paper: #fbfbfd;          /* page background                       */
-  --color-paper-shade: #f0f0f4;    /* secondary surface, placeholders       */
-  --color-paper-deep: #e2e2e8;     /* pressed / selected surface            */
-  --color-ink: #1c1a17;            /* primary text · 16.8:1 on paper        */
-  --color-graphite: #4a453e;       /* secondary text · 9.2:1                */
-  --color-graphite-soft: #6b645a;  /* muted text · 5.7:1 (AA)               */
-  --color-rule: #cfcfd8;           /* hairlines, never text                 */
-  --color-highlight: #f3cf1c;      /* doodle yellow · marker behind ink     */
-  --color-on-highlight: #1c1a17;   /* text on highlight · 11.4:1            */
-  --color-accent: #2447d6;         /* numbers, status, links, focus · 6.9:1 */
-  --color-accent-hover: #1e3aa8;   /* hover / pressed · 9.1:1               */
-  --color-accent-tint: #e9edfb;    /* selected backgrounds only (ink 14.9:1)*/
+  /* ---- Color -------------------------------------------------------------- */
+  --color-paper: #f6f6f4;          /* page background                       */
+  --color-paper-shade: #ecece8;    /* secondary surface, placeholders       */
+  --color-paper-deep: #e2e2dd;     /* pressed / selected surface            */
+  --color-surface: #ffffff;        /* cards                                 */
+  --color-ink: #1d2733;            /* primary text · 14:1 on paper          */
+  --color-graphite: #4b5563;       /* secondary text · 7:1                  */
+  --color-graphite-soft: #5f6773;  /* muted text · 5:1 (AA on paper-shade)  */
+  --color-rule: #dcdcd6;           /* hairlines, never text                 */
+  --color-highlight: #e6ebfb;      /* text selection                        */
+  --color-on-highlight: #1d2733;
+  --color-accent: #2447d6;         /* current nav item, links, focus · 6.6:1 */
+  --color-accent-hover: #1f3db8;   /* hover / pressed · 8:1                 */
+  --color-accent-tint: #e9edfb;    /* selected backgrounds only             */
   --color-on-accent: #ffffff;      /* text on accent · 7.1:1                */
   --color-focus: var(--color-accent);
-  --color-shadow: #1c1a17;         /* hard offset shadow (print, not blur)  */
-  --color-scrim: rgb(28 26 23 / 0.55);
-  --color-film: #141210;           /* film base: the reel, the photo strip   */
-  --color-film-edge: #e8a33c;      /* edge printing on film · 8.6:1 on film  */
-  --color-film-hole: var(--color-paper); /* sprocket holes show the page   */
+  --color-shadow: rgb(29 39 51 / 0.08);
+  --color-scrim: rgb(29 39 51 / 0.6);
+  --color-danger: #b3261e;
 
   color-scheme: light;
 
   /* ---- Typography -------------------------------------------------------- */
-  /* Swap a family here and the whole site follows.
-     title  → header, headings, display (IBM Plex Mono)
-     body   → paragraphs and any reading-size text (Inter)
-     system → labels, meta, dates, captions (IBM Plex Mono) */
-  --font-title: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  /* title  → page titles and section headings (Newsreader, a text serif)
+     body   → paragraphs and reading-size text (Inter)
+     system → labels, meta, dates, captions (Inter, smaller) */
+  --font-title: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
   --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-system: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-system: var(--font-body);
 
-  /* Roles, not sizes. Each clamps between a mobile and a desktop value
-     with its own curve: display shrinks hard, body barely moves. */
-  --type-display: clamp(2rem, 1.2rem + 3.4vw, 4.4rem);
-  --type-heading-xl: clamp(1.75rem, 1.25rem + 2.1vw, 3.1rem);
-  --type-heading-l: clamp(1.4rem, 1.15rem + 1.1vw, 2.15rem);
-  --type-heading-m: clamp(1.15rem, 1.05rem + 0.45vw, 1.45rem);
-  --type-heading-s: clamp(1rem, 0.97rem + 0.2vw, 1.125rem);
-  --type-lede: clamp(1.125rem, 1rem + 0.5vw, 1.375rem); /* intro paragraph: bigger body, not a heading */
-  --type-body: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
+  /* Roles, not sizes. Each clamps between a mobile and a desktop value. */
+  --type-display: clamp(2.25rem, 1.45rem + 3.2vw, 4rem);
+  --type-heading-xl: clamp(2rem, 1.5rem + 2vw, 3rem);
+  --type-heading-l: clamp(1.5rem, 1.25rem + 1vw, 2.125rem);
+  --type-heading-m: clamp(1.2rem, 1.1rem + 0.4vw, 1.4rem);
+  --type-heading-s: clamp(1.05rem, 1rem + 0.2vw, 1.15rem);
+  --type-lede: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
+  --type-body: 1rem;
   --type-body-s: 0.9375rem;
   --type-caption: 0.8125rem;
-  --type-label: 0.75rem;
-  --type-nav: 0.8125rem;
-  --type-meta: 0.8125rem;
+  --type-label: 0.6875rem;
+  --type-nav: 0.9375rem;
+  --type-meta: 0.875rem;
   --type-code: 0.875rem;
 
-  --leading-tight: 1.1;
+  --leading-tight: 1.12;
   --leading-heading: 1.2;
   --leading-body: 1.6;
   --leading-system: 1.45;
 
-  --tracking-display: -0.04em;
-  --tracking-heading: -0.025em;
+  --tracking-display: -0.025em;
+  --tracking-heading: -0.015em;
   --tracking-label: 0.08em;
 
-  --weight-title: 500;
+  --weight-title: 400;
   --weight-body: 400;
-  --weight-body-strong: 600;
+  --weight-body-strong: 550;
   --weight-system: 400;
   --weight-system-strong: 500;
 
@@ -82,43 +79,38 @@
   --space-32: 8rem;
 
   /* ---- Layout ------------------------------------------------------------ */
-  --layout-max: 84rem;                          /* 1344px                 */
-  --layout-text: 38rem;                         /* comfortable measure    */
-  --layout-gutter: clamp(1rem, 0.4rem + 3vw, 3rem); /* 16px on phones     */
-  --layout-columns: 12;
-  --layout-gap: clamp(0.75rem, 0.5rem + 1.2vw, 1.5rem);
-  --section-space: clamp(4.5rem, 2.5rem + 9vw, 10rem);
-  --project-space: clamp(2.5rem, 1.5rem + 4vw, 5rem);
-  --nav-height: 3.5rem;
-  --tap-min: 2.75rem;                           /* 44px touch targets     */
+  /* Desktop: a narrow sidebar (name, nav) and one content column. */
+  --layout-side: 13rem;                         /* sidebar column          */
+  --layout-max: 60rem;                          /* content column          */
+  --layout-text: 38rem;                         /* comfortable measure     */
+  --layout-gutter: clamp(1rem, 0.4rem + 2.4vw, 2rem); /* 16px on phones    */
+  --layout-gap: clamp(1rem, 0.6rem + 1vw, 1.5rem);
+  --section-space: clamp(4rem, 2.5rem + 6vw, 8rem);
+  --nav-height: 4.5rem;
+  --tap-min: 2.75rem;                           /* 44px touch targets      */
 
-  /* ---- Radius: only where it means something ---------------------------- */
+  /* ---- Radius ------------------------------------------------------------- */
   --radius-none: 0;
-  --radius-soft: 2px;      /* inputs, keycaps                             */
-  --radius-pill: 999px;    /* pills only                                  */
+  --radius-soft: 4px;
+  --radius-pill: 999px;
 
-  /* ---- Borders & elevation (print-like, not blurry) --------------------- */
+  /* ---- Borders & elevation ------------------------------------------------ */
   --rule-hair: 1px solid var(--color-rule);
   --rule-ink: 1px solid var(--color-ink);
-  --shadow-offset: 4px 4px 0 var(--color-shadow);
-  --shadow-offset-lift: 7px 7px 0 var(--color-shadow);
+  --shadow-soft: 0 1px 2px var(--color-shadow), 0 8px 24px var(--color-shadow);
 
-  /* ---- Motion ------------------------------------------------------------ */
+  /* ---- Motion: short and calm ------------------------------------------- */
   --duration-instant: 80ms;
   --duration-quick: 160ms;
-  --duration-settle: 320ms;
-  --duration-slow: 560ms;
-  --duration-develop: 1100ms;   /* image "developing" in the tray         */
+  --duration-settle: 280ms;
+  --duration-slow: 520ms;
 
   --ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
-  --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1.02);   /* tiny overshoot     */
+  --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-snap: cubic-bezier(0.5, 0, 0.1, 1);
-  --ease-develop: cubic-bezier(0.4, 0, 0.2, 1);
 
-  --stagger-step: 70ms;
-  --jitter: 40ms;               /* scripts add 0..jitter ms per element    */
-
-  --cursor-lag: 0.22;           /* 0..1 follow factor per frame            */
+  --stagger-step: 60ms;
+  --jitter: 0ms;
 }
 
 /* ---- Motion off: only when the visitor's system asks for it -------------- */
@@ -127,9 +119,6 @@
     --duration-quick: 1ms;
     --duration-settle: 1ms;
     --duration-slow: 1ms;
-    --duration-develop: 1ms;
     --stagger-step: 0ms;
-    --jitter: 0ms;
-    --cursor-lag: 1;
   }
 }

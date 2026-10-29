@@ -10,10 +10,11 @@ import Base from '../layouts/Base.astro';
 import CaseBlocks from '../components/case/CaseBlocks.astro';
 import CaseIndex from '../components/case/CaseIndex.astro';
 import CaseSections from '../components/case/CaseSections.astro';
+import ProjectCover from '../components/ProjectCover.astro';
 import { caseHref, href, type Locale } from '../i18n/config';
 import { ui } from '../i18n/ui';
 import { site } from '../content/site';
-import type { Project } from '../content/projects';
+import { caseProjects, type Project } from '../content/projects';
 import type { CaseStudy, SealedCase } from '../content/cases/types';
 
 interface Props { locale: Locale; project: Project; study: CaseStudy; sealed?: SealedCase; }
@@ -33,77 +34,83 @@ const facts = [
   { label: c.focus[locale], values: project.tags.map((tg) => tg[locale]) },
   { label: c.tools[locale], values: split(study.tools[locale]) },
 ];
-// Eyebrow: frame no. · context · any extra facts (Type, Method), without repeats.
-const eyebrowParts = [`${p.frame[locale]} ${project.frame}`, ...project.context[locale].split(' · ')];
+// Eyebrow: context · any extra facts (Type, Method), without repeats.
+const eyebrowParts = [...project.context[locale].split(' · ')];
 for (const f of study.facts ?? []) if (!eyebrowParts.some((x) => x.toLowerCase() === f.value[locale].toLowerCase())) eyebrowParts.push(f.value[locale]);
 const eyebrow = eyebrowParts.join(' · ');
+// The next case in the list (wrapping round), for the way on at the end.
+const at = caseProjects.findIndex((x) => x.slug === project.slug);
+const next = caseProjects.length > 1 ? caseProjects[(at + 1) % caseProjects.length] : undefined;
 const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[locale], media: sealed.media, slug: project.slug, base: import.meta.env.BASE_URL }) : '';
 ---
 
-<Base locale={locale} altHref={caseHref(project.slug, other)} pageId={project.slug} title={project.title[locale]} description={project.line[locale]}>
+<Base locale={locale} route="case" altHref={caseHref(project.slug, other)} pageId={project.slug} title={project.title[locale]} description={project.line[locale]}>
   <!-- Protected: the whole page is the gate. The case (and its way on)
        appears only once the password opens it. -->
   {sealed && (
     <section class="gate" data-gate data-slug={project.slug} data-payload={payload} aria-labelledby="gate-title">
       <script is:inline>(function(g){try{if(sessionStorage.getItem('ina:gate:'+g.dataset.slug))g.classList.add('is-resuming')}catch(e){}})(document.currentScript.parentElement)</script>
-      <div class="gate__top container"><a class="gate__back t-label" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}>← {p.back[locale]}</a></div>
-      <div class="gate__card paper-card">
-        <p class="gate__lock" aria-hidden="true"><i></i></p>
-        <p class="t-label gate__label">{g.label[locale]} · {project.title[locale]}</p>
-        <h1 id="gate-title" class="t-heading-l">{g.title[locale]}</h1>
+      <div class="gate__top container"><a class="gate__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a></div>
+      <div class="gate__card">
+                <p class="gate__label t-label">{g.label[locale]} · {project.title[locale]}</p>
+        <h1 id="gate-title" class="t-heading-xl">{g.title[locale]}</h1>
         <p class="gate__body">{g.body[locale]} <a class="link" href={site.links.linkedin} target="_blank" rel="noopener">{g.ask[locale]} ↗</a></p>
         <form class="gate__form" data-gate-form>
           <label class="visually-hidden" for="gate-pw">{g.field[locale]}</label>
           <input id="gate-pw" class="gate__input" type="password" name="password" autocomplete="current-password" placeholder={g.field[locale]} required data-gate-input />
           <button class="gate__btn" type="submit" data-gate-btn>{g.unlock[locale]}</button>
         </form>
-        <span class="gate__strip" aria-hidden="true"></span>
         <p class="gate__error t-caption" role="alert" aria-live="assertive" data-gate-error data-wrong={g.wrong[locale]} data-busy={g.busy[locale]} data-failed={g.failed[locale]}></p>
       </div>
-      <p class="gate__resume" aria-hidden="true"><span class="gate__strip"></span><span class="t-meta">{g.busy[locale]}</span></p>
+      <p class="gate__resume t-meta" aria-hidden="true">{g.busy[locale]}</p>
     </section>
   )}
 
+  <!-- Desktop: the case's index takes the place of the site navigation. -->
+  <nav class="case-index" slot="aside" aria-label={c.contents[locale]} hidden={sealed ? true : undefined} data-case-index data-case>
+    <a class="case-index__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a>
+    {sealed ? <div data-sealed-index></div> : <CaseIndex study={study} locale={locale} />}
+  </nav>
+
   <article class="case" hidden={sealed ? true : undefined} data-case>
-    <!-- Layout after the reference portfolios (Rachel Chen, Emmi Wu): the
-         index is a left sidebar from the very top, with the way back above
-         it; the header sits in the same column as the content. -->
-    <div class="case-body container">
-      <nav class="case-index" aria-label={c.contents[locale]} data-case-index>
-        <a class="case-index__back t-label" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}>← {p.back[locale]}</a>
-        {sealed ? <div data-sealed-index></div> : <CaseIndex study={study} locale={locale} />}
-      </nav>
+    <header class="case-hero">
+      <p class="case-hero__eyebrow t-label">{eyebrow}</p>
+      <h1 class="case-hero__title t-display">{project.title[locale]}</h1>
+      <p class="case-hero__line">{project.line[locale]}</p>
+      <dl class="case-hero__facts">
+        {facts.map((f) => (
+          <div>
+            <dt>{f.label}</dt>
+            {f.values.map((v) => <dd>{v}</dd>)}
+          </div>
+        ))}
+      </dl>
+      {study.live && (
+        <a class="case-hero__live link" href={study.live.href} target="_blank" rel="noopener">
+          {study.live.label[locale]} ↗<span class="visually-hidden"> {ui.nav.newTab[locale]}</span>
+        </a>
+      )}
+    </header>
 
-      <div class="case-main">
-        <header class="case-hero">
-          <p class="case-hero__eyebrow t-label">{eyebrow}</p>
-          <h1 class="case-hero__title t-heading-xl">{project.title[locale]}</h1>
-          <p class="case-hero__line">{project.line[locale]}</p>
-          <dl class="case-hero__facts">
-            {facts.map((f) => (
-              <div>
-                <dt>{f.label}</dt>
-                {f.values.map((v) => <dd>{v}</dd>)}
-              </div>
-            ))}
-          </dl>
-          {study.live && (
-            <a class="case-hero__live link t-nav" href={study.live.href} target="_blank" rel="noopener">
-              {study.live.label[locale]} ↗<span class="visually-hidden"> {ui.nav.newTab[locale]}</span>
-            </a>
-          )}
-        </header>
-
-        {sealed ? (
-          <>
-            <div class="case-sealed" data-sealed-sections></div>
-            <div hidden><CaseBlocks blocks={[]} locale={locale} figStart={0} /></div>
-          </>
-        ) : (
-          <CaseSections study={study} locale={locale} />
-        )}
-      </div>
+    <div class="case-cover">
+      <ProjectCover media={project.media} label={project.title[locale]} locale={locale} sizes="(max-width: 64rem) 100vw, 60rem" />
     </div>
+
+    {sealed ? (
+      <>
+        <div class="case-sealed" data-sealed-sections></div>
+        <div hidden><CaseBlocks blocks={[]} locale={locale} figStart={0} /></div>
+      </>
+    ) : (
+      <CaseSections study={study} locale={locale} />
+    )}
+
+    {next && (
+      <a class="case-next" href={caseHref(next.slug, locale)}>
+        <span class="case-next__label t-label">{c.nextCase[locale]}</span>
+        <span class="case-next__title t-heading-l">{next.title[locale]} <span aria-hidden="true">→</span></span>
+      </a>
+    )}
   </article>
 
 
@@ -120,16 +127,17 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
 
 
 <style is:global>
-  /* Global (case-* / lightbox prefixed): sealed bodies are injected after unlock. */
-  /* Header, in the content column. */
-  .case-hero { display: grid; justify-items: start; gap: var(--space-4); padding-bottom: var(--space-12); }
+  /* Global (case-* / lightbox / gate prefixed): sealed bodies are injected
+     after unlock and keep the class names they were sealed with. */
+
+  /* Header. */
+  .case-hero { display: grid; justify-items: start; gap: var(--space-4); padding-block: var(--space-16) var(--space-12); }
   .case-hero__eyebrow { color: var(--color-graphite-soft); }
-  .case-hero__title { width: fit-content; max-width: 20ch; text-wrap: balance; }
+  .case-hero__title { max-width: 18ch; font-size: clamp(2.25rem, 1.5rem + 2.6vw, 3.5rem); }
   .case-hero__line {
     max-width: 40rem;
-    font-size: var(--type-heading-m);
-    line-height: 1.4;
-    letter-spacing: -0.01em;
+    font-size: var(--type-lede);
+    line-height: 1.55;
     color: var(--color-graphite);
     text-wrap: pretty;
   }
@@ -139,62 +147,74 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
     gap: var(--space-6);
     width: 100%;
     margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: var(--rule-hair);
   }
   .case-hero__facts div { display: grid; align-content: start; gap: 2px; }
-  .case-hero__facts dt {
-    margin-bottom: var(--space-2);
-    font-family: var(--font-system);
-    font-size: var(--type-label);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-accent);
-  }
-  .case-hero__facts dd { font-size: var(--type-body-s); line-height: 1.5; color: var(--color-graphite); }
-  .case-hero__live { margin-top: var(--space-4); }
+  .case-hero__facts dt { margin-bottom: var(--space-1); font-size: var(--type-caption); color: var(--color-graphite-soft); }
+  .case-hero__facts dd { font-size: var(--type-body-s); line-height: 1.5; color: var(--color-ink); }
+  .case-hero__live { margin-top: var(--space-2); font-size: var(--type-body-s); }
+  @media (min-width: 64.0625rem) { .case-hero { padding-top: var(--space-24); } }
   @media (max-width: 40rem) {
+    .case-hero { padding-top: var(--space-12); }
     .case-hero__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-4); }
   }
 
-  /* Body: index on the left (sticky), sections on the right. */
-  .case-body {
-    display: grid;
-    grid-template-columns: 11rem minmax(0, 1fr);
-    gap: var(--space-12);
-    padding-top: var(--space-12);
-  }
-  .case-index { position: sticky; top: calc(var(--nav-height) + var(--space-8)); align-self: start; display: grid; gap: var(--space-3); }
-  .case-index__back { display: inline-flex; align-items: center; min-height: var(--tap-min); margin-bottom: var(--space-2); color: var(--color-graphite); text-decoration: none; }
+  .case-cover { --cover-ratio: 16 / 9; overflow: hidden; margin-bottom: var(--space-16); border: var(--rule-hair); border-radius: var(--radius-soft); }
+  @media (max-width: 40rem) { .case-cover { --cover-ratio: 4 / 3; } }
+
+  /* Index: in the sidebar on desktop (sticky), hidden on smaller screens. */
+  .case-index { display: grid; gap: var(--space-4); }
+  .case-index__back { display: inline-flex; align-items: center; min-height: 2rem; font-size: var(--type-nav); color: var(--color-graphite-soft); text-decoration: none; }
   .case-index__back:hover { color: var(--color-ink); }
-  .case-index ol { display: grid; gap: var(--space-1); }
-  .case-index a {
-    display: inline-flex;
+  .case-index ol { display: grid; }
+  .case-index a[data-index-link] {
+    position: relative;
+    display: flex;
     gap: var(--space-2);
-    align-items: center;
-    min-height: 2rem;
-    font-family: var(--font-system);
-    font-size: var(--type-meta);
-    color: var(--color-graphite);
+    padding-block: 0.3rem;
+    font-size: var(--type-caption);
+    line-height: 1.4;
+    color: var(--color-graphite-soft);
     text-decoration: none;
     transition: color var(--duration-quick);
   }
-  .case-index a:hover { color: var(--color-ink); }
-  .case-index__no { color: var(--color-graphite-soft); }
+  .case-index a[data-index-link]:hover { color: var(--color-ink); }
+  .case-index__no { flex: none; width: 1.5em; color: var(--color-graphite-soft); font-variant-numeric: tabular-nums; }
   .case-index a[aria-current='true'] { color: var(--color-accent); }
   .case-index a[aria-current='true'] .case-index__no { color: var(--color-accent); }
-  .case-index a[aria-current='true']::before { content: '▸'; margin-left: -1.1em; width: 0.9em; }
-
-  .case-sec { padding-block: var(--space-12) var(--space-16); border-top: var(--rule-hair); scroll-margin-top: var(--nav-height); }
-  .case-sec:first-child { border-top: 0; padding-top: 0; }
-  .case-sec__head { display: grid; gap: var(--space-3); margin-bottom: var(--space-8); }
-  .case-sec__head h2 { max-width: 34ch; text-wrap: balance; white-space: pre-line; }
-  .case-sec__blocks { display: grid; gap: var(--space-12); }
-  .case-sec__no { color: var(--color-accent); font-size: 0.55em; vertical-align: 0.35em; margin-right: 0.35em; }
-  .case-intro { display: grid; gap: var(--space-8); padding-bottom: var(--space-12); }
-
-  @media (max-width: 64rem) {
-    .case-body { grid-template-columns: 1fr; gap: 0; }
-    .case-index { display: none; }
+  .case-index a[aria-current='true']::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * var(--space-4));
+    top: 0.85em;
+    width: 5px;
+    height: 5px;
+    background: currentColor;
   }
+
+  /* Sections. */
+  .case-sec { padding-block: var(--space-12) var(--space-16); border-top: var(--rule-hair); scroll-margin-top: var(--space-8); }
+  .case-intro + .case-sec, .case-sealed > .case-sec:first-child { border-top: 0; padding-top: 0; }
+  .case-sec__head { display: grid; gap: var(--space-3); margin-bottom: var(--space-8); }
+  .case-sec__head .section-label { color: var(--color-graphite-soft); }
+  .case-sec__head h2 { max-width: 30ch; text-wrap: balance; white-space: pre-line; }
+  .case-sec__blocks { display: grid; gap: var(--space-12); }
+  .case-sec__no { margin-right: 0.5em; font-family: var(--font-body); font-size: 0.5em; vertical-align: 0.4em; color: var(--color-graphite-soft); font-variant-numeric: tabular-nums; }
+  .case-intro { display: grid; gap: var(--space-8); padding-bottom: var(--space-16); }
+
+  /* The way on: the next case. */
+  .case-next {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-8);
+    padding-top: var(--space-12);
+    border-top: var(--rule-hair);
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  .case-next__label { color: var(--color-graphite-soft); }
+  .case-next:hover .case-next__title { color: var(--color-accent); }
 
   /* Lightbox: the image, big, on paper. */
   .lightbox {
@@ -203,9 +223,10 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
     max-height: 94vh;
     margin: auto;
     padding: var(--space-12) var(--space-6) var(--space-6);
-    border: var(--rule-ink);
+    border: 0;
+    border-radius: var(--radius-soft);
     background: var(--color-paper);
-    box-shadow: var(--shadow-offset-lift);
+    box-shadow: var(--shadow-soft);
   }
   .lightbox::backdrop { background: var(--color-scrim); }
   .lightbox[open] { display: grid; gap: var(--space-3); justify-items: center; }
@@ -214,15 +235,16 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   .lightbox__step {
     width: var(--tap-min);
     height: var(--tap-min);
-    border: var(--rule-ink);
-    background: var(--color-paper);
+    border: var(--rule-hair);
+    border-radius: 50%;
+    background: var(--color-surface);
     color: var(--color-ink);
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
-  .lightbox__step:hover { background: var(--color-accent-tint); }
+  .lightbox__step:hover { border-color: var(--color-ink); }
   .lightbox__step[hidden] { visibility: hidden; display: block !important; }
   .lightbox__cap { max-width: 60rem; text-align: center; }
-  .lightbox__count { font-family: var(--font-system); color: var(--color-ink); }
+  .lightbox__count { color: var(--color-ink); font-variant-numeric: tabular-nums; }
   @media (max-width: 40rem) {
     .lightbox { padding-inline: var(--space-3); }
     .lightbox__stage { grid-template-columns: 1fr 1fr; }
@@ -238,86 +260,59 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
     padding: 0 var(--space-2);
     border: 0;
     background: none;
-    color: var(--color-ink);
+    font-size: var(--type-meta);
+    color: var(--color-graphite);
   }
+  .lightbox__close:hover { color: var(--color-ink); }
 
-  /* The gate: a paper card with a lock, where the case would be. */
-  /* The gate: a full page, one paper card with a lock in the middle. */
-  .gate {
-    position: relative;
-    display: grid;
-    place-items: center;
-    min-height: 100svh;
-    padding: var(--space-16) var(--space-4);
-  }
-  .gate__top { position: absolute; top: var(--space-6); left: 0; right: 0; }
-  .gate__back { color: var(--color-graphite-soft); }
+  /* The gate: where the case would be, a short note and a password field. */
+  .gate { display: grid; align-content: start; gap: var(--space-12); padding-block: var(--space-16) var(--space-24); }
+  @media (min-width: 64.0625rem) { .gate { padding-top: var(--space-24); } }
+  .gate__back { justify-self: start; display: inline-flex; align-items: center; min-height: var(--tap-min); font-size: var(--type-nav); color: var(--color-graphite-soft); text-decoration: none; }
   .gate__back:hover { color: var(--color-ink); }
-  .gate__card { display: grid; justify-items: start; gap: var(--space-4); width: 100%; max-width: 36rem; padding: var(--space-12) var(--space-8); --tilt: -0.4deg; }
+  .gate__top { display: flex; }
+  .gate__card { display: grid; justify-items: start; gap: var(--space-4); max-width: 34rem; }
   /* Already opened in this tab: skip straight to the case, no flash of the form. */
   .gate.is-resuming .gate__card { display: none; }
-  /* Developing: a strip of film running through, while the case decrypts. */
-  .gate__strip {
-    --film-step: 42px;
-    display: none;
-    width: 100%;
-    height: 1.75rem;
-    background:
-      radial-gradient(circle, var(--color-paper) 0 2px, transparent 2.5px) 0 3px / 14px 7px repeat-x,
-      radial-gradient(circle, var(--color-paper) 0 2px, transparent 2.5px) 0 calc(100% - 3px) / 14px 7px repeat-x,
-      linear-gradient(90deg, #4a453e 0 34px, transparent 34px) 4px 50% / var(--film-step) 42% repeat-x,
-      var(--color-film);
-    animation: film-run 0.9s linear infinite;
-  }
-  @keyframes film-run { to { background-position-x: calc(-1 * var(--film-step)), calc(-1 * var(--film-step)), calc(4px - var(--film-step)), 0; } }
-  .gate.is-busy .gate__card .gate__strip { display: block; }
-  .gate__resume { display: none; justify-items: center; gap: var(--space-3); width: min(16rem, 70vw); }
-  .gate__resume .gate__strip { display: block; }
-  .gate__resume .t-meta { color: var(--color-graphite); }
-  .gate.is-resuming .gate__resume { display: grid; }
-  @media (prefers-reduced-motion: reduce) { .gate__strip { animation: none; } }
-  /* Locked: nothing else on the page, not the site header, not the footer;
-     only the way back. Both return once the case opens. */
-  body:has(.gate) .footer, body:has(.gate) .nav { display: none; }
-  .gate__lock i { position: relative; display: block; width: 1.5rem; height: 1.2rem; margin-top: 0.8rem; border: 1.5px solid var(--color-ink); border-radius: 2px; }
-  .gate__lock i::before { content: ''; position: absolute; left: 50%; bottom: 100%; width: 0.95rem; height: 0.8rem; translate: -50% 0; border: 1.5px solid var(--color-ink); border-bottom: 0; border-radius: 0.6rem 0.6rem 0 0; transition: translate var(--duration-settle) var(--ease-settle); }
-  .gate.is-opening .gate__lock i::before { translate: -20% -0.3rem; }
-  .gate__label { color: var(--color-accent); }
+  .gate__resume { display: none; }
+  .gate.is-resuming .gate__resume { display: block; }
+  .gate__label { color: var(--color-graphite-soft); }
   .gate__body { color: var(--color-graphite); text-wrap: pretty; }
-  .gate__form { display: flex; gap: var(--space-2); width: 100%; margin-top: var(--space-2); }
+  .gate__form { display: flex; gap: var(--space-2); width: 100%; margin-top: var(--space-4); }
   .gate__input {
     flex: 1;
     min-width: 0;
     min-height: var(--tap-min);
     padding: 0 var(--space-3);
-    border: var(--rule-ink);
-    border-radius: 0;
-    background: var(--color-paper);
+    border: var(--rule-hair);
+    border-color: color-mix(in srgb, var(--color-ink) 25%, transparent);
+    border-radius: var(--radius-soft);
+    background: var(--color-surface);
     color: var(--color-ink);
-    font: inherit;
-    font-family: var(--font-system);
     font-size: var(--type-body-s);
-    box-shadow: 3px 3px 0 var(--color-shadow);
   }
-  .gate__input:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+  .gate__input:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 1px; }
   .gate__btn {
     min-height: var(--tap-min);
     padding: 0 var(--space-6);
     border: 0;
+    border-radius: var(--radius-soft);
     background: var(--color-ink);
     color: var(--color-paper);
-    font-family: var(--font-system);
-    font-size: var(--type-nav);
-    letter-spacing: 0.04em;
+    font-size: var(--type-body-s);
+    font-weight: 500;
   }
   .gate__btn:hover { background: var(--color-accent); }
   .gate__btn:disabled { opacity: 0.6; }
-  .gate__error { min-height: 1.4em; color: #b3261e; }
+  .gate__error { min-height: 1.4em; color: var(--color-danger); }
   .gate__error.is-busy { color: var(--color-graphite); }
-  .gate.is-wrong .gate__card { animation: gate-shake 0.35s var(--ease-soft); }
-  @keyframes gate-shake { 25% { translate: -6px 0; } 50% { translate: 5px 0; } 75% { translate: -3px 0; } }
+  .gate.is-wrong .gate__card { animation: gate-shake 0.3s var(--ease-soft); }
+  @keyframes gate-shake { 25% { translate: -4px 0; } 50% { translate: 3px 0; } 75% { translate: -2px 0; } }
+  @media (prefers-reduced-motion: reduce) { .gate.is-wrong .gate__card { animation: none; } }
+  /* Locked: only the way back; the site's links return once the case opens. */
+  body:has(.gate) :is(.site-side, .site-header__nav) { visibility: hidden; }
   .case-sealed:empty { display: none; }
-  @media (max-width: 40rem) { .gate__card { padding: var(--space-8) var(--space-6); } .gate__form { flex-direction: column; } }
+  @media (max-width: 40rem) { .gate__form { flex-direction: column; } }
 </style>
 
 <script>
@@ -449,9 +444,6 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
           return;
         }
         try { sessionStorage.setItem(KEY, password); } catch { /* ignore */ }
-        gate.classList.add('is-opening');
-        // Let the shackle lift before the page turns into the case.
-        if (!remembered && matchMedia('(prefers-reduced-motion: no-preference)').matches) await new Promise((r) => setTimeout(r, 450));
         document.querySelector('[data-sealed-index]')!.outerHTML = html.index;
         const target = document.querySelector<HTMLElement>('[data-sealed-sections]')!;
         target.innerHTML = html.sections;

@@ -1,18 +1,9 @@
 ---
-// The work, as one roll of film: every project is a frame on the same reel.
-//   desktop (> 64rem) → the reel on the left, each frame's notes on the right,
-//                       joined by a thin line. One frame is "on": the one the
-//                       pointer is over, otherwise the one in the middle of the
-//                       screen. It is the only one at full strength (image and
-//                       notes, title in blue); the others step back under a
-//                       darkroom shade (never hidden). Nothing moves.
-//   tablet + phone     → the reel runs full width, notes under each frame,
-//                       always full strength.
-// Every row answers the same questions in the same place:
-// frame no. · title · period · description · context · role · status.
-// Open projects link to their case; locked ones open the password gate;
-// "developing" ones are out of focus and not links (cursor: "coming soon!").
-// Reduced motion: nothing fades; frames are simply there.
+// The work: a two-column grid of covers (one column on phones). Every card
+// answers the same questions in the same place: cover · title / context ·
+// a one-line description · role, period and status.
+// Open projects link to their case; protected ones open the password gate;
+// projects still in progress are shown, quieter, without a link.
 import ProjectCover from './ProjectCover.astro';
 import { caseHref, type Locale } from '../i18n/config';
 import { ui } from '../i18n/ui';
@@ -21,262 +12,95 @@ import { projects } from '../content/projects';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const p = ui.project;
-const cursorFor = { open: 'project', locked: 'secret', soon: 'soon' } as const;
-const shape = { live: '●', prototype: '◐', developing: '○', locked: '' } as const;
-const total = String(projects.length).padStart(2, '0');
+const known = (v: string) => v !== '—';
 ---
 
-<ol class="reel" role="list" data-reel>
-  {projects.map((proj, i) => {
+<ul class="work-grid" role="list" data-stagger>
+  {projects.map((proj) => {
     const Tag = proj.state === 'soon' ? 'div' : 'a';
     const linkProps = proj.state === 'soon' ? {} : { href: caseHref(proj.slug, locale) };
+    const meta = [proj.role[locale], proj.period[locale]].filter(known);
     return (
-      <li class="shot" data-state={proj.state} data-shot>
-        <Tag class="shot__hit" {...linkProps} data-cursor={cursorFor[proj.state]}>
-          <div class="shot__film">
-            {i === 0 && <p class="shot__leader" aria-hidden="true"><span>start ▸ {total} exp.</span></p>}
-            <div class="shot__frame frame-card__cover">
-              <div class="shot__print" data-develop>
-                <ProjectCover cover={proj.cover} media={proj.media} label="" locale={locale} sizes="(max-width: 64rem) calc(100vw - 6rem), 44vw" />
-              </div>
-              {proj.state === 'soon' && <span class="shot__soon t-label">{p.soon[locale]}</span>}
-              <span class="shot__edge" aria-hidden="true">▸ {proj.frame}&ensp;{proj.frame}A</span>
-            </div>
+      <li class="card" data-state={proj.state} data-reveal>
+        <Tag class="card__hit" {...linkProps}>
+          <div class="card__cover">
+            <ProjectCover media={proj.media} label="" locale={locale} sizes="(max-width: 40rem) 100vw, (max-width: 64rem) 50vw, 29rem" />
           </div>
-
-          <div class="shot__notes">
-            <p class="shot__no t-label"><span>{p.frame[locale]}</span> {proj.frame}</p>
-            <div class="shot__top">
-              <h3 class="shot__title t-heading-m">{proj.title[locale]}</h3>
-              <p class="shot__period t-meta"><span class="visually-hidden">{p.period[locale]}: </span>{proj.period[locale]}</p>
-            </div>
-            <p class="shot__line t-body">{proj.line[locale]}</p>
-            <p class="shot__who t-meta">
-              <span>{proj.context[locale]}</span><span aria-hidden="true"> · </span><span><span class="visually-hidden">{p.role[locale]}: </span>{proj.role[locale]}</span>
-            </p>
-            <p class="shot__status t-meta" data-kind={proj.statusKind}>
-              {proj.statusKind === 'locked'
-                ? <i class="shot__lock" aria-hidden="true"></i>
-                : <span class="shot__shape" aria-hidden="true">{shape[proj.statusKind]}</span>}
-              {proj.status[locale]}
+          <div class="card__text">
+            <h3 class="card__title">
+              <span class="card__name">{proj.title[locale]}</span>
+              <span class="card__sep" aria-hidden="true">/</span>
+              <span class="card__context">{proj.context[locale]}</span>
+            </h3>
+            <p class="card__line">{proj.line[locale]}</p>
+            <p class="card__meta">
+              {meta.length > 0 && <span>{meta.join(' · ')}</span>}
+              {proj.state === 'locked' && (
+                <span class="card__flag">
+                  <svg viewBox="0 0 12 14" aria-hidden="true"><rect x="1.5" y="6" width="9" height="7" rx="1" /><path d="M3.5 6V4a2.5 2.5 0 0 1 5 0v2" /></svg>
+                  {p.locked[locale]}
+                </span>
+              )}
+              {proj.state === 'soon' && <span class="card__flag">{p.soon[locale]}</span>}
             </p>
           </div>
         </Tag>
       </li>
     );
   })}
-</ol>
+</ul>
 
 <style>
-  .reel {
-    --cover-ratio: 16 / 10;
-    --band: 2.5rem;            /* film edge with the sprocket holes */
-    --gap-frames: 1.25rem;     /* black between two frames (edge print lives here) */
-    --leader: 3.5rem;          /* the cut tongue at the start of the roll */
-    --holes: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='26'%3E%3Crect x='14' y='6' width='11' height='14' rx='2.2' fill='black'/%3E%3C/svg%3E");
+  .work-grid {
+    --cover-ratio: 4 / 3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-16) var(--layout-gap);
+  }
+  @media (max-width: 40rem) {
+    .work-grid { grid-template-columns: 1fr; gap: var(--space-12); }
   }
 
-  .shot__hit {
+  .card__hit {
     display: grid;
-    --gutter: clamp(2.5rem, 1rem + 3vw, 4.5rem);
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    column-gap: var(--gutter);
+    gap: var(--space-4);
     color: inherit;
     text-decoration: none;
   }
+  .card__cover {
+    overflow: hidden;
+    border: var(--rule-hair);
+    border-radius: var(--radius-soft);
+    background: var(--color-paper-shade);
+  }
+  .card__cover :global(.media-cover) { transition: scale var(--duration-slow) var(--ease-settle); }
+  a.card__hit:hover .card__cover :global(.media-cover) { scale: 1.015; }
+  .card__hit:focus-visible { outline: none; }
+  .card__hit:focus-visible .card__cover { outline: 2px solid var(--color-focus); outline-offset: 3px; }
 
-  /* ---- The film: one continuous reel, row after row ---------------------- */
-  .shot__film {
-    position: relative;
+  .card__text { display: grid; gap: var(--space-2); }
+  .card__title {
+    font-family: var(--font-body);
+    font-size: var(--type-body);
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--color-ink);
+  }
+  .card__sep { margin-inline: 0.35em; color: var(--color-rule); font-weight: 400; }
+  .card__context { color: var(--color-graphite-soft); font-weight: 400; }
+  a.card__hit:hover .card__name { text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+  .card__line { max-width: 34rem; font-size: var(--type-body-s); line-height: 1.55; color: var(--color-graphite); text-wrap: pretty; }
+  .card__meta {
     display: flex;
-    flex-direction: column;
-    padding: 0 var(--band) var(--gap-frames);
-    background: var(--color-film);
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-4);
+    font-size: var(--type-caption);
+    color: var(--color-graphite-soft);
   }
-  /* Sprocket holes, both edges, cut out of the film (mask, so they show the page). */
-  .shot__film::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    -webkit-mask: var(--holes) left -0.25rem top 0 / 2.5rem 1.625rem repeat-y, var(--holes) right -0.25rem top 0 / 2.5rem 1.625rem repeat-y;
-    mask: var(--holes) left -0.25rem top 0 / 2.5rem 1.625rem repeat-y, var(--holes) right -0.25rem top 0 / 2.5rem 1.625rem repeat-y;
-    background-color: var(--color-film-hole);
-  }
-  .shot:first-child .shot__film { padding-top: 0; }
-  .shot:last-child .shot__film { padding-bottom: calc(var(--gap-frames) * 3); }
+  .card__flag { display: inline-flex; align-items: center; gap: 0.4em; }
+  .card__flag svg { width: 0.7rem; fill: none; stroke: currentColor; stroke-width: 1.2; }
 
-  /* The leader: the reel starts with the cut tongue of a new roll. */
-  .shot__leader {
-    position: relative;
-    height: var(--leader);
-    margin-inline: calc(-1 * var(--band));
-    background: var(--color-paper);
-  }
-  .shot__leader::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--color-film);
-    clip-path: polygon(0 62%, 58% 0, 100% 0, 100% 100%, 0 100%);
-  }
-  .shot__leader span {
-    position: absolute;
-    left: var(--band);
-    bottom: 0.5rem;
-    font-family: var(--font-system);
-    font-size: 0.625rem;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--color-film-edge);
-  }
-
-  .shot__frame {
-    position: relative;
-    z-index: 1;
-    margin-block: auto;        /* centred in its row when the notes run taller */
-    border-radius: 4px;
-  }
-  .shot__print { position: relative; border-radius: inherit; overflow: hidden; background: var(--color-film); }
-  /* The shade over frames that aren't on: film-dark at 40%. */
-  .shot__print::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: var(--color-film);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--duration-slow) var(--ease-soft);
-  }
-  /* Edge print, in the black between frames: ▸ 01  01A */
-  .shot__edge {
-    position: absolute;
-    left: 0.25rem;
-    top: calc(100% + 0.35rem);
-    font-family: var(--font-system);
-    font-size: 0.5625rem;
-    line-height: 1;
-    letter-spacing: 0.24em;
-    color: var(--color-film-edge);
-  }
-
-  /* ---- The notes ---------------------------------------------------------- */
-  .shot__notes {
-    position: relative;
-    display: grid;
-    align-content: center;
-    gap: var(--space-2);
-    padding-block: var(--space-6) calc(var(--space-6) + var(--gap-frames));
-    transition: opacity var(--duration-slow) var(--ease-soft);
-  }
-  .shot:first-child .shot__notes { padding-top: calc(var(--leader) + var(--space-6)); }
-  /* The line from the frame to its notes. */
-  .shot__notes::before,
-  .shot__notes::after { content: ''; position: absolute; top: 50%; }
-  .shot:first-child .shot__notes::before, .shot:first-child .shot__notes::after { top: calc(50% + var(--leader) / 2); }
-  .shot__notes::before {
-    right: calc(100% + 0.75rem);
-    width: calc(var(--gutter) - 0.75rem);
-    border-top: 1px solid currentColor;
-  }
-  .shot__notes::after {
-    right: calc(100% + 0.75rem - 4px);   /* at the notes' end of the line */
-    width: 7px;
-    height: 7px;
-    margin-top: -3px;
-    border-radius: 50%;
-    background: currentColor;
-  }
-  .shot__no { color: var(--color-graphite-soft); }
-  .shot__top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); }
-  .shot__title { width: fit-content; transition: color var(--duration-quick); }
-  .shot__period { flex: none; color: var(--color-ink); white-space: nowrap; }
-  .shot__line { margin-block: var(--space-1) var(--space-2); color: var(--color-graphite); max-width: 36rem; text-wrap: pretty; }
-  .shot__status { display: flex; align-items: center; gap: 0.45em; margin-top: var(--space-1); color: var(--color-ink); }
-  .shot__shape { color: var(--color-accent); }
-  .shot__status[data-kind='developing'] .shot__shape { color: var(--color-graphite); }
-  .shot__lock {
-    position: relative;
-    display: inline-block;
-    width: 0.62em;
-    height: 0.5em;
-    margin-top: 0.3em;
-    border: 1px solid currentColor;
-  }
-  .shot__lock::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: 100%;
-    width: 0.4em;
-    height: 0.36em;
-    translate: -50% 0;
-    border: 1px solid currentColor;
-    border-bottom: 0;
-    border-radius: 0.3em 0.3em 0 0;
-  }
-
-  /* ---- On / off: the frame in the middle of the screen leads --------------- */
-  :global(.reel.is-tracking) .shot:not(.is-on) .shot__notes { opacity: 0.45; }
-  :global(.reel.is-tracking) .shot:not(.is-on) .shot__print::after { opacity: 0.4; }
-  :global(.reel.is-tracking) .shot.is-on .shot__title { color: var(--color-accent); }
-  a.shot__hit:hover .shot__title { color: var(--color-accent-hover); }
-  .shot__hit:focus-visible { outline: none; }
-  .shot__hit:focus-visible .shot__frame { outline: 2px solid var(--color-focus); outline-offset: 3px; }
-
-  /* Developing: out of focus, not a link. */
-  .shot[data-state='soon'] .shot__frame :global([data-cover]) { filter: blur(2.5px) saturate(0.5) brightness(0.85); }
-  .shot__soon {
-    position: absolute;
-    left: var(--space-3);
-    top: var(--space-3);
-    z-index: 2;
-    padding: var(--space-1) var(--space-2);
-    background: var(--color-highlight);
-    color: var(--color-on-highlight);
-  }
-
-  /* ---- Tablet + phone: the reel runs full width, notes below ------------- */
-  @media (max-width: 64rem) {
-    .reel { --band: 1.875rem; }
-    .shot__hit { grid-template-columns: 1fr; }
-    .shot__notes, .shot:first-child .shot__notes { padding: var(--space-4) 0 var(--space-12); }
-    .shot__notes::before, .shot__notes::after { display: none; }
-    .shot:last-child .shot__film { padding-bottom: var(--gap-frames); }
-    .reel { --leader: 3rem; }
-  }
+  /* In progress: quieter, not a link. */
+  .card[data-state='soon'] .card__cover :global(.media-cover) { opacity: 0.55; filter: grayscale(0.6); }
 </style>
-
-<script>
-  import { motionOn } from '../scripts/prefs';
-
-  // The frame whose middle crosses the middle of the screen is "on".
-  const reel = document.querySelector<HTMLElement>('[data-reel]');
-  const wide = window.matchMedia('(min-width: 64.0625rem)');
-  if (reel && 'IntersectionObserver' in window) {
-    const shots = Array.from(reel.querySelectorAll<HTMLElement>('[data-shot]'));
-    const setOn = (el: Element | null) => shots.forEach((s) => s.classList.toggle('is-on', s === el));
-    let middle: Element | null = null;
-    let pointed: Element | null = null;
-    const apply = () => setOn(pointed ?? middle);
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) if (e.isIntersecting) { middle = e.target; apply(); }
-    }, { rootMargin: '-50% 0px -50% 0px' });
-    shots.forEach((s) => io.observe(s));
-    // The pointer wins while it's over a frame; leaving the reel hands back
-    // to the frame in the middle of the screen.
-    shots.forEach((s) => s.addEventListener('pointerenter', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      pointed = s; apply();
-    }));
-    reel.addEventListener('pointerleave', () => { pointed = null; apply(); });
-    // Keyboard: the focused frame is on.
-    reel.addEventListener('focusin', (e) => { pointed = (e.target as Element).closest('[data-shot]'); apply(); });
-    reel.addEventListener('focusout', () => { pointed = null; apply(); });
-    const sync = () => reel.classList.toggle('is-tracking', wide.matches && motionOn());
-    wide.addEventListener('change', sync);
-    window.addEventListener('ina:prefs', sync);
-    sync();
-  }
-</script>

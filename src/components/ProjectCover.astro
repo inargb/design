@@ -1,68 +1,44 @@
 ---
-// A project's cover. Uploaded media wins when present; otherwise the
-// hand-built CSS cover is used.
-//   · the frame's shape comes from --cover-ratio (set by the context:
-//     16:10 in the desktop grid, 4:3 on tablets and phones, 16:9 on case pages)
+// A project's cover: an uploaded still or a looping video.
+//   · the frame's shape comes from --cover-ratio (set by the context)
 //   · media fills it with object-fit: cover, centred on the cover's `focus`
 //     and zoomed by `zoom`, so the subject survives every crop
 //   · stills use srcset (800w / 1600w); videos load only near the viewport,
 //     play only while visible, and show the poster with reduced motion
-import type { CoverId, CoverMedia } from '../content/projects';
+import type { CoverMedia } from '../content/projects';
 import type { Locale } from '../i18n/config';
 import { withBase } from '../i18n/config';
-import CoverSpecs from './covers/CoverSpecs.astro';
-import CoverMenu from './covers/CoverMenu.astro';
-import CoverBarTabs from './covers/CoverBarTabs.astro';
-import CoverPortal from './covers/CoverPortal.astro';
-import CoverBandoneon from './covers/CoverBandoneon.astro';
-import CoverBinder from './covers/CoverBinder.astro';
-import CoverSabi from './covers/CoverSabi.astro';
 
 interface Props {
-  cover: CoverId;
   label: string;          // '' when the title sits next to the cover (decorative)
-  media?: CoverMedia;
+  media: CoverMedia;
   locale?: Locale;
   sizes?: string;         // how wide the cover renders, for srcset
 }
-const { cover, label, media, locale = 'en', sizes = '(max-width: 40rem) 100vw, 50vw' } = Astro.props;
-const map = {
-  specs: CoverSpecs,
-  menu: CoverMenu,
-  bartabs: CoverBarTabs,
-  portal: CoverPortal,
-  bandoneon: CoverBandoneon,
-  binder: CoverBinder,
-  sabi: CoverSabi,
-} as const;
-const Cover = map[cover];
-const alt = label ? media?.alt[locale] ?? label : '';
-const style = media ? `--focus:${media.focus ?? '50% 50%'};--zoom:${media.zoom ?? 1}` : '';
+const { label, media, locale = 'en', sizes = '(max-width: 40rem) 100vw, 50vw' } = Astro.props;
+const alt = label ? media.alt[locale] ?? label : '';
+const style = `--focus:${media.focus ?? '50% 50%'};--zoom:${media.zoom ?? 1}`;
 ---
 
-{media ? (
-  <div class="media-cover" style={style} data-cover data-media-cover>
-    {media.video ? (
-      <video muted loop playsinline preload="none" poster={media.poster && withBase(media.poster)} aria-label={alt || undefined} aria-hidden={alt ? undefined : 'true'} disablepictureinpicture>
-        <source src={withBase(media.video.webm)} type="video/webm" />
-        <source src={withBase(media.video.mp4)} type="video/mp4" />
-      </video>
-    ) : media.image ? (
-      <img
-        src={withBase(media.image.src)}
-        srcset={`${withBase(media.image.small)} 800w, ${withBase(media.image.src)} 1600w`}
-        sizes={sizes}
-        alt={alt}
-        width="1600"
-        height="900"
-        loading="lazy"
-        decoding="async"
-      />
-    ) : null}
-  </div>
-) : (
-  <Cover label={label} />
-)}
+<div class="media-cover" style={style} data-cover data-media-cover>
+  {media.video ? (
+    <video muted loop playsinline preload="none" poster={media.poster && withBase(media.poster)} aria-label={alt || undefined} aria-hidden={alt ? undefined : 'true'} disablepictureinpicture>
+      <source src={withBase(media.video.webm)} type="video/webm" />
+      <source src={withBase(media.video.mp4)} type="video/mp4" />
+    </video>
+  ) : media.image ? (
+    <img
+      src={withBase(media.image.src)}
+      srcset={`${withBase(media.image.small)} 800w, ${withBase(media.image.src)} 1600w`}
+      sizes={sizes}
+      alt={alt}
+      width="1600"
+      height="900"
+      loading="lazy"
+      decoding="async"
+    />
+  ) : null}
+</div>
 
 <style>
   .media-cover {
@@ -86,8 +62,8 @@ const style = media ? `--focus:${media.focus ?? '50% 50%'};--zoom:${media.zoom ?
 <script>
   import { motionOn } from '../scripts/prefs';
 
-  // CSS covers animate only while visible. Videos start loading when they
-  // come near the viewport and play only while visible, with motion on.
+  // Videos start loading when they come near the viewport and play only
+  // while visible, with motion on.
   const covers = document.querySelectorAll<HTMLElement>('[data-cover]');
   const visible = new Set<HTMLElement>();
 

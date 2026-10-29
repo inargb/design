@@ -1,4 +1,4 @@
-// Project index: the data behind the contact sheet, covers and case routes.
+// Project index: the data behind the work grid, covers and case routes.
 // Facts here come only from the current portfolio (public pages) and the
 // Menu Management brief. Nothing is invented; unknowns are left out.
 import type { L10n } from '../i18n/config';
@@ -24,8 +24,7 @@ export interface Project {
   status: L10n;
   statusKind: StatusKind;
   tags: L10n[];
-  cover: CoverId;
-  media?: CoverMedia;         // uploaded cover video/gif; falls back to the CSS cover
+  media: CoverMedia;          // uploaded cover image or video
   liveUrl?: string;           // current case on inasilva.com (until rebuilt)
 }
 
@@ -45,14 +44,6 @@ export interface CoverMedia {
   zoom?: number;                            // 1 = fit, >1 crops tighter around focus
 }
 
-export type CoverId =
-  | 'specs'
-  | 'menu'
-  | 'bartabs'
-  | 'portal'
-  | 'bandoneon'
-  | 'binder'
-  | 'sabi';
 
 const tag = (en: string, pt: string): L10n => ({ en, pt });
 const unknown: L10n = { en: '—', pt: '—' };
@@ -73,7 +64,6 @@ export const projects: Project[] = [
     status: { en: 'protected case', pt: 'case protegido' },
     statusKind: 'locked',
     tags: [tag('POS', 'PDV'), tag('Design systems', 'Design systems')],
-    cover: 'bartabs',
     media: {
       image: { src: 'covers/bar-tabs-1600.webp', small: 'covers/bar-tabs-800.webp' },
       alt: { en: 'The Bar Tabs screen in dark mode: a selected tab’s details on the left and open tabs as colour-coded cards.', pt: 'A tela de comandas no modo escuro: os detalhes de uma comanda à esquerda e as comandas abertas como cards coloridos.' },
@@ -99,7 +89,6 @@ export const projects: Project[] = [
       tag('Enterprise software', 'Software enterprise'),
       tag('Information architecture', 'Arquitetura da informação'),
     ],
-    cover: 'menu',
     media: {
       image: { src: 'covers/menu-management-1600.webp', small: 'covers/menu-management-800.webp' },
       alt: { en: 'The Menu Management workspace: a menu tree on the left and a list of items with prices beside it. Brand and staff names are blurred.', pt: 'O espaço de trabalho de Gestão de Cardápios: a árvore do cardápio à esquerda e a lista de itens com preços ao lado. Marca e nomes de pessoas estão desfocados.' },
@@ -125,7 +114,6 @@ export const projects: Project[] = [
     status: { en: 'in use every sprint', pt: 'em uso a cada sprint' },
     statusKind: 'live',
     tags: [tag('AI-driven', 'IA'), tag('Documentation', 'Documentação'), tag('Design systems', 'Design systems')],
-    cover: 'specs',
     media: {
       video: { mp4: 'covers/specs-generator.mp4', webm: 'covers/specs-generator.webm' },
       poster: 'covers/specs-generator-poster.webp',
@@ -150,7 +138,6 @@ export const projects: Project[] = [
     status: { en: 'live', pt: 'no ar' },
     statusKind: 'live',
     tags: [tag('UX/UI', 'UX/UI'), tag('Research', 'Pesquisa'), tag('Redesign', 'Redesign')],
-    cover: 'portal',
     media: {
       video: { mp4: 'covers/systems-portal.mp4', webm: 'covers/systems-portal.webm' },
       poster: 'covers/systems-portal-poster.webp',
@@ -175,7 +162,6 @@ export const projects: Project[] = [
     status: { en: 'prototype, tested', pt: 'protótipo testado' },
     statusKind: 'prototype',
     tags: [tag('UX/UI', 'UX/UI'), tag('Design systems', 'Design systems'), tag('Case study', 'Estudo de caso')],
-    cover: 'bandoneon',
     media: {
       image: { src: 'covers/bandoneon-1600.webp', small: 'covers/bandoneon-800.webp' },
       alt: { en: 'Two phones with the Bandoneón app: the green splash screen and the recipe of the day.', pt: 'Dois celulares com o app Bandoneón: a tela de abertura verde e a receita do dia.' },
@@ -196,10 +182,9 @@ export const projects: Project[] = [
     context: { en: 'Product · app', pt: 'Produto · app' },
     role: unknown,
     period: unknown,
-    status: { en: 'developing', pt: 'revelando' },
+    status: { en: 'in progress', pt: 'em andamento' },
     statusKind: 'developing',
     tags: [tag('UX/UI research', 'Pesquisa UX/UI'), tag('Product', 'Produto'), tag('App', 'App')],
-    cover: 'sabi',
     media: {
       image: { src: 'covers/sabi-1600.webp', small: 'covers/sabi-800.webp' },
       alt: { en: 'The Sabi mark: three rounded bars with a yellow dot in the middle.', pt: 'A marca do Sabi: três barras arredondadas com um ponto amarelo no meio.' },
@@ -214,15 +199,14 @@ export const projects: Project[] = [
     title: { en: 'Pocabin', pt: 'Pocabin' },
     line: {
       en: 'A digital binder for organizing and tracking K-pop photocard collections, a side project designed and vibe-coded as a website, still developing.',
-      pt: 'Um binder digital para organizar e acompanhar coleções de photocards de K-pop, um projeto pessoal desenhado e vibe-codado como website, ainda revelando.',
+      pt: 'Um binder digital para organizar e acompanhar coleções de photocards de K-pop, um projeto pessoal desenhado e vibe-codado como website, ainda em desenvolvimento.',
     },
     context: { en: 'Side project', pt: 'Projeto pessoal' },
     role: unknown,
     period: unknown,
-    status: { en: 'developing', pt: 'revelando' },
+    status: { en: 'in progress', pt: 'em andamento' },
     statusKind: 'developing',
     tags: [tag('Website', 'Website'), tag('Product', 'Produto'), tag('Vibe-coding', 'Vibe-coding')],
-    cover: 'binder',
     media: {
       video: { mp4: 'covers/pocabin.mp4', webm: 'covers/pocabin.webm' },
       poster: 'covers/pocabin-poster.webp',
