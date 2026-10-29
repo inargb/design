@@ -1,7 +1,7 @@
-name: Build (and deploy to GitHub Pages on demand)
+name: Build and deploy to GitHub Pages
 
-# Every push and pull request is type-checked and built. Deploying is manual
-# (Actions → Run workflow) until GitHub Pages is switched on for this repo.
+# Every push and pull request is type-checked and built. Pushes to main (and
+# manual runs from Actions → Run workflow) also deploy to GitHub Pages.
 on:
   push:
     branches: [main]
@@ -29,13 +29,13 @@ jobs:
       - run: npm ci
       - run: npx astro check
       - run: npm run build
-      - if: github.event_name == 'workflow_dispatch'
+      - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
   deploy:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

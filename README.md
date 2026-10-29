@@ -19,12 +19,11 @@ npm run check      # type + template checks
 
 ## Deploy
 
-`.github/workflows/deploy.yml` type-checks and builds every push and pull
-request. Deploying to GitHub Pages is manual (Actions → *Build* → Run
-workflow) and needs Pages switched on for the repo (Settings → Pages →
-Source: GitHub Actions). The site builds for `https://inargb.github.io/design/`.
-For a custom domain, build with `SITE_URL=https://example.com BASE_PATH=/` and
-add `public/CNAME`.
+Live at https://inargb.github.io/design/. `.github/workflows/deploy.yml`
+type-checks and builds every push and pull request; every push to `main`
+also deploys to GitHub Pages (a manual run from Actions → Run workflow does
+too). For a custom domain, build with `SITE_URL=https://example.com BASE_PATH=/`
+and add `public/CNAME`.
 
 ## Where things live
 
