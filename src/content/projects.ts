@@ -157,7 +157,7 @@ export const projects: Project[] = [
     },
     context: { en: 'Academic', pt: 'Acadêmico' },
     role: { en: 'Lead designer', pt: 'Designer líder' },
-    period: unknown,
+    period: { en: '2022', pt: '2022' },
     duration: { en: '6 months', pt: '6 meses' },
     status: { en: 'prototype, tested', pt: 'protótipo testado' },
     statusKind: 'prototype',
