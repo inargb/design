@@ -185,12 +185,17 @@ const parts = (q: string) => q.split(/\[\[|\]\]/).map((text, i) => ({ text, key:
 
   /* Kind words as post-its: square notes in soft colours, each a hair off
      straight, a strip of tape on top. They straighten up under the pointer. */
+  /* Three to a row; a shorter last row sits centred under the first. */
   .quotes {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-    gap: var(--space-8) var(--space-6);
+    --gap-x: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-8) var(--gap-x);
     padding-top: var(--space-2);
   }
+  .quotes li { flex: 0 1 calc((100% - 2 * var(--gap-x)) / 3); min-width: 15rem; }
+  @media (max-width: 48rem) { .quotes li { flex-basis: 100%; } }
   .quotes li { --note: #fbf0b2; --tilt: -1.4deg; }
   .quotes li:nth-child(5n + 2) { --note: #f9d9de; --tilt: 1.2deg; }
   .quotes li:nth-child(5n + 3) { --note: #d7eaf8; --tilt: -0.6deg; }

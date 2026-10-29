@@ -126,11 +126,11 @@ export const about = {
     items: [
       {
         quote: l(
-          'A valuable addition to any team, as Inaia [[combines creativity]] with a strong technical understanding of graphic design. Her commitment, responsibility, and excellence consistently stood out during her studies.',
-          'Uma adição valiosa para qualquer time, porque a Inaiá [[une criatividade]] a um conhecimento técnico sólido de design gráfico. Seu comprometimento, responsabilidade e excelência sempre se destacaram durante os estudos.',
+          'Transforms concepts into user centered, high quality interfaces aligned with the product vision. [[Proactive and detail-oriented]], she identifies issues, collaborates with QA, and communicates clearly.',
+          'Transforma conceitos em interfaces de alta qualidade, centradas no usuário e alinhadas à visão do produto. [[Proativa e detalhista]], identifica problemas, colabora com QA e se comunica com clareza.',
         ),
-        name: 'Marco Aurélio Lobo Junior',
-        role: l('Coordinator – CST Graphic Design @IESB', 'Coordenador – CST Design Gráfico @IESB'),
+        name: 'Parmis Meshgi',
+        role: l('Senior Product Designer @Volanté Systems', 'Senior Product Designer @Volanté Systems'),
       },
       {
         quote: l(
@@ -142,6 +142,14 @@ export const about = {
       },
       {
         quote: l(
+          'Work focused on [[accessibility and inclusion]] through design, creating visual communication materials, and enhancing document clarity and presentation.',
+          'Trabalho focado em [[acessibilidade e inclusão]] por meio do design, criando materiais de comunicação visual e melhorando a clareza e a apresentação de documentos.',
+        ),
+        name: 'Thaciana Cerqueira',
+        role: l('General Coordinator of IT Governance @FNDE', 'Coordenadora-Geral de Governança de TI @FNDE'),
+      },
+      {
+        quote: l(
           'During her internship as a UX/UI Designer at the Ministry of Agriculture and Livestock, she showed great receptiveness to feedback, [[strong collaboration skills]], and consistent excellence in her work.',
           'Durante o estágio como UX/UI Designer no Ministério da Agricultura e Pecuária, ela mostrou grande abertura a feedback, [[ótima capacidade de colaboração]] e excelência constante no trabalho.',
         ),
@@ -150,19 +158,11 @@ export const about = {
       },
       {
         quote: l(
-          'Transforms concepts into user centered, high quality interfaces aligned with the product vision. [[Proactive and detail-oriented]], she identifies issues, collaborates with QA, and communicates clearly.',
-          'Transforma conceitos em interfaces de alta qualidade, centradas no usuário e alinhadas à visão do produto. [[Proativa e detalhista]], identifica problemas, colabora com QA e se comunica com clareza.',
+          'A valuable addition to any team, as Inaia [[combines creativity]] with a strong technical understanding of graphic design. Her commitment, responsibility, and excellence consistently stood out during her studies.',
+          'Uma adição valiosa para qualquer time, porque a Inaiá [[une criatividade]] a um conhecimento técnico sólido de design gráfico. Seu comprometimento, responsabilidade e excelência sempre se destacaram durante os estudos.',
         ),
-        name: 'Parmis Meshgi',
-        role: l('Senior Product Designer @Volanté Systems', 'Senior Product Designer @Volanté Systems'),
-      },
-      {
-        quote: l(
-          'Work focused on [[accessibility and inclusion]] through design, creating visual communication materials, and enhancing document clarity and presentation.',
-          'Trabalho focado em [[acessibilidade e inclusão]] por meio do design, criando materiais de comunicação visual e melhorando a clareza e a apresentação de documentos.',
-        ),
-        name: 'Thaciana Cerqueira',
-        role: l('General Coordinator of IT Governance @FNDE', 'Coordenadora-Geral de Governança de TI @FNDE'),
+        name: 'Marco Aurélio Lobo Junior',
+        role: l('Coordinator – CST Graphic Design @IESB', 'Coordenador – CST Design Gráfico @IESB'),
       },
     ],
   },
