@@ -79,9 +79,16 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
       <div class="case-main">
         <a class="case__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a>
         <header class="case-hero">
-          <p class="case-hero__eyebrow t-label">{eyebrow}</p>
-          <h1 class="case-hero__title t-display">{project.title[locale]}</h1>
-          <p class="case-hero__line">{project.line[locale]}</p>
+          <div class="case-hero__intro">
+            <p class="case-hero__eyebrow t-label">{eyebrow}</p>
+            <h1 class="case-hero__title t-display">{project.title[locale]}</h1>
+            <p class="case-hero__line">{project.line[locale]}</p>
+          </div>
+          {study.live && (
+            <a class="case-hero__live" href={study.live.href} target="_blank" rel="noopener">
+              {study.live.label[locale]}<span aria-hidden="true">↗</span><span class="visually-hidden"> {ui.nav.newTab[locale]}</span>
+            </a>
+          )}
           <dl class="case-hero__facts">
             {facts.map((f) => (
               <div>
@@ -90,11 +97,6 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
               </div>
             ))}
           </dl>
-          {study.live && (
-            <a class="case-hero__live link" href={study.live.href} target="_blank" rel="noopener">
-              {study.live.label[locale]} ↗<span class="visually-hidden"> {ui.nav.newTab[locale]}</span>
-            </a>
-          )}
         </header>
 
         <div class="case-cover">
@@ -143,7 +145,16 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   .case__back:hover, .case-index__back:hover { color: var(--color-ink); }
   .case__back { margin-top: var(--space-6); }
   @media (min-width: 64.0625rem) { .case__back { display: none; } }
-  .case-hero { display: grid; justify-items: start; gap: var(--space-4); padding-block: var(--space-6) var(--space-12); }
+  /* Title and line on the left; the live link, a real button, beside them,
+     level with the end of the line. The facts run underneath, full width. */
+  .case-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 0 var(--space-8);
+    padding-block: var(--space-6) var(--space-12);
+  }
+  .case-hero__intro { display: grid; justify-items: start; gap: var(--space-4); }
   .case-hero__eyebrow { color: var(--color-graphite-soft); }
   .case-hero__title { max-width: 22ch; font-size: var(--type-heading-xl); }
   .case-hero__line {
@@ -154,6 +165,7 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
     text-wrap: pretty;
   }
   .case-hero__facts {
+    grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-6);
@@ -165,9 +177,28 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   .case-hero__facts div { display: grid; align-content: start; gap: 2px; }
   .case-hero__facts dt { margin-bottom: var(--space-1); font-size: var(--type-caption); color: var(--color-graphite-soft); }
   .case-hero__facts dd { font-size: var(--type-body-s); line-height: 1.5; color: var(--color-ink); }
-  .case-hero__live { margin-top: var(--space-2); font-size: var(--type-body-s); }
+  .case-hero__live {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap-min);
+    padding: 0 var(--space-6);
+    border-radius: var(--radius-soft);
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-system);
+    font-size: var(--type-caption);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background-color var(--duration-quick) var(--ease-soft);
+  }
+  .case-hero__live:hover { background: var(--color-accent); }
   @media (max-width: 40rem) {
-    .case-hero { padding-top: var(--space-6); }
+    .case-hero { grid-template-columns: 1fr; padding-top: var(--space-6); }
+    .case-hero__live { justify-self: start; margin-top: var(--space-6); }
     .case-hero__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-4); }
   }
 
