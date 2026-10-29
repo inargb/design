@@ -1,0 +1,102 @@
+---
+// The word "frames", three ways: a Figma frame, a film frame, a film's
+// frames per second. It's a button (keyboard and touch work too): each
+// click shows the next kind, and the meaning is announced.
+import type { Locale } from '../i18n/config';
+
+interface Props { locale: Locale; word: string; after?: string; }
+const { locale, word, after = '' } = Astro.props;
+const kinds = {
+  en: ['figma · Frame 1,427', 'film · frame 24 of 36', 'cinema · 24 frames per second'],
+  pt: ['figma · Frame 1.427', 'filme · frame 24 de 36', 'cinema · 24 frames por segundo'],
+}[locale];
+const hint = { en: 'show another kind of frame', pt: 'mostrar outro tipo de frame' }[locale];
+---
+
+<button class="fw" type="button" data-frames-word data-kind="0" data-kinds={JSON.stringify(kinds)} aria-describedby="fw-live"><span class="fw__word">{word}</span><span class="visually-hidden">, {hint}</span><span class="fw__deco" aria-hidden="true"><i class="fw__h tl"></i><i class="fw__h tr"></i><i class="fw__h bl"></i><i class="fw__h br"></i><i class="fw__holes top"></i><i class="fw__holes bottom"></i></span><span class="fw__tag" aria-hidden="true" data-frames-tag>{kinds[0]}</span></button>{after}<span id="fw-live" class="visually-hidden" aria-live="polite" data-frames-live></span>
+
+<style>
+  .fw {
+    position: relative;
+    display: inline;
+    padding: 0 0.06em;
+    margin: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    text-decoration: underline dotted 0.06em;
+    text-decoration-color: var(--color-graphite-soft);
+    text-underline-offset: 0.12em;
+  }
+  .fw__word { position: relative; z-index: 1; font-style: italic; }
+  .fw__deco {
+    position: absolute;
+    inset: 0.08em -0.12em 0.02em;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-soft), inset var(--duration-settle) var(--ease-settle);
+  }
+  .fw:is(:hover, :focus-visible, [data-active]) { text-decoration-color: transparent; }
+  .fw:is(:hover, :focus-visible, [data-active]) .fw__deco { opacity: 1; }
+  .fw:focus-visible { outline: none; }
+
+  /* 0 · Figma frame: a selection box with handles and a name tag. */
+  .fw[data-kind='0'] .fw__deco { outline: 0.02em solid var(--color-accent); }
+  .fw__h { position: absolute; display: none; width: 0.1em; height: 0.1em; background: var(--color-paper); border: 0.02em solid var(--color-accent); }
+  .fw[data-kind='0'] .fw__h { display: block; }
+  .tl { left: -0.05em; top: -0.05em; } .tr { right: -0.05em; top: -0.05em; }
+  .bl { left: -0.05em; bottom: -0.05em; } .br { right: -0.05em; bottom: -0.05em; }
+
+  /* 1 · film frame: a dark strip with sprocket holes. */
+  .fw__holes {
+    position: absolute; left: 0; right: 0; display: none; height: 0.14em;
+    background: radial-gradient(circle, var(--color-paper) 0.025em, transparent 0.03em) 0 50% / 0.16em 100% repeat-x, var(--color-ink);
+  }
+  .fw__holes.top { top: -0.14em; } .fw__holes.bottom { bottom: -0.14em; }
+  .fw[data-kind='1'] .fw__holes { display: block; }
+  .fw[data-kind='1'] .fw__deco { background: var(--color-ink); }
+  .fw[data-kind='1']:is(:hover, :focus-visible, [data-active]) .fw__word { color: var(--color-paper); }
+
+  /* 2 · cinema: a picture frame, double-ruled and a hair off straight. */
+  .fw[data-kind='2'] .fw__deco { inset: -0.02em -0.2em -0.08em; border: 0.07em double var(--color-accent); rotate: -1.5deg; }
+
+  .fw__tag {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 0.3rem);
+    padding: 2px 6px;
+    font-family: var(--font-system);
+    font-size: var(--type-label);
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    color: var(--color-on-accent);
+    background: var(--color-accent);
+    opacity: 0;
+    translate: 0 -4px;
+    transition: opacity var(--duration-quick), translate var(--duration-settle) var(--ease-settle);
+  }
+  .fw:is(:hover, :focus-visible, [data-active]) .fw__tag { opacity: 1; translate: 0 0; }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-frames-word]');
+  if (btn) {
+    const kinds: string[] = JSON.parse(btn.dataset.kinds ?? '[]');
+    const tag = btn.querySelector('[data-frames-tag]')!;
+    const live = document.querySelector('[data-frames-live]')!;
+    let hideTimer = 0;
+    btn.addEventListener('click', () => {
+      const next = (Number(btn.dataset.kind) + 1) % kinds.length;
+      btn.dataset.kind = String(next);
+      tag.textContent = kinds[next];
+      live.textContent = kinds[next];
+      btn.toggleAttribute('data-active', true);
+      clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(() => btn.removeAttribute('data-active'), 2600);
+    });
+  }
+</script>

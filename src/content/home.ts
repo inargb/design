@@ -1,12 +1,15 @@
-// Home page copy. The headline is the site description in Inaiá's words;
-// "currently" and "previously" come from the experience on the About page.
+// Home page copy, in Inaiá's words; "currently" and "previously" come
+// from the experience on the About page.
 import type { L10n } from '../i18n/config';
 
 export const home = {
-  headline: {
-    en: 'Inaiá Silva is a product designer who builds systems, specs and interfaces for every screen size.',
-    pt: 'Inaiá Silva é product designer e cria sistemas, specs e interfaces para todos os tamanhos de tela.',
+  // The headline is split around the interactive word.
+  headlineBefore: {
+    en: 'I design products for every screen size, with an absurd number of ',
+    pt: 'Eu desenho produtos para todos os tamanhos de tela, com um número absurdo de ',
   } as L10n,
+  word: { en: 'frames', pt: 'frames' } as L10n,
+  headlineAfter: { en: '.', pt: '.' } as L10n,
 
   now: [
     {

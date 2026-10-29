@@ -2,9 +2,10 @@
 
 A quieter, more senior take on [inasilva.com](https://inasilva.com) (source:
 `inargb/portfolio`). Same cases, About page, copy and links; a new layout:
-off-white paper, slate ink, a serif for headings (Newsreader), Inter for
-everything else, a sticky sidebar for navigation and one content column.
-No doodles, custom cursor, film reel or easter eggs.
+off-white paper, slate ink, IBM Plex Mono for headings and labels, Inter for
+reading, a sticky sidebar for navigation and one content column.
+The headline keeps the interactive word "frames" (Figma frame, film frame,
+frames per second); the doodles, custom cursor, film reel and easter eggs are gone.
 
 Static site built with [Astro](https://astro.build), plain CSS custom
 properties and a little TypeScript.
@@ -36,7 +37,7 @@ src/
   i18n/ui.ts               interface strings (EN / PT)
   content/*.ts             page content, bilingual, typed (projects, home, about, photos)
   components/              Nav (header + sidebar), Footer, LanguageSwitch,
-                           ProjectGrid, ProjectCover
+                           FramesWord, ProjectGrid, ProjectCover
   components/case/         case-study blocks, figures, sections, index
   layouts/Base.astro       the page shell: header, sidebar, content column, footer
   views/                   one view per page, rendered by thin EN/PT page files
