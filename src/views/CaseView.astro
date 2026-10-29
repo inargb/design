@@ -164,8 +164,7 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
     .case-hero__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-4); }
   }
 
-  .case-cover { --cover-ratio: 16 / 9; overflow: hidden; margin-bottom: var(--space-16); border: var(--rule-hair); border-radius: var(--radius-soft); }
-  @media (max-width: 40rem) { .case-cover { --cover-ratio: 4 / 3; } }
+  .case-cover { --cover-ratio: 3 / 2; overflow: hidden; margin-bottom: var(--space-16); border-radius: var(--radius-soft); }
 
   /* Body: index on the left (sticky), sections on the right; one column
      below desktop, without the index. */

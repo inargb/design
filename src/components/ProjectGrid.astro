@@ -1,5 +1,6 @@
 ---
-// The work: a two-column grid of landscape covers (one column on phones).
+// The work: a two-column grid of 3:2 covers, each the product UI on a soft
+// panel (one column on phones).
 // Each card says only: name / context · year.
 // Open projects link to their case; protected ones open the password gate;
 // projects still in progress are shown, quieter, without a link. Over a
@@ -48,7 +49,7 @@ const year = (v: string) => (v === '—' ? '' : v.replace(/\s*—\s*/g, '–'));
 
 <style>
   .work-grid {
-    --cover-ratio: 16 / 10;
+    --cover-ratio: 3 / 2;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-12) var(--layout-gap);
@@ -65,7 +66,6 @@ const year = (v: string) => (v === '—' ? '' : v.replace(/\s*—\s*/g, '–'));
   }
   .card__cover {
     overflow: hidden;
-    border: var(--rule-hair);
     border-radius: var(--radius-soft);
     background: var(--color-paper-shade);
   }

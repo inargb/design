@@ -61,17 +61,24 @@ public/covers/             project covers (stills and videos)
 
 ## Covers
 
-Each project has an uploaded cover in `public/covers/`: a still (two WebP
-widths, `-800.webp` and `-1600.webp`) or a video (MP4 + WebM, with a
-`-poster.webp`). The frame is 4:3 in the grid and 16:9 on case pages; media
-fills it (`object-fit: cover`), centred on the project's `focus` and zoomed by
-`zoom`. Export sources at 16:9.
+Every cover is the product UI set on a soft 3:2 panel (after helin.design):
+the window or phones float in the middle with rounded corners and a faint
+shadow, or bleed off the right and bottom edges. They're built, not drawn by
+hand: `design/covers-src/make-covers.py` cuts the UI out of each source in
+`design/covers-src/` (stills and MP4s) and writes `public/covers/`:
+
+- stills → `<name>-panel-800.webp` and `<name>-panel-1600.webp` (served with `srcset`)
+- videos → `<name>-panel.mp4`, `<name>-panel.webm` and a `<name>-panel-poster.webp`
 
 ```bash
-ffmpeg -i in.gif -vf "fps=20,scale='min(1280,iw)':-2,format=yuv420p" -c:v libx264 -crf 26 -movflags +faststart -an public/covers/x.mp4
-ffmpeg -i in.gif -vf "fps=20,scale='min(1280,iw)':-2" -c:v libvpx-vp9 -crf 38 -b:v 0 -an public/covers/x.webm
-ffmpeg -ss 2 -i in.gif -frames:v 1 -c:v libwebp -quality 82 public/covers/x-poster.webp
+python3 design/covers-src/make-covers.py            # everything (needs Pillow, NumPy, ffmpeg)
+python3 design/covers-src/make-covers.py --stills   # stills only, quick
 ```
+
+To add a project, put its source in `design/covers-src/`, add a line to the
+script with the UI's crop box and placement, and point the project's `media`
+in `src/content/projects.ts` at the panel files. Videos load only near the
+viewport, play only while visible, and show the poster with reduced motion.
 
 ## Case studies
 
