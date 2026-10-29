@@ -15,18 +15,11 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
     <h1 id="hero-title" class="hero__title t-display">
       {home.headlineBefore[locale]}<FramesWord locale={locale} word={home.word[locale]} after={home.headlineAfter[locale]} />
     </h1>
-    <dl class="hero__now">
-      {home.now.map((n) => (
-        <div>
-          <dt>{n.label[locale]}</dt>
-          <dd>{n.body[locale]}</dd>
-        </div>
-      ))}
-    </dl>
+    <p class="hero__based">{home.based[locale]}</p>
   </section>
 
   <section id="work" class="work" aria-labelledby="work-title">
-    <h2 id="work-title" class="work__title t-label">{home.workLabel[locale]}</h2>
+    <h2 id="work-title" class="work__title t-label">{home.workLabel[locale]}<span class="caret" aria-hidden="true"></span></h2>
     <ProjectGrid locale={locale} />
   </section>
 </Base>
@@ -34,19 +27,11 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
 <style>
   .hero {
     display: grid;
-    gap: var(--space-12);
+    gap: var(--space-6);
     padding-block: var(--space-16) var(--space-24);
   }
   .hero__title { max-width: 22ch; }
-  .hero__now {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-    gap: var(--space-6) var(--space-12);
-    max-width: 44rem;
-  }
-  .hero__now div { display: grid; gap: var(--space-1); align-content: start; }
-  .hero__now dt { font-size: var(--type-body-s); color: var(--color-graphite-soft); }
-  .hero__now dd { font-size: var(--type-body-s); line-height: 1.55; color: var(--color-ink); text-wrap: pretty; }
+  .hero__based { font-size: var(--type-lede); line-height: 1.5; color: var(--color-graphite); }
 
   .work { scroll-margin-top: var(--space-8); }
   .work__title { margin-bottom: var(--space-6); color: var(--color-graphite-soft); }
@@ -55,7 +40,6 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
     .hero { padding-top: var(--space-24); }
   }
   @media (max-width: 40rem) {
-    .hero { gap: var(--space-8); padding-block: var(--space-12) var(--space-16); }
-    .hero__now { grid-template-columns: 1fr; }
+    .hero { gap: var(--space-4); padding-block: var(--space-12) var(--space-16); }
   }
 </style>

@@ -1,5 +1,4 @@
-// Home page copy, in Inaiá's words; "currently" and "previously" come
-// from the experience on the About page.
+// Home page copy, in Inaiá's words.
 import type { L10n } from '../i18n/config';
 
 export const home = {
@@ -11,16 +10,8 @@ export const home = {
   word: { en: 'frames', pt: 'frames' } as L10n,
   headlineAfter: { en: '.', pt: '.' } as L10n,
 
-  now: [
-    {
-      label: { en: 'Currently', pt: 'Atualmente' } as L10n,
-      body: { en: 'UX/UI Designer at Volanté Systems, designing POS and back-office tools for restaurants and bars.', pt: 'UX/UI Designer na Volanté Systems, desenhando ferramentas de PDV e back-office para bares e restaurantes.' } as L10n,
-    },
-    {
-      label: { en: 'Previously', pt: 'Antes' } as L10n,
-      body: { en: 'Visual Designer at FNDE and UX/UI Designer Intern at the Ministry of Agriculture and Livestock.', pt: 'Designer Visual no FNDE e estagiária de UX/UI no Ministério da Agricultura e Pecuária.' } as L10n,
-    },
-  ],
+  // One line under the headline.
+  based: { en: 'Product designer, currently based in Brazil.', pt: 'Product designer, atualmente no Brasil.' } as L10n,
 
   workLabel: { en: 'Selected work', pt: 'Projetos selecionados' } as L10n,
 };

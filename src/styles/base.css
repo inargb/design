@@ -92,8 +92,16 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
 .t-italic { font-style: italic; }
 .t-pretty { text-wrap: pretty; }
 
+/* The underscore that ends labels like "selected work_". It blinks slowly,
+   like a cursor waiting for input, and stays still with reduced motion. */
+.caret::after {
+  content: '_';
+  animation: caret-blink 1.1s steps(1) infinite;
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .caret::after { animation: none; } }
+
 /* Kept for markup shipped inside sealed (encrypted) cases: now silent. */
-.caret::after { content: none; }
 .mark { background: none; color: inherit; }
 
 /* ---- Links ---------------------------------------------------------------- */
