@@ -67,11 +67,13 @@ centred; objects can be dragged off and back. A click (or Enter) opens one:
 
 - the camera → a roll of film with the About page's art note (`components/playground/FilmViewer.astro`)
 - the iPod → a working iPod classic (`components/playground/IPod.astro`): Music, Extras (photos),
-  Settings (shuffle, repeat, about), Shuffle Songs, Backlight, Now Playing; songs play through a hidden
-  YouTube player, loaded on the first press of play
+  Settings (shuffle, repeat, about), Shuffle Songs, Backlight, Now Playing. Songs play as Apple
+  Music's official 30-second previews (no ads, nothing hosted here), with a "Listen on Spotify" link
+  under the iPod for the full song; songs without a preview are greyed out and skipped
 - the DVDs → Inaiá's Letterboxd profile in a new tab; magazines, shoes and the plant → their note
 
-Objects, links and the iPod's songs live in `src/content/playground.ts`.
+Objects, links and the iPod's songs live in `src/content/playground.ts`. A song's `preview`
+is the `previewUrl` from the iTunes Search API (itunes.apple.com/search?term=…&entity=song).
 
 ## Covers
 

@@ -290,7 +290,8 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
     let lit = true;
     let volume = 70;
     let volUntil = 0;
-    const broken = new Set<number>();         // songs without a playable preview
+    // Songs without a playable preview: greyed out in lists and skipped.
+    const broken = new Set<number>(d.songs.flatMap((s, i) => (s.preview ? [] : [i])));
 
     const current = () => (pos >= 0 ? d.songs[queue[pos]] : undefined);
 
