@@ -2,7 +2,7 @@
 // Desktop and tablet: links + language switch in the bar.
 // Phones: the bar keeps the name and a menu button; the button opens a
 // full-screen overlay (a modal <dialog>: focus stays inside, Esc closes)
-// with home · about · resume and EN / PT-BR.
+// with home · about · playground · resume and EN / PT-BR.
 import LanguageSwitch from './LanguageSwitch.astro';
 import { href, type Locale, type RouteId } from '../i18n/config';
 import { ui } from '../i18n/ui';
@@ -15,10 +15,12 @@ const homeHref = href('home', locale);
 const menuLinks = [
   { label: n.homeShort[locale], href: homeHref, current: route === 'home' },
   { label: n.about[locale], href: href('about', locale), current: route === 'about' },
+  { label: n.playground[locale], href: href('playground', locale), current: route === 'playground' },
 ];
 const links = [
   { id: 'work', label: n.work[locale], href: `${homeHref}${homeHref.endsWith('/') ? '' : '/'}#work`, current: false },
   { id: 'about', label: n.about[locale], href: href('about', locale), current: route === 'about' },
+  { id: 'playground', label: n.playground[locale], href: href('playground', locale), current: route === 'playground' },
 ];
 ---
 

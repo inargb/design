@@ -1,0 +1,531 @@
+---
+// A working iPod classic in an overlay (a modal <dialog>), after Inaiá's
+// Framer iPod. Menus: Music (All Songs, Artists), Extras (her film photos),
+// Settings (Shuffle, Repeat, About), Shuffle Songs, Backlight and Now
+// Playing. The click wheel turns by dragging around it or scrolling; the
+// keyboard works too (arrows, Enter, Backspace, Space). Songs play through
+// a hidden YouTube player, loaded only on the first press of play.
+import { getImage } from 'astro:assets';
+import type { Locale } from '../../i18n/config';
+import { ipodContent as ip } from '../../content/playground';
+import { photos } from '../../content/photos';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const u = ip.ui;
+const pics = await Promise.all(photos.map(async (ph) => ({ src: (await getImage({ src: ph.src, width: 480, format: 'webp' })).src, alt: ph.alt[locale] })));
+const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
+---
+
+<dialog class="ipodv" aria-label={u.label[locale]} aria-describedby="ipod-help" data-ipod-dialog>
+  <button class="ipodv__close" type="button" data-ipod-close>{u.close[locale]} <span aria-hidden="true">✕</span></button>
+  <p id="ipod-help" class="visually-hidden">{u.help[locale]}</p>
+  <div class="ipod" data-ipod data-ipod-data={data}>
+    <div class="ipod__screen is-lit" data-screen>
+      <div class="ipod__bar">
+        <span class="ipod__state" data-state aria-hidden="true"></span>
+        <span class="ipod__title" data-title>iPod</span>
+        <span class="ipod__battery" aria-hidden="true"><i></i></span>
+      </div>
+      <div class="ipod__view" data-view aria-live="polite"></div>
+    </div>
+    <div class="ipod__wheel" data-wheel>
+      <button class="ipod__key ipod__key--menu" type="button" data-key="menu">MENU</button>
+      <button class="ipod__key ipod__key--prev" type="button" data-key="prev" aria-label="Previous">
+        <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M2 1v10M10 6l8-5v10zM2 6l8-5v10z" /></svg>
+      </button>
+      <button class="ipod__key ipod__key--next" type="button" data-key="next" aria-label="Next">
+        <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M18 1v10M10 6L2 1v10zM18 6l-8-5v10z" /></svg>
+      </button>
+      <button class="ipod__key ipod__key--play" type="button" data-key="play" aria-label="Play / pause">
+        <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M3 1l7 5-7 5zM13 1v10M17 1v10" /></svg>
+      </button>
+      <button class="ipod__center" type="button" data-key="select" aria-label="Select"></button>
+    </div>
+  </div>
+  <p class="ipodv__hint" aria-hidden="true">{u.hint[locale]}</p>
+</dialog>
+
+<style>
+  .ipodv {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: var(--space-6);
+    border: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+  .ipodv[open] { display: grid; place-items: center; }
+  .ipodv::backdrop { background: rgb(29 39 51 / 0.55); backdrop-filter: blur(2px); }
+  .ipodv__close {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    min-height: var(--tap-min);
+    padding: 0 var(--space-3);
+    border: 0;
+    background: none;
+    color: #fff;
+    font-family: var(--font-system);
+    font-size: var(--type-caption);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .ipodv__hint {
+    position: absolute;
+    right: var(--space-6);
+    bottom: var(--space-6);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-system);
+    font-size: var(--type-caption);
+  }
+
+  /* ---- The body --------------------------------------------------------- */
+  .ipod {
+    --ink: #22305a;
+    display: grid;
+    justify-items: center;
+    gap: 22px;
+    width: 264px;
+    padding: 20px 18px 26px;
+    border-radius: 30px;
+    background: linear-gradient(160deg, #ffffff, #eeeeec 70%, #e2e2df);
+    box-shadow: 0 1px 0 #fff inset, 0 0 0 1px rgb(0 0 0 / 0.06), 0 24px 60px -20px rgb(0 0 0 / 0.55);
+    font-family: var(--font-body);
+    user-select: none;
+    touch-action: none;
+  }
+
+  /* ---- The screen ------------------------------------------------------- */
+  .ipod__screen {
+    width: 228px;
+    height: 168px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 2px solid #a9adb4;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25) inset;
+    background:
+      repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.08) 0 1px, transparent 1px 3px),
+      linear-gradient(#c9d7ea, #b6c8e0);
+    color: var(--ink);
+    filter: brightness(0.82) saturate(0.85);
+    transition: filter 400ms ease;
+  }
+  .ipod__screen.is-lit { filter: none; background:
+      repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.12) 0 1px, transparent 1px 3px),
+      linear-gradient(#dfe9f7, #c8d8ee); }
+  .ipod__bar {
+    display: grid;
+    grid-template-columns: 22px 1fr 22px;
+    align-items: center;
+    height: 22px;
+    padding: 0 6px;
+    border-bottom: 1px solid rgb(34 48 90 / 0.35);
+    background: linear-gradient(#f4f7fb, #d4ddeb);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .ipod__title { text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ipod__state { font-size: 9px; }
+  .ipod__battery { justify-self: end; position: relative; width: 18px; height: 9px; border: 1px solid var(--ink); border-radius: 2px; }
+  .ipod__battery::after { content: ''; position: absolute; right: -3px; top: 2px; width: 2px; height: 3px; background: var(--ink); }
+  .ipod__battery i { position: absolute; inset: 1px; background: linear-gradient(#7fd36b, #3c9a2b); }
+  .ipod__view { height: calc(100% - 22px); font-size: 12.5px; }
+
+  /* Lists */
+  .ipod__view :global(ol) { list-style: none; margin: 0; padding: 0; }
+  .ipod__view :global(li) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    height: 24px;
+    padding: 0 8px;
+    white-space: nowrap;
+  }
+  .ipod__view :global(li span) { overflow: hidden; text-overflow: ellipsis; }
+  .ipod__view :global(li.is-sel) { background: linear-gradient(#5a7bd0, #2b4a9c); color: #fff; }
+  .ipod__view :global(li.is-off) { opacity: 0.45; }
+  .ipod__view :global(.chev) { flex: none; font-weight: 700; }
+
+  /* Now playing */
+  .ipod__view :global(.np) { display: grid; align-content: start; gap: 4px; height: 100%; padding: 8px 10px; text-align: center; }
+  .ipod__view :global(.np__count) { text-align: left; font-size: 11px; }
+  .ipod__view :global(.np__title) { margin-top: 10px; font-size: 12.5px; font-weight: 600; line-height: 1.25; }
+  .ipod__view :global(.np__artist) { font-size: 12px; }
+  .ipod__view :global(.np__bar) { position: relative; height: 9px; margin-top: 14px; border: 1px solid var(--ink); border-radius: 5px; overflow: hidden; background: #fff; }
+  .ipod__view :global(.np__bar i) { position: absolute; inset: 0 auto 0 0; width: var(--p, 0%); background: linear-gradient(#7f97d6, #3d5aa6); }
+  .ipod__view :global(.np__bar.is-vol i) { background: linear-gradient(#9fd08f, #4f9a3c); }
+  .ipod__view :global(.np__times) { display: flex; justify-content: space-between; font-size: 11px; font-variant-numeric: tabular-nums; }
+
+  /* About, photos */
+  .ipod__view :global(.about) { display: grid; gap: 2px; padding: 10px; font-size: 12px; }
+  .ipod__view :global(.about strong) { font-size: 13px; margin-bottom: 6px; text-align: center; }
+  .ipod__view :global(.about div) { display: flex; justify-content: space-between; }
+  .ipod__view :global(.pic) { display: grid; place-items: center; height: 100%; padding: 6px; background: #111; }
+  .ipod__view :global(.pic img) { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .ipod__view :global(.pic span) { position: absolute; }
+
+  /* ---- The click wheel ------------------------------------------------- */
+  .ipod__wheel {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 38%, #f8f8f7, #dededb 72%, #cfcfcb);
+    box-shadow: 0 1px 1px rgb(255 255 255 / 0.9) inset, 0 0 0 1px rgb(0 0 0 / 0.05);
+    cursor: grab;
+  }
+  .ipod__wheel.is-turning { cursor: grabbing; }
+  .ipod__key {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #8c8c88;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+  .ipod__key svg { width: 18px; fill: currentColor; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
+  .ipod__key--menu { top: 10px; left: 74px; }
+  .ipod__key--prev { left: 6px; top: 83px; }
+  .ipod__key--next { right: 6px; top: 83px; }
+  .ipod__key--play { bottom: 10px; left: 74px; }
+  .ipod__key:hover, .ipod__key:focus-visible { color: #4a4a47; }
+  .ipod__key:focus-visible, .ipod__center:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; border-radius: 8px; }
+  .ipod__center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 78px;
+    height: 78px;
+    translate: -50% -50%;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 35%, #ffffff, #f0f0ee 70%, #e3e3e0);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.18), 0 0 0 1px rgb(0 0 0 / 0.06);
+    cursor: pointer;
+  }
+  .ipod__center:active { box-shadow: 0 1px 2px rgb(0 0 0 / 0.2) inset; }
+  .ipod__center:focus-visible { border-radius: 50%; }
+
+  @media (max-width: 40rem) { .ipodv__hint { display: none; } }
+  @media (max-height: 34rem) { .ipod { scale: 0.85; } }
+</style>
+
+<script>
+  import { motionOn } from '../../scripts/prefs';
+
+  type Song = { id: string; title: string; artist: string };
+  type Data = { owner: string; songs: Song[]; photos: { src: string; alt: string }[] };
+  type Row = { label: string; to?: () => View; run?: () => void; chev?: boolean; off?: boolean };
+  type View =
+    | { kind: 'list'; title: string; rows: () => Row[]; sel: number; top: number }
+    | { kind: 'now' }
+    | { kind: 'about' }
+    | { kind: 'photo'; i: number };
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-ipod-dialog]');
+  const root = document.querySelector<HTMLElement>('[data-ipod]');
+  if (dialog && root) init(dialog, root);
+
+  function init(dialog: HTMLDialogElement, root: HTMLElement) {
+    const d: Data = JSON.parse(root.dataset.ipodData!);
+    const screen = root.querySelector<HTMLElement>('[data-screen]')!;
+    const view = root.querySelector<HTMLElement>('[data-view]')!;
+    const titleEl = root.querySelector<HTMLElement>('[data-title]')!;
+    const stateEl = root.querySelector<HTMLElement>('[data-state]')!;
+    const wheel = root.querySelector<HTMLElement>('[data-wheel]')!;
+    const ROWS = 6;
+    const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+    const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+    // ---- player state ----------------------------------------------------
+    let queue = d.songs.map((_, i) => i);     // play order (indexes into songs)
+    let pos = -1;                             // position in the queue
+    let playing = false;
+    let shuffle = false;
+    let repeat: 'off' | 'one' | 'all' = 'all';
+    let lit = true;
+    let volume = 70;
+    let volUntil = 0;
+    const broken = new Set<number>();         // songs YouTube won't embed
+
+    const current = () => (pos >= 0 ? d.songs[queue[pos]] : undefined);
+
+    // ---- views -------------------------------------------------------------
+    const list = (title: string, rows: () => Row[]): View => ({ kind: 'list', title, rows, sel: 0, top: 0 });
+    const songRows = (idxs: number[]): Row[] => idxs.map((i) => ({ label: d.songs[i].title, off: broken.has(i), run: () => playFrom(idxs, i) }));
+    const artists = () => [...new Set(d.songs.map((s) => s.artist))].sort((a, b) => a.localeCompare(b));
+    const allIdx = () => d.songs.map((_, i) => i);
+
+    const mainMenu = (): View => list('iPod', () => [
+      { label: 'Music', chev: true, to: () => list('Music', () => [
+        { label: 'All Songs', chev: true, to: () => list('All Songs', () => songRows(allIdx())) },
+        { label: 'Artists', chev: true, to: () => list('Artists', () => artists().map((a) => ({
+          label: a, chev: true,
+          to: () => list(a, () => songRows(allIdx().filter((i) => d.songs[i].artist === a))),
+        }))) },
+      ]) },
+      { label: 'Extras', chev: true, to: () => list('Extras', () => [
+        { label: 'Photos', chev: true, to: () => ({ kind: 'photo', i: 0 }) },
+      ]) },
+      { label: 'Settings', chev: true, to: () => list('Settings', () => [
+        { label: `Shuffle: ${shuffle ? 'On' : 'Off'}`, run: () => { shuffle = !shuffle; rebuildQueue(); } },
+        { label: `Repeat: ${repeat === 'off' ? 'Off' : repeat === 'one' ? 'One' : 'All'}`, run: () => { repeat = repeat === 'off' ? 'one' : repeat === 'one' ? 'all' : 'off'; } },
+        { label: 'About', chev: true, to: () => ({ kind: 'about' }) },
+      ]) },
+      { label: 'Shuffle Songs', run: () => { shuffle = true; rebuildQueue(true); pos = 0; load(true); push({ kind: 'now' }); } },
+      { label: 'Backlight', run: () => { lit = !lit; screen.classList.toggle('is-lit', lit); } },
+      ...(current() ? [{ label: 'Now Playing', chev: true, to: (): View => ({ kind: 'now' }) }] : []),
+    ]);
+
+    let stack: View[] = [mainMenu()];
+    const top = () => stack[stack.length - 1];
+    function push(v: View) { stack.push(v); render(); }
+    function back() { if (stack.length > 1) { stack.pop(); render(); } }
+
+    // ---- rendering -----------------------------------------------------
+    function render() {
+      const v = top();
+      stateEl.textContent = current() ? (playing ? '▶' : '❚❚') : '';
+      if (v.kind === 'list') {
+        const rows = v.rows();
+        v.sel = Math.min(v.sel, rows.length - 1);
+        if (v.sel < v.top) v.top = v.sel;
+        if (v.sel >= v.top + ROWS) v.top = v.sel - ROWS + 1;
+        titleEl.textContent = v.title;
+        view.innerHTML = `<ol>${rows.slice(v.top, v.top + ROWS).map((r, i) =>
+          `<li class="${v.top + i === v.sel ? 'is-sel' : ''}${r.off ? ' is-off' : ''}"><span>${esc(r.label)}</span>${r.chev ? '<b class="chev" aria-hidden="true">›</b>' : ''}</li>`).join('')}</ol>`;
+      } else if (v.kind === 'now') {
+        titleEl.textContent = 'Now Playing';
+        const s = current();
+        if (!s) { view.innerHTML = ''; return; }
+        const t = player?.getCurrentTime?.() ?? 0;
+        const dur = player?.getDuration?.() || 0;
+        const showVol = performance.now() < volUntil;
+        view.innerHTML = `<div class="np">
+          <p class="np__count">${pos + 1} of ${queue.length}</p>
+          <p class="np__title">${esc(s.title)}</p>
+          <p class="np__artist">${esc(s.artist)}</p>
+          <div class="np__bar${showVol ? ' is-vol' : ''}" style="--p:${showVol ? volume : dur ? (t / dur) * 100 : 0}%"><i></i></div>
+          <p class="np__times"><span>${showVol ? 'Volume' : fmt(t)}</span><span>${showVol ? `${volume}%` : dur ? `-${fmt(Math.max(0, dur - t))}` : '--:--'}</span></p>
+        </div>`;
+      } else if (v.kind === 'about') {
+        titleEl.textContent = 'About';
+        view.innerHTML = `<div class="about"><strong>${esc(d.owner)}’s iPod</strong>
+          <div><span>Songs</span><span>${d.songs.length}</span></div>
+          <div><span>Photos</span><span>${d.photos.length}</span></div>
+          <div><span>Version</span><span>1.2.1</span></div></div>`;
+      } else {
+        titleEl.textContent = `${v.i + 1} of ${d.photos.length}`;
+        const p = d.photos[v.i];
+        view.innerHTML = `<div class="pic"><img src="${p.src}" alt="${esc(p.alt)}" /></div>`;
+      }
+    }
+
+    // ---- wheel steps, select, menu ---------------------------------------
+    function step(dir: 1 | -1) {
+      const v = top();
+      if (v.kind === 'list') {
+        const n = v.rows().length;
+        v.sel = Math.max(0, Math.min(n - 1, v.sel + dir));
+      } else if (v.kind === 'now') {
+        volume = Math.max(0, Math.min(100, volume + dir * 5));
+        player?.setVolume?.(volume);
+        volUntil = performance.now() + 1500;
+      } else if (v.kind === 'photo') {
+        v.i = (v.i + dir + d.photos.length) % d.photos.length;
+      }
+      render();
+    }
+    function select() {
+      const v = top();
+      if (v.kind !== 'list') return;
+      const r = v.rows()[v.sel];
+      if (!r) return;
+      if (r.to) push(r.to());
+      else { r.run?.(); render(); }
+    }
+
+    // ---- playback (YouTube, hidden) --------------------------------------
+    type YTPlayer = {
+      loadVideoById(id: string): void; cueVideoById(id: string): void; playVideo(): void; pauseVideo(): void;
+      getCurrentTime(): number; getDuration(): number; setVolume(v: number): void; destroy(): void;
+    };
+    let player: YTPlayer | null = null;
+    let ready: Promise<void> | null = null;
+
+    function ensurePlayer(): Promise<void> {
+      if (ready) return ready;
+      ready = new Promise((resolve) => {
+        const w = window as unknown as { YT?: any; onYouTubeIframeAPIReady?: () => void };
+        const host = document.createElement('div');
+        host.setAttribute('aria-hidden', 'true');
+        host.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+        const slot = document.createElement('div');
+        host.append(slot);
+        document.body.append(host);
+        const make = () => {
+          player = new w.YT.Player(slot, {
+            host: 'https://www.youtube-nocookie.com',
+            width: 1, height: 1,
+            playerVars: { autoplay: 0, controls: 0, playsinline: 1, rel: 0, iv_load_policy: 3, fs: 0, disablekb: 1 },
+            events: {
+              onReady: () => { player!.setVolume(volume); resolve(); },
+              onStateChange: (e: { data: number }) => {
+                if (e.data === 1) { playing = true; render(); }
+                if (e.data === 2) { playing = false; render(); }
+                if (e.data === 0) ended();
+              },
+              onError: () => { broken.add(queue[pos]); advance(1, true); },
+            },
+          }) as YTPlayer;
+        };
+        if (w.YT?.Player) make();
+        else {
+          w.onYouTubeIframeAPIReady = make;
+          const s = document.createElement('script');
+          s.src = 'https://www.youtube.com/iframe_api';
+          document.head.append(s);
+        }
+      });
+      return ready;
+    }
+
+    function rebuildQueue(fresh = false) {
+      const keep = current();
+      queue = d.songs.map((_, i) => i);
+      if (shuffle) for (let i = queue.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [queue[i], queue[j]] = [queue[j], queue[i]]; }
+      if (!fresh && keep) pos = queue.indexOf(d.songs.indexOf(keep));
+    }
+    async function load(play: boolean) {
+      const s = current();
+      if (!s) return;
+      await ensurePlayer();
+      if (play) { player!.loadVideoById(s.id); playing = true; } else player!.cueVideoById(s.id);
+      render();
+    }
+    function playFrom(idxs: number[], i: number) {
+      queue = shuffle ? idxs.slice().sort(() => Math.random() - 0.5) : idxs.slice();
+      if (!shuffle) pos = queue.indexOf(i); else { queue = [i, ...queue.filter((x) => x !== i)]; pos = 0; }
+      load(true);
+      push({ kind: 'now' });
+    }
+    function advance(dir: 1 | -1, auto = false) {
+      if (pos < 0) return;
+      for (let tries = 0; tries < queue.length; tries++) {
+        let next = pos + dir;
+        if (next >= queue.length) { if (auto && repeat === 'off') { playing = false; render(); return; } next = 0; }
+        if (next < 0) next = queue.length - 1;
+        pos = next;
+        if (!broken.has(queue[pos])) break;
+      }
+      load(true);
+    }
+    function ended() {
+      if (repeat === 'one') { load(true); return; }
+      advance(1, true);
+    }
+    async function playPause() {
+      if (!current()) { pos = 0; await load(true); push({ kind: 'now' }); return; }
+      await ensurePlayer();
+      if (playing) player!.pauseVideo(); else player!.playVideo();
+      playing = !playing;
+      render();
+    }
+    function prev() {
+      // Like the real thing: a few seconds in, ⏮ restarts the song.
+      if ((player?.getCurrentTime?.() ?? 0) > 3) { load(true); return; }
+      advance(-1);
+    }
+
+    // The progress bar moves while the Now Playing screen is up.
+    window.setInterval(() => { if (dialog.open && top().kind === 'now') render(); }, 500);
+
+    // ---- input: keys on the wheel, the centre, the keyboard --------------
+    let turned = false; // a drag around the wheel shouldn't also click a key
+    root.querySelectorAll<HTMLButtonElement>('[data-key]').forEach((b) => b.addEventListener('click', () => {
+      if (turned) { turned = false; return; }
+      const k = b.dataset.key;
+      if (k === 'menu') back();
+      if (k === 'select') select();
+      if (k === 'play') playPause();
+      if (k === 'next') advance(1);
+      if (k === 'prev') prev();
+    }));
+
+    // Turning the wheel: every ~28° of drag around its centre is one step.
+    let lastAngle: number | null = null, acc = 0;
+    const angle = (e: PointerEvent) => {
+      const r = wheel.getBoundingClientRect();
+      return Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI;
+    };
+    wheel.addEventListener('pointerdown', (e) => {
+      if ((e.target as Element).closest('.ipod__center')) return;
+      lastAngle = angle(e); acc = 0; turned = false;
+      wheel.setPointerCapture(e.pointerId);
+      wheel.classList.add('is-turning');
+    });
+    wheel.addEventListener('pointermove', (e) => {
+      if (lastAngle === null) return;
+      const a = angle(e);
+      let delta = a - lastAngle;
+      if (delta > 180) delta -= 360;
+      if (delta < -180) delta += 360;
+      lastAngle = a;
+      acc += delta;
+      while (Math.abs(acc) >= 28) { step(acc > 0 ? 1 : -1); acc -= Math.sign(acc) * 28; turned = true; }
+    });
+    const release = () => { lastAngle = null; wheel.classList.remove('is-turning'); };
+    wheel.addEventListener('pointerup', release);
+    wheel.addEventListener('pointercancel', release);
+
+    // A scroll over the iPod turns the wheel too.
+    let wheelAcc = 0;
+    root.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      wheelAcc += e.deltaY;
+      while (Math.abs(wheelAcc) >= 40) { step(wheelAcc > 0 ? 1 : -1); wheelAcc -= Math.sign(wheelAcc) * 40; }
+    }, { passive: false });
+
+    dialog.addEventListener('keydown', (e) => {
+      const k = e.key;
+      if (k === 'ArrowDown') { e.preventDefault(); step(1); }
+      else if (k === 'ArrowUp') { e.preventDefault(); step(-1); }
+      else if (k === 'ArrowRight') { e.preventDefault(); advance(1); }
+      else if (k === 'ArrowLeft') { e.preventDefault(); prev(); }
+      else if (k === 'Enter' && !(e.target as Element).closest('[data-ipod-close]')) { e.preventDefault(); select(); }
+      else if (k === 'Backspace') { e.preventDefault(); back(); }
+      else if (k === ' ' && !(e.target as Element).closest('button')) { e.preventDefault(); playPause(); }
+    });
+
+    // ---- open / close ------------------------------------------------------
+    window.addEventListener('ina:shelf-open', (e) => {
+      if ((e as CustomEvent).detail?.action?.kind !== 'ipod') return;
+      stack = [mainMenu()];
+      render();
+      dialog.showModal();
+      root.querySelector<HTMLElement>('.ipod__center')!.focus({ preventScroll: true });
+    });
+    dialog.querySelector('[data-ipod-close]')!.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+    // Closing the iPod stops the music.
+    dialog.addEventListener('close', () => { if (playing) { player?.pauseVideo(); playing = false; } });
+    if (!motionOn()) screen.style.transition = 'none';
+    render();
+  }
+</script>

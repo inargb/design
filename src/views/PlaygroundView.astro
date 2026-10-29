@@ -1,0 +1,51 @@
+---
+// The playground: the shelf from inasilva.com on one screen-high page
+// (top bar, no footer). Objects open things: the camera a roll of film,
+// the iPod a working iPod, the films and magazines their pages.
+import Base from '../layouts/Base.astro';
+import Shelf from '../components/playground/Shelf.astro';
+import FilmViewer from '../components/playground/FilmViewer.astro';
+import IPod from '../components/playground/IPod.astro';
+import { href, type Locale } from '../i18n/config';
+import { playground as pg } from '../content/playground';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const other: Locale = locale === 'en' ? 'pt' : 'en';
+---
+
+<Base locale={locale} route="playground" altHref={href('playground', other)} pageId="playground" title={pg.title[locale]} description={pg.intro[locale]}>
+  <section class="pg" aria-labelledby="pg-title">
+    <header class="pg__head">
+      <h1 id="pg-title" class="pg__title t-label">{pg.title[locale]}<span class="caret" aria-hidden="true"></span></h1>
+      <p class="pg__intro">{pg.intro[locale]}</p>
+    </header>
+    <div class="pg__shelf">
+      <Shelf locale={locale} />
+    </div>
+  </section>
+  <FilmViewer locale={locale} />
+  <IPod locale={locale} />
+</Base>
+
+<style>
+  /* Only the top bar here: no footer, and on desktop the page is exactly one
+     screen high. */
+  :global(body:has(.pg) .footer) { display: none; }
+  .pg {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--space-6);
+    min-height: calc(100svh - var(--nav-height));
+    padding-block: var(--space-8);
+  }
+  .pg__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-6); }
+  .pg__title { color: var(--color-graphite-soft); }
+  .pg__intro { font-size: var(--type-body-s); color: var(--color-graphite); }
+  .pg__shelf { display: grid; align-content: center; }
+  @media (min-width: 64.0625rem) {
+    .pg { height: calc(100svh - var(--nav-height)); overflow: hidden; }
+    /* The shelf scales to fit the height left under the heading. */
+    .pg__shelf :global(.shelf) { width: min(100%, calc((100svh - var(--nav-height) - 13rem) / 0.62)); margin-inline: auto; }
+  }
+</style>

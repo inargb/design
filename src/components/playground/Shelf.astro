@@ -1,0 +1,142 @@
+---
+// The shelf: drag the objects onto it (or let "tidy up for me" do it).
+// A click, or Enter, opens an object: an overlay, a link in a new tab, or
+// its note (scripts/shelf.ts sends `ina:shelf-open`). Without JS, the
+// objects simply sit in a row next to the shelf.
+import { Image } from 'astro:assets';
+import type { Locale } from '../../i18n/config';
+import { playground as pg } from '../../content/playground';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const u = pg.ui;
+const strings = Object.fromEntries(Object.entries(u).map(([k, v]) => [k, v[locale]]));
+---
+
+<div class="shelf" data-shelf data-slots={JSON.stringify(pg.slots)} data-strings={JSON.stringify(strings)}>
+  <p id="shelf-help" class="visually-hidden">{u.help[locale]}</p>
+  <div class="shelf__stage" data-stage>
+    <Image class="shelf__img" src={pg.image} alt={pg.imageAlt[locale]} widths={[500, 1000]} sizes="(max-width: 40rem) 100vw, 40vw" data-shelf-img />
+    <div class="shelf__pile" data-pile></div>
+    <ul class="shelf__objects" role="list" aria-describedby="shelf-help">
+      {pg.objects.map((o) => (
+        <li class="shelf__item" data-id={o.id} data-size={o.size} data-home={o.home} data-pile={JSON.stringify(o.pile)} data-ratio={o.src.height / o.src.width}>
+          <button
+            type="button"
+            class="shelf__obj"
+            data-obj
+            data-action={JSON.stringify(o.action)}
+            aria-label={o.action.kind === 'link' ? `${o.name[locale]} (${u.opens[locale]})` : o.name[locale]}
+            aria-haspopup={o.action.kind === 'film' || o.action.kind === 'ipod' ? 'dialog' : undefined}
+            data-note={o.note[locale]}
+          >
+            <Image src={o.src} alt="" widths={[160, 320]} sizes="160px" draggable="false" />
+          </button>
+        </li>
+      ))}
+    </ul>
+    <p class="shelf__note" data-note-bubble aria-hidden="true"></p>
+  </div>
+  <!-- Under the pile, on the right: a word from the shelf, the lazy way out, the count. -->
+  <div class="shelf__bar">
+    <p class="shelf__say" data-say aria-live="polite"></p>
+    <button type="button" class="shelf__btn" data-tidy>{u.tidy[locale]} <span aria-hidden="true">↺</span></button>
+    <button type="button" class="shelf__btn" data-mess hidden>{u.mess[locale]} <span aria-hidden="true">↺</span></button>
+    <p class="shelf__count" aria-hidden="true"><span data-count>0</span>/{pg.objects.length}</p>
+  </div>
+  <p class="visually-hidden" aria-live="polite" data-shelf-live></p>
+</div>
+
+<style>
+  .shelf { display: grid; gap: var(--space-2); }
+  .shelf__stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: 52fr 48fr;
+    align-items: end;
+    padding-top: 13%;
+  }
+  /* The real photo: no filters, no blend modes. */
+  .shelf__img { width: 100%; height: auto; user-select: none; pointer-events: none; }
+  .shelf__pile { align-self: stretch; }
+
+  /* No-JS / pre-JS: a simple row of objects. */
+  .shelf__objects { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-4); }
+  .shelf__obj { width: 5rem; padding: 0; border: 0; background: none; touch-action: none; cursor: pointer; }
+  .shelf__obj :global(img) { width: 100%; height: auto; pointer-events: none; user-select: none; }
+
+  /* JS on: objects float over the stage, positioned by the script. */
+  .shelf.is-live .shelf__objects { position: absolute; inset: 0; margin: 0; display: block; pointer-events: none; }
+  .shelf.is-live .shelf__item { position: absolute; left: 0; top: 0; pointer-events: auto; }
+  .shelf.is-live .shelf__obj {
+    display: block;
+    width: var(--w);
+    transform: translate(var(--x), var(--y)) rotate(var(--r, 0deg));
+    transform-origin: 50% 100%;
+    transition: transform var(--duration-slow) var(--ease-settle), opacity var(--duration-settle) var(--ease-soft), filter var(--duration-quick);
+    filter: drop-shadow(2px 3px 0 rgb(29 39 51 / 0.16));
+  }
+  .shelf.is-live .shelf__obj:hover { filter: drop-shadow(3px 5px 0 rgb(29 39 51 / 0.22)); }
+  /* Arriving: already in place, invisible; then a quick fade in. */
+  .shelf.is-settling .shelf__obj { transition: none; opacity: 0; }
+  .shelf.is-live .shelf__item.is-dragging .shelf__obj { transition: none; cursor: grabbing; filter: drop-shadow(6px 10px 0 rgb(29 39 51 / 0.2)); }
+  .shelf.is-live .shelf__item.is-dragging { z-index: 10; }
+  .shelf__obj:focus-visible { outline-offset: 4px; }
+
+  .shelf__note {
+    position: absolute;
+    z-index: 20;
+    left: 0;
+    top: 0;
+    max-width: 16rem;
+    padding: var(--space-1) var(--space-2);
+    font-family: var(--font-system);
+    font-size: var(--type-caption);
+    line-height: 1.4;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    pointer-events: none;
+    opacity: 0;
+    translate: -50% -100%;
+    transition: opacity var(--duration-quick);
+  }
+  .shelf__note.is-on { opacity: 1; }
+
+  /* Under the pile, right-aligned: "tidy up for me ↺   0/9". */
+  .shelf__bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--space-6);
+    font-family: var(--font-system);
+    font-size: var(--type-caption);
+  }
+  .shelf__say { margin-right: auto; color: var(--color-graphite); }
+  .shelf__count { color: var(--color-graphite); font-variant-numeric: tabular-nums; }
+  .shelf__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    min-height: var(--tap-min);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
+  }
+  .shelf__btn:hover { color: var(--color-accent-hover); }
+  .shelf__btn span { display: inline-block; transition: rotate var(--duration-settle) var(--ease-settle); }
+  .shelf__btn:hover span { rotate: -180deg; }
+
+  @media (max-width: 40rem) {
+    .shelf__stage { grid-template-columns: 1fr; padding-top: 24%; }
+    .shelf__pile { min-height: 70vw; }
+    .shelf__bar { flex-wrap: wrap; }
+  }
+</style>
+
+<script>
+  import '../../scripts/shelf';
+</script>
