@@ -67,36 +67,40 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   )}
 
   <article class="case" hidden={sealed ? true : undefined} data-case>
-    <a class="case__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a>
-    <header class="case-hero">
-      <p class="case-hero__eyebrow t-label">{eyebrow}</p>
-      <h1 class="case-hero__title t-display">{project.title[locale]}</h1>
-      <p class="case-hero__line">{project.line[locale]}</p>
-      <dl class="case-hero__facts">
-        {facts.map((f) => (
-          <div>
-            <dt>{f.label}</dt>
-            {f.values.map((v) => <dd>{v}</dd>)}
-          </div>
-        ))}
-      </dl>
-      {study.live && (
-        <a class="case-hero__live link" href={study.live.href} target="_blank" rel="noopener">
-          {study.live.label[locale]} ↗<span class="visually-hidden"> {ui.nav.newTab[locale]}</span>
-        </a>
-      )}
-    </header>
-
-    <div class="case-cover">
-      <ProjectCover media={project.media} label={project.title[locale]} locale={locale} sizes="(max-width: 72rem) 100vw, 72rem" />
-    </div>
-
-    <!-- The index sits on the left (sticky, desktop only), the sections on the right. -->
+    <!-- As on inasilva.com: the index is a left column from the very top,
+         with the way back above it, and stays fixed while the case scrolls;
+         the header, cover and sections share the column on the right. -->
     <div class="case-body">
       <nav class="case-index" aria-label={c.contents[locale]} data-case-index>
+        <a class="case-index__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a>
         {sealed ? <div data-sealed-index></div> : <CaseIndex study={study} locale={locale} />}
       </nav>
+
       <div class="case-main">
+        <a class="case__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a>
+        <header class="case-hero">
+          <p class="case-hero__eyebrow t-label">{eyebrow}</p>
+          <h1 class="case-hero__title t-display">{project.title[locale]}</h1>
+          <p class="case-hero__line">{project.line[locale]}</p>
+          <dl class="case-hero__facts">
+            {facts.map((f) => (
+              <div>
+                <dt>{f.label}</dt>
+                {f.values.map((v) => <dd>{v}</dd>)}
+              </div>
+            ))}
+          </dl>
+          {study.live && (
+            <a class="case-hero__live link" href={study.live.href} target="_blank" rel="noopener">
+              {study.live.label[locale]} ↗<span class="visually-hidden"> {ui.nav.newTab[locale]}</span>
+            </a>
+          )}
+        </header>
+
+        <div class="case-cover">
+          <ProjectCover media={project.media} label={project.title[locale]} locale={locale} sizes="(max-width: 64rem) 100vw, 58rem" />
+        </div>
+
         {sealed ? (
           <>
             <div class="case-sealed" data-sealed-sections></div>
@@ -134,9 +138,12 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
      after unlock and keep the class names they were sealed with. */
 
   /* Header. */
-  .case__back { display: inline-flex; align-items: center; min-height: var(--tap-min); margin-top: var(--space-6); font-family: var(--font-system); font-size: var(--type-caption); letter-spacing: 0.04em; color: var(--color-graphite-soft); text-decoration: none; }
-  .case__back:hover { color: var(--color-ink); }
-  .case-hero { display: grid; justify-items: start; gap: var(--space-4); padding-block: var(--space-8) var(--space-12); }
+  /* The way back: in the index column on desktop, above the header below it. */
+  .case__back, .case-index__back { display: inline-flex; align-items: center; min-height: var(--tap-min); font-family: var(--font-system); font-size: var(--type-caption); letter-spacing: 0.04em; color: var(--color-graphite-soft); text-decoration: none; }
+  .case__back:hover, .case-index__back:hover { color: var(--color-ink); }
+  .case__back { margin-top: var(--space-6); }
+  @media (min-width: 64.0625rem) { .case__back { display: none; } }
+  .case-hero { display: grid; justify-items: start; gap: var(--space-4); padding-block: var(--space-6) var(--space-12); }
   .case-hero__eyebrow { color: var(--color-graphite-soft); }
   .case-hero__title { max-width: 22ch; font-size: var(--type-heading-xl); }
   .case-hero__line {
@@ -167,11 +174,12 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   .case-cover { --cover-ratio: 16 / 9; overflow: hidden; margin-bottom: var(--space-16); border: var(--rule-hair); border-radius: var(--radius-soft); }
   @media (max-width: 40rem) { .case-cover { --cover-ratio: 4 / 3; } }
 
-  /* Body: index on the left (sticky), sections on the right; one column
-     below desktop, without the index. */
-  .case-body { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--space-12); }
+  /* Body: the index on the left, fixed from the top of the page as the case
+     scrolls (sticky); everything else on the right. One column below
+     desktop, without the index. */
+  .case-body { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--space-12); padding-top: var(--space-8); }
   .case-main { min-width: 0; }
-  .case-index { position: sticky; top: calc(var(--nav-height) + var(--space-8)); align-self: start; }
+  .case-index { position: sticky; top: calc(var(--nav-height) + var(--space-8)); align-self: start; display: grid; gap: var(--space-4); }
   @media (max-width: 64rem) {
     .case-body { grid-template-columns: 1fr; gap: 0; }
     .case-index { display: none; }
@@ -193,15 +201,7 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   .case-index__no { flex: none; width: 1.5em; color: var(--color-graphite-soft); font-variant-numeric: tabular-nums; }
   .case-index a[aria-current='true'] { color: var(--color-accent); }
   .case-index a[aria-current='true'] .case-index__no { color: var(--color-accent); }
-  .case-index a[aria-current='true']::before {
-    content: '';
-    position: absolute;
-    left: calc(-1 * var(--space-4));
-    top: 0.85em;
-    width: 5px;
-    height: 5px;
-    background: currentColor;
-  }
+  .case-index a[aria-current='true']::before { content: '▸'; position: absolute; left: -1.1em; }
 
   /* Sections. */
   .case-sec { padding-block: var(--space-12) var(--space-16); border-top: var(--rule-hair); scroll-margin-top: var(--nav-height); }
