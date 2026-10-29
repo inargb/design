@@ -4,7 +4,8 @@ A quieter, more senior take on [inasilva.com](https://inasilva.com) (source:
 `inargb/portfolio`). Same cases, About page, copy and links; a new layout:
 off-white paper, slate ink, IBM Plex Mono for headings and labels, Inter for
 reading, the top bar from inasilva.com (same type, order and EN/PT switch, in
-capitals) and one centred content column.
+capitals) and one centred content column. Projects sit in two columns that don't line up
+(covers change shape card to card), each captioned only name / context · year.
 The headline keeps the interactive word "frames" (Figma frame, film frame,
 frames per second), project cards keep the viewfinder cursor, and the footer
 keeps spec mode (the ruler, or press S); the doodles, film reel and other

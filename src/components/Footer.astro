@@ -8,10 +8,10 @@ const { locale } = Astro.props;
 const f = ui.footer;
 const c = ui.controls;
 const links = [
-  { label: 'linkedin', href: site.links.linkedin },
-  { label: 'instagram', href: site.links.instagram },
-  { label: ui.nav.resume[locale].toLowerCase(), href: site.links.resume[locale] },
-  { label: 'design', href: site.links.design },
+  { label: 'LinkedIn', href: site.links.linkedin },
+  { label: 'Instagram', href: site.links.instagram },
+  { label: ui.nav.resume[locale], href: site.links.resume[locale] },
+  { label: 'Design', href: site.links.design },
 ];
 ---
 
@@ -74,7 +74,7 @@ const links = [
     align-items: baseline;
     flex-wrap: wrap;
   }
-  .footer__links { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); }
+  .footer__links { display: flex; flex-wrap: wrap; gap: 0 var(--space-8); }
   .footer__link {
     display: inline-flex;
     align-items: center;

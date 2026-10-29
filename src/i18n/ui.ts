@@ -24,7 +24,7 @@ export const ui = {
 
   footer: {
     signature: { en: 'designed by me <3', pt: 'design feito por mim <3' },
-    greeting: { en: 'nice to meet you', pt: 'prazer em te conhecer' },
+    greeting: { en: 'Nice to meet you', pt: 'Prazer em te conhecer' },
     elsewhere: { en: 'elsewhere', pt: 'por aí' },
   },
 
