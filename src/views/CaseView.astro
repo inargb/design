@@ -276,10 +276,14 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   .lightbox__close:hover { color: var(--color-ink); }
 
   /* The gate: where the case would be, a short note and a password field. */
-  .gate { display: grid; align-content: start; gap: var(--space-12); padding-block: var(--space-6) var(--space-24); }
+  /* The gate is the whole page, as on inasilva.com: no site header or
+     footer, only the way back at the top and the note in the middle. Both
+     return once the case opens (the gate is removed). */
+  body:has(.gate) :is(.nav, .footer) { display: none; }
+  .gate { position: relative; display: grid; place-items: center; min-height: 100svh; padding-block: var(--space-24); }
+  .gate__top { position: absolute; top: var(--space-6); left: 0; }
   .gate__back { justify-self: start; display: inline-flex; align-items: center; min-height: var(--tap-min); font-size: var(--type-nav); color: var(--color-graphite-soft); text-decoration: none; }
   .gate__back:hover { color: var(--color-ink); }
-  .gate__top { display: flex; }
   .gate__card { display: grid; justify-items: start; gap: var(--space-4); max-width: 34rem; }
   /* Already opened in this tab: skip straight to the case, no flash of the form. */
   .gate.is-resuming .gate__card { display: none; }
