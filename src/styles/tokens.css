@@ -15,8 +15,8 @@
   --color-graphite: #4b5563;       /* secondary text · 7:1                  */
   --color-graphite-soft: #5f6773;  /* muted text · 5:1 (AA on paper-shade)  */
   --color-rule: #dcdcd6;           /* hairlines, never text                 */
-  --color-highlight: #f3cf1c;      /* marker yellow: language switch, selection */
-  --color-on-highlight: #1d2733;   /* text on highlight · 11:1              */
+  --color-highlight: #2447d6;      /* marker blue: language switch, selection */
+  --color-on-highlight: #ffffff;   /* text on highlight · 7.1:1             */
   --color-accent: #2447d6;         /* current nav item, links, focus · 6.6:1 */
   --color-accent-hover: #1f3db8;   /* hover / pressed · 8:1                 */
   --color-accent-tint: #e9edfb;    /* selected backgrounds only             */
