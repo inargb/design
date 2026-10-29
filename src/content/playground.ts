@@ -77,37 +77,39 @@ export const playground = {
 };
 
 // ---- The iPod --------------------------------------------------------------
-// Inaiá's 18 songs, as on her Framer iPod (inassilva.framer.website/about).
+// Inaiá's 18 songs (mostly those on her Framer iPod).
 // The iPod plays Apple Music's official 30-second previews (`preview`, from
 // the iTunes Search API: no ads, nothing hosted here) and links to the full
 // song on Spotify. A song without a preview is greyed out and skipped.
+// To add a song: its Spotify track id, title, artist, and the iTunes
+// Search API `previewUrl` (itunes.apple.com/search?term=…&entity=song).
 export interface Song { title: string; artist: string; preview?: string; spotify: string }
 
-const spotify = (title: string, artist: string) =>
-  `https://open.spotify.com/search/${encodeURIComponent(`${title} ${artist}`)}`;
-const song = (title: string, artist: string, preview?: string): Song => ({ title, artist, preview, spotify: spotify(title, artist) });
+// Each song links to its own track on Spotify (open.spotify.com/track/<id>).
+const song = (spotifyId: string, title: string, artist: string, preview?: string): Song =>
+  ({ title, artist, preview, spotify: `https://open.spotify.com/track/${spotifyId}` });
 
 export const ipodContent = {
   owner: 'inaia_',
   songs: [
-    song('Sweet Life', 'Frank Ocean'), // no Apple preview found
-    song('Rain Drop', 'NCT 127', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e4/5c/f4/e45cf40c-78c0-fd03-c3c5-69fb259290c4/mzaf_17432267585482174066.plus.aac.p.m4a'),
-    song('Don’t Look Back In Anger', 'Oasis', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/32/95/6d/32956de7-66cf-a0ee-3e22-7719fcb113c8/mzaf_8671835566530470258.plus.aac.p.m4a'),
-    song('Seven Nation Army', 'The White Stripes', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fe/2d/58/fe2d587f-6344-3fb3-43f7-d318a6253dcc/mzaf_16825320951570507954.plus.aac.p.m4a'),
-    song('Camera Lights', 'HAECHAN', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7b/d5/69/7bd569c5-317c-67b3-2e8c-7a7a4259b11a/mzaf_3395718680272436086.plus.aac.p.m4a'),
-    song('Human', 'The Killers', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/09/ed/cf/09edcf94-420e-2e75-c51f-259a9d4fb257/mzaf_7821723296315451145.plus.aac.p.m4a'),
-    song('P.Y.T. (Pretty Young Thing)', 'Michael Jackson', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/32/b2/70/32b270f9-c07a-dfc3-0516-921a4b3932d0/mzaf_15483315381309393545.plus.aac.p.m4a'),
-    song('BIRDS', 'Turnstile', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7d/dd/1b/7ddd1ba3-a13e-4326-8e73-71310ff0b321/mzaf_1706933049560492064.plus.aac.p.m4a'),
-    song('Be My Own Boyfriend', 'Olivia Dean'), // no Apple preview found
-    song('Can I Call You Rose', 'Thee Sacred Souls', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/86/07/2a/86072a8a-a8c8-09d6-3505-5399dfab12e4/mzaf_15704289805936940876.plus.aac.p.m4a'),
-    song('Chega de Saudade', 'João Gilberto', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e9/34/fb/e934fbad-dbba-4ab7-01e9-090f7a6829a4/mzaf_4167164513099182753.plus.aac.p.m4a'),
-    song('There Is a Light That Never Goes Out', 'The Smiths', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/4e/c9/1d/4ec91df8-8524-b6ac-812c-fb38054be09d/mzaf_3253228293752173874.plus.aac.p.m4a'),
-    song('White Ferrari', 'Frank Ocean', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b6/94/4d/b6944d5f-b66c-ef53-6fd5-8f0aaa92846c/mzaf_16355860049074950110.plus.aac.p.m4a'),
-    song('poppop', 'NCT WISH', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f5/69/f4/f569f4e0-eb15-9ec8-2ad2-f38036ced93b/mzaf_11568841897585187862.plus.aac.p.m4a'),
-    song('Love Love', 'Gilsons', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/52/41/de/5241def9-1a9b-a9be-8978-19bf028e677d/mzaf_14738843196800230461.plus.aac.p.m4a'),
-    song('Supernatural', 'NewJeans', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/41/ce/f9/41cef96a-6b48-2ddd-72a8-f479e7a1c752/mzaf_5570335600994446876.plus.aac.p.m4a'),
-    song('Emperor’s New Clothes', 'Panic! At The Disco', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/59/16/45/591645f1-bb64-6a3c-baed-38ffdb730c0d/mzaf_12028274114546274041.plus.aac.p.m4a'),
-    song('Oblivion', 'Mac Miller'), // no Apple preview found
+    song('3OM6qQmdFV6uy61GIqpRtf', 'AMAZING', 'Rex Orange County', /*PREV:AMAZING*/),
+    song('4xDjeOpTMV3CkhrPrFXhVQ', 'Rain Drop', 'NCT 127', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e4/5c/f4/e45cf40c-78c0-fd03-c3c5-69fb259290c4/mzaf_17432267585482174066.plus.aac.p.m4a'),
+    song('0UvCh63URrLFcPkKt99hHd', 'Don’t Look Back In Anger', 'Oasis', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/32/95/6d/32956de7-66cf-a0ee-3e22-7719fcb113c8/mzaf_8671835566530470258.plus.aac.p.m4a'),
+    song('3dPQuX8Gs42Y7b454ybpMR', 'Seven Nation Army', 'The White Stripes', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fe/2d/58/fe2d587f-6344-3fb3-43f7-d318a6253dcc/mzaf_16825320951570507954.plus.aac.p.m4a'),
+    song('201nq7iIM3amZvwqkAU9U6', 'Camera Lights', 'HAECHAN', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7b/d5/69/7bd569c5-317c-67b3-2e8c-7a7a4259b11a/mzaf_3395718680272436086.plus.aac.p.m4a'),
+    song('1sTsuZTdANkiFd7T34H3nb', 'Human', 'The Killers', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/09/ed/cf/09edcf94-420e-2e75-c51f-259a9d4fb257/mzaf_7821723296315451145.plus.aac.p.m4a'),
+    song('1CgmY8fVN7kstVDZmsdM5k', 'P.Y.T. (Pretty Young Thing)', 'Michael Jackson', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/32/b2/70/32b270f9-c07a-dfc3-0516-921a4b3932d0/mzaf_15483315381309393545.plus.aac.p.m4a'),
+    song('0kshHISCRGn9MwpkbqafG4', 'BIRDS', 'Turnstile', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7d/dd/1b/7ddd1ba3-a13e-4326-8e73-71310ff0b321/mzaf_1706933049560492064.plus.aac.p.m4a'),
+    song('1qbmS6ep2hbBRaEZFpn7BX', 'The Man I Need', 'Olivia Dean', /*PREV:The Man I Need*/),
+    song('6IAuH3hgTRpUUdmOGubXGS', 'Can I Call You Rose', 'Thee Sacred Souls', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/86/07/2a/86072a8a-a8c8-09d6-3505-5399dfab12e4/mzaf_15704289805936940876.plus.aac.p.m4a'),
+    song('380KZqSJVBziAQrvx7rdGW', 'Chega de Saudade', 'João Gilberto', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e9/34/fb/e934fbad-dbba-4ab7-01e9-090f7a6829a4/mzaf_4167164513099182753.plus.aac.p.m4a'),
+    song('0WQiDwKJclirSYG9v5tayI', 'There Is a Light That Never Goes Out', 'The Smiths', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/4e/c9/1d/4ec91df8-8524-b6ac-812c-fb38054be09d/mzaf_3253228293752173874.plus.aac.p.m4a'),
+    song('2LMkwUfqC6S6s6qDVlEuzV', 'White Ferrari', 'Frank Ocean', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b6/94/4d/b6944d5f-b66c-ef53-6fd5-8f0aaa92846c/mzaf_16355860049074950110.plus.aac.p.m4a'),
+    song('1Y3Z8ZgjFse47Nt2ZR4EFU', 'poppop', 'NCT WISH', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/f5/69/f4/f569f4e0-eb15-9ec8-2ad2-f38036ced93b/mzaf_11568841897585187862.plus.aac.p.m4a'),
+    song('7nSataGo54Le0IfcFQCFLN', 'Love Love', 'Gilsons', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/52/41/de/5241def9-1a9b-a9be-8978-19bf028e677d/mzaf_14738843196800230461.plus.aac.p.m4a'),
+    song('5ocSQW5sIUIOFojwXEz9Ki', 'Supernatural', 'NewJeans', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/41/ce/f9/41cef96a-6b48-2ddd-72a8-f479e7a1c752/mzaf_5570335600994446876.plus.aac.p.m4a'),
+    song('3px2rAPu74ltbkf9eZsZ8h', 'Emperor’s New Clothes', 'Panic! At The Disco', 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/59/16/45/591645f1-bb64-6a3c-baed-38ffdb730c0d/mzaf_12028274114546274041.plus.aac.p.m4a'),
+    song('5bJ1DrEM4hNCafcDd1oxHx', 'Self Care', 'Mac Miller', /*PREV:Self Care*/),
   ] as Song[],
   ui: {
     label: l('iPod', 'iPod'),
