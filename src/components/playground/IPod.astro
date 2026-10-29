@@ -341,8 +341,9 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
     function step(dir: 1 | -1) {
       const v = top();
       if (v.kind === 'list') {
+        // Lists wrap around: past the last option comes the first, and back.
         const n = v.rows().length;
-        v.sel = Math.max(0, Math.min(n - 1, v.sel + dir));
+        if (n) v.sel = (v.sel + dir + n) % n;
       } else if (v.kind === 'now') {
         volume = Math.max(0, Math.min(100, volume + dir * 5));
         player?.setVolume?.(volume);
