@@ -15,8 +15,8 @@
   --color-graphite: #4b5563;       /* secondary text · 7:1                  */
   --color-graphite-soft: #5f6773;  /* muted text · 5:1 (AA on paper-shade)  */
   --color-rule: #dcdcd6;           /* hairlines, never text                 */
-  --color-highlight: #e6ebfb;      /* text selection                        */
-  --color-on-highlight: #1d2733;
+  --color-highlight: #f3cf1c;      /* marker yellow: language switch, selection */
+  --color-on-highlight: #1d2733;   /* text on highlight · 11:1              */
   --color-accent: #2447d6;         /* current nav item, links, focus · 6.6:1 */
   --color-accent-hover: #1f3db8;   /* hover / pressed · 8:1                 */
   --color-accent-tint: #e9edfb;    /* selected backgrounds only             */
@@ -79,14 +79,12 @@
   --space-32: 8rem;
 
   /* ---- Layout ------------------------------------------------------------ */
-  /* Desktop: a narrow sidebar (name, nav) and one content column. */
-  --layout-side: 13rem;                         /* sidebar column          */
-  --layout-max: 60rem;                          /* content column          */
+  --layout-max: 72rem;                          /* page column             */
   --layout-text: 38rem;                         /* comfortable measure     */
-  --layout-gutter: clamp(1rem, 0.4rem + 2.4vw, 2rem); /* 16px on phones    */
+  --layout-gutter: clamp(1rem, 0.4rem + 3vw, 3rem); /* 16px on phones      */
   --layout-gap: clamp(1rem, 0.6rem + 1vw, 1.5rem);
   --section-space: clamp(4rem, 2.5rem + 6vw, 8rem);
-  --nav-height: 4.5rem;
+  --nav-height: 3.5rem;
   --tap-min: 2.75rem;                           /* 44px touch targets      */
 
   /* ---- Radius ------------------------------------------------------------- */

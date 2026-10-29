@@ -1,116 +1,235 @@
 ---
-// The site's navigation, in two places:
-//   desktop (> 64rem) → name top-left, language top-right, and the links in a
-//                       sticky sidebar. A page can put its own content in the
-//                       sidebar instead (a case shows its index there).
-//   tablet + phone     → one header row: name, links and language.
-// The current page gets the accent colour and a small square in front.
+// Desktop and tablet: links + language switch in the bar.
+// Phones: the bar keeps the name and a menu button; the button opens a
+// full-screen overlay (a modal <dialog>: focus stays inside, Esc closes)
+// with home · about · resume and EN / PT-BR.
 import LanguageSwitch from './LanguageSwitch.astro';
 import { href, type Locale, type RouteId } from '../i18n/config';
 import { ui } from '../i18n/ui';
 import { site } from '../content/site';
 
-interface Props { locale: Locale; route?: RouteId | 'case'; altHref: string; hasAside?: boolean; }
-const { locale, route, altHref, hasAside = false } = Astro.props;
+interface Props { locale: Locale; route?: RouteId | 'case'; altHref: string; }
+const { locale, route, altHref } = Astro.props;
 const n = ui.nav;
 const homeHref = href('home', locale);
-const workHref = `${homeHref}${homeHref.endsWith('/') ? '' : '/'}#work`;
-type Current = 'page' | 'true' | undefined;
-const links: { label: string; href: string; current: Current }[] = [
-  { label: n.work[locale], href: workHref, current: route === 'home' ? 'page' : route === 'case' ? 'true' : undefined },
-  { label: n.about[locale], href: href('about', locale), current: route === 'about' ? 'page' : undefined },
+const menuLinks = [
+  { label: n.homeShort[locale], href: homeHref, current: route === 'home' },
+  { label: n.about[locale], href: href('about', locale), current: route === 'about' },
+];
+const links = [
+  { id: 'work', label: n.work[locale], href: `${homeHref}${homeHref.endsWith('/') ? '' : '/'}#work`, current: false },
+  { id: 'about', label: n.about[locale], href: href('about', locale), current: route === 'about' },
 ];
 ---
 
-<header class="site-header">
-  <a class="site-header__name" href={homeHref} aria-label={n.home[locale]}>{site.name}</a>
+<header class="nav">
+  <div class="nav__inner container">
+    <a class="nav__mark t-nav" href={homeHref} aria-label={n.home[locale]}>
+      <span aria-hidden="true">inaiá silva</span>
+    </a>
 
-  <nav class="site-header__nav" aria-label={n.label[locale]}>
-    <ul role="list">
-      {links.map((l) => <li><a class="nav-link" href={l.href} aria-current={l.current}>{l.label}</a></li>)}
+    <nav class="nav__links" aria-label={n.label[locale]}>
+      <ul role="list">
+        {links.map((l) => (
+          <li>
+            <a class="nav__link t-nav" href={l.href} aria-current={l.current ? 'page' : undefined}>
+              {l.label}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a class="nav__link t-nav" href={site.links.resume[locale]} target="_blank" rel="noopener">
+            {n.resume[locale]}<span aria-hidden="true"> ↗</span>
+            <span class="visually-hidden">{n.newTab[locale]}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="nav__tools">
+      <LanguageSwitch locale={locale} altHref={altHref} />
+    </div>
+
+    <button class="nav__burger" type="button" aria-label={n.menuOpen[locale]} aria-haspopup="dialog" aria-expanded="false" data-menu-open>
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<dialog class="menu" aria-label={n.label[locale]} data-menu>
+  <div class="menu__top container">
+    <button class="menu__close" type="button" aria-label={n.menuClose[locale]} data-menu-close>
+      <span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+  </div>
+  <nav class="menu__body" aria-label={n.label[locale]}>
+    <ul class="menu__links" role="list">
+      {menuLinks.map((l) => (
+        <li><a class="menu__link" href={l.href} aria-current={l.current ? 'page' : undefined}>{l.label}</a></li>
+      ))}
       <li>
-        <a class="nav-link" href={site.links.resume[locale]} target="_blank" rel="noopener">
-          {n.resume[locale]}<span aria-hidden="true">&thinsp;↗</span><span class="visually-hidden"> {n.newTab[locale]}</span>
+        <a class="menu__link" href={site.links.resume[locale]} target="_blank" rel="noopener">
+          {n.resume[locale]}<span aria-hidden="true">↗</span><span class="visually-hidden"> {n.newTab[locale]}</span>
         </a>
       </li>
     </ul>
+    <p class="menu__lang" aria-label={ui.lang.label[locale]}>
+      {locale === 'en'
+        ? <><span class="menu__lang-on" aria-current="true">EN</span><span aria-hidden="true">/</span><a href={altHref} hreflang="pt-BR" lang="pt-BR" aria-label={ui.lang.switchTo[locale]}>PT-BR</a></>
+        : <><a href={altHref} hreflang="en" lang="en" aria-label={ui.lang.switchTo[locale]}>EN</a><span aria-hidden="true">/</span><span class="menu__lang-on" aria-current="true">PT-BR</span></>}
+    </p>
   </nav>
+</dialog>
 
-  <LanguageSwitch locale={locale} altHref={altHref} />
-</header>
-
-<aside class="site-side">
-  <div class="site-side__inner">
-    {hasAside ? <slot /> : (
-      <nav aria-label={n.label[locale]}>
-        <ul class="site-side__links" role="list">
-          {links.map((l) => <li><a class="nav-link" href={l.href} aria-current={l.current}>{l.label}</a></li>)}
-          <li>
-            <a class="nav-link" href={site.links.resume[locale]} target="_blank" rel="noopener">
-              {n.resume[locale]}<span aria-hidden="true">&thinsp;↗</span><span class="visually-hidden"> {n.newTab[locale]}</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    )}
-  </div>
-</aside>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-menu]');
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  if (dialog && openBtn) {
+    const set = (open: boolean) => openBtn.setAttribute('aria-expanded', String(open));
+    openBtn.addEventListener('click', () => { dialog.showModal(); set(true); });
+    dialog.querySelector('[data-menu-close]')!.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => { set(false); openBtn.focus(); });
+    // The current page's link just closes the menu.
+    dialog.querySelectorAll<HTMLAnchorElement>('a[aria-current="page"]').forEach((a) =>
+      a.addEventListener('click', (e) => { e.preventDefault(); dialog.close(); }));
+    // Grown past the phone breakpoint while open → close it.
+    const mq = window.matchMedia('(min-width: 40.0625rem)');
+    mq.addEventListener('change', () => { if (mq.matches && dialog.open) dialog.close(); });
+  }
+</script>
 
 <style>
-  .site-header {
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--color-paper) 92%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: var(--rule-hair);
+    transition: background-color var(--duration-slow) var(--ease-soft);
+  }
+  .nav__inner {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-6);
     min-height: var(--nav-height);
-    border-bottom: var(--rule-hair);
   }
-  .site-header__name {
+  /* Same type as the bar on inasilva.com, in capitals. */
+  .nav { font-family: var(--font-system); }
+  .nav :is(.nav__mark, .nav__link), .menu :is(.menu__link, .menu__lang) { text-transform: uppercase; letter-spacing: 0.06em; }
+  .nav__mark, .nav__link { font-size: 0.8125rem; }
+  .nav__mark {
     display: inline-flex;
     align-items: center;
     min-height: var(--tap-min);
     margin-right: auto;
-    font-size: var(--type-nav);
-    font-weight: 500;
     color: var(--color-ink);
     text-decoration: none;
+    font-weight: 500;
   }
-  .site-header__nav ul { display: flex; gap: var(--space-4); }
-
-  .nav-link {
+  .nav__links ul { display: flex; gap: var(--space-1); }
+  .nav__link {
     position: relative;
     display: inline-flex;
     align-items: center;
     min-height: var(--tap-min);
-    font-size: var(--type-nav);
-    color: var(--color-graphite-soft);
+    padding-inline: var(--space-3);
+    color: var(--color-graphite);
     text-decoration: none;
     transition: color var(--duration-quick) var(--ease-soft);
   }
-  .nav-link:hover { color: var(--color-ink); }
-  .nav-link[aria-current] { color: var(--color-accent); }
+  /* A crop mark appears under the hovered / current link. */
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: 0.7rem;
+    height: 1px;
+    background: currentColor;
+    scale: 0 1;
+    transform-origin: left;
+    transition: scale var(--duration-settle) var(--ease-settle);
+  }
+  .nav__link:hover, .nav__link[aria-current='page'] { color: var(--color-ink); }
+  .nav__link:hover::after, .nav__link[aria-current='page']::after { scale: 1 1; }
+  .nav__tools { display: flex; align-items: center; gap: var(--space-2); }
 
-  .site-side { display: none; }
+  /* Menu button: three lines, only on phones. */
+  .nav__burger, .menu__close {
+    position: relative;
+    display: none;
+    width: var(--tap-min);
+    height: var(--tap-min);
+    margin-right: calc(-1 * var(--space-2));
+    border: 0;
+    background: none;
+    color: var(--color-ink);
+  }
+  .nav__burger span, .menu__close span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1.5rem;
+    height: 2px;
+    background: currentColor;
+    translate: -50% -50%;
+  }
+  .nav__burger span:nth-child(1) { margin-top: -7px; }
+  .nav__burger span:nth-child(3) { margin-top: 7px; }
+  .menu__close span:nth-child(1) { rotate: 45deg; }
+  .menu__close span:nth-child(2) { rotate: -45deg; }
 
-  @media (min-width: 64.0625rem) {
-    .site-header { border-bottom: 0; }
-    .site-header__nav { display: none; }
-    .site-side { display: block; }
-    .site-side__inner {
-      position: sticky;
-      top: var(--space-8);
-      padding-top: var(--space-24);
-    }
-    .site-side__links { display: grid; }
-    .site-side__links .nav-link { min-height: 2rem; }
-    .site-side__links .nav-link[aria-current]::before {
-      content: '';
-      position: absolute;
-      left: calc(-1 * var(--space-4));
-      top: 50%;
-      width: 5px;
-      height: 5px;
-      translate: 0 -50%;
-      background: currentColor;
-    }
+  /* The overlay: the whole screen, links centred. */
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0 0 env(safe-area-inset-bottom);
+    border: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+  .menu[open] { display: grid; grid-template-rows: auto 1fr; }
+  .menu::backdrop { background: var(--color-paper); }
+  .menu__top { display: flex; justify-content: flex-end; align-items: center; min-height: var(--nav-height); }
+  .menu__close { display: block; }
+  .menu__body { display: grid; align-content: center; justify-items: center; gap: var(--space-12); padding-bottom: var(--nav-height); }
+  .menu__links { display: grid; justify-items: center; gap: var(--space-4); }
+  .menu__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15em;
+    min-height: var(--tap-min);
+    padding-inline: var(--space-3);
+    font-family: var(--font-system);
+    font-size: 1.375rem;
+    letter-spacing: 0.02em;
+    color: var(--color-graphite);
+    text-decoration: none;
+  }
+  .menu__link:hover { color: var(--color-ink); }
+  .menu__link[aria-current='page'] { color: var(--color-graphite-soft); opacity: 0.7; }
+  .menu__lang {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-system);
+    font-size: 0.9375rem;
+    letter-spacing: 0.08em;
+    color: var(--color-graphite-soft);
+  }
+  .menu__lang a { display: inline-flex; align-items: center; min-height: var(--tap-min); padding-inline: var(--space-1); color: var(--color-graphite-soft); text-decoration: none; }
+  .menu__lang a:hover { color: var(--color-ink); }
+  .menu__lang-on { color: var(--color-ink); font-weight: 500; padding-inline: var(--space-1); }
+  .menu[open] .menu__body { animation: menu-in var(--duration-settle) var(--ease-settle); }
+  @keyframes menu-in { from { opacity: 0; translate: 0 0.5rem; } }
+
+  /* Phones: the bar keeps the name and the menu button. */
+  @media (max-width: 40rem) {
+    .nav__links, .nav__tools { display: none; }
+    .nav__burger { display: block; }
   }
 </style>

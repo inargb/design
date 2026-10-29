@@ -10,12 +10,16 @@ export const ui = {
     about: { en: 'About', pt: 'Sobre' },
     resume: { en: 'Resume', pt: 'Currículo' },
     home: { en: 'Inaiá Silva, home', pt: 'Inaiá Silva, início' },
+    homeShort: { en: 'Home', pt: 'Início' },
+    menuOpen: { en: 'Open menu', pt: 'Abrir menu' },
+    menuClose: { en: 'Close menu', pt: 'Fechar menu' },
     newTab: { en: '(opens in a new tab)', pt: '(abre em outra aba)' },
   },
 
   lang: {
     label: { en: 'Language', pt: 'Idioma' },
     switchTo: { en: 'Ler em português', pt: 'Read in English' },
+    current: { en: 'English', pt: 'Português' },
   },
 
   footer: {

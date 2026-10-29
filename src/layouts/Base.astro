@@ -29,8 +29,6 @@ const root = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const fullTitle = title ? `${title} · ${site.name}` : site.title[locale];
 const desc = description ?? site.description[locale];
 const canonical = new URL(Astro.url.pathname, Astro.site);
-// Pages can replace the sidebar navigation (a case shows its own index there).
-const hasAside = Astro.slots.has('aside');
 ---
 
 <!doctype html>
@@ -60,11 +58,9 @@ const hasAside = Astro.slots.has('aside');
   </head>
   <body>
     <a class="skip-link" href="#main">{ui.skip[locale]}</a>
-    <div class="shell">
-      <Nav locale={locale} route={route} altHref={altHref} hasAside={hasAside}>
-        <slot name="aside" />
-      </Nav>
-      <main id="main" class="shell__main" tabindex="-1">
+    <Nav locale={locale} route={route} altHref={altHref} />
+    <div class="page container">
+      <main id="main" class="page__main" tabindex="-1">
         <slot />
       </main>
       <Footer locale={locale} />
@@ -77,25 +73,6 @@ const hasAside = Astro.slots.has('aside');
 </html>
 
 <style is:global>
-  /* The page: a header row (name, language), a narrow sidebar (navigation, or
-     a case's index) and one content column. Phones and tablets: one column,
-     with the navigation in the header. */
-  .shell {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    padding-inline: var(--layout-gutter);
-  }
-  .shell__main { min-width: 0; outline: none; }
-
-  @media (min-width: 64.0625rem) {
-    .shell {
-      grid-template-columns: var(--layout-side) minmax(0, var(--layout-max)) minmax(0, 1fr);
-      grid-template-rows: auto 1fr auto;
-      column-gap: var(--space-12);
-    }
-    .shell > .site-header { grid-column: 1 / -1; grid-row: 1; }
-    .shell > .site-side { grid-column: 1; grid-row: 2 / span 2; }
-    .shell__main { grid-column: 2; grid-row: 2; }
-    .shell > .footer { grid-column: 2; grid-row: 3; }
-  }
+  /* The page: the top bar, then one centred column (content, footer). */
+  .page__main { outline: none; }
 </style>

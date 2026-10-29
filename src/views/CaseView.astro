@@ -50,9 +50,9 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   {sealed && (
     <section class="gate" data-gate data-slug={project.slug} data-payload={payload} aria-labelledby="gate-title">
       <script is:inline>(function(g){try{if(sessionStorage.getItem('ina:gate:'+g.dataset.slug))g.classList.add('is-resuming')}catch(e){}})(document.currentScript.parentElement)</script>
-      <div class="gate__top container"><a class="gate__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a></div>
+      <div class="gate__top"><a class="gate__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a></div>
       <div class="gate__card">
-                <p class="gate__label t-label">{g.label[locale]} · {project.title[locale]}</p>
+        <p class="gate__label t-label">{g.label[locale]} · {project.title[locale]}</p>
         <h1 id="gate-title" class="t-heading-xl">{g.title[locale]}</h1>
         <p class="gate__body">{g.body[locale]} <a class="link" href={site.links.linkedin} target="_blank" rel="noopener">{g.ask[locale]} ↗</a></p>
         <form class="gate__form" data-gate-form>
@@ -66,13 +66,8 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
     </section>
   )}
 
-  <!-- Desktop: the case's index takes the place of the site navigation. -->
-  <nav class="case-index" slot="aside" aria-label={c.contents[locale]} hidden={sealed ? true : undefined} data-case-index data-case>
-    <a class="case-index__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a>
-    {sealed ? <div data-sealed-index></div> : <CaseIndex study={study} locale={locale} />}
-  </nav>
-
   <article class="case" hidden={sealed ? true : undefined} data-case>
+    <a class="case__back" href={`${home}${home.endsWith('/') ? '' : '/'}#work`}><span aria-hidden="true">←&thinsp;</span>{p.back[locale]}</a>
     <header class="case-hero">
       <p class="case-hero__eyebrow t-label">{eyebrow}</p>
       <h1 class="case-hero__title t-display">{project.title[locale]}</h1>
@@ -93,24 +88,32 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
     </header>
 
     <div class="case-cover">
-      <ProjectCover media={project.media} label={project.title[locale]} locale={locale} sizes="(max-width: 64rem) 100vw, 60rem" />
+      <ProjectCover media={project.media} label={project.title[locale]} locale={locale} sizes="(max-width: 72rem) 100vw, 72rem" />
     </div>
 
-    {sealed ? (
-      <>
-        <div class="case-sealed" data-sealed-sections></div>
-        <div hidden><CaseBlocks blocks={[]} locale={locale} figStart={0} /></div>
-      </>
-    ) : (
-      <CaseSections study={study} locale={locale} />
-    )}
+    <!-- The index sits on the left (sticky, desktop only), the sections on the right. -->
+    <div class="case-body">
+      <nav class="case-index" aria-label={c.contents[locale]} data-case-index>
+        {sealed ? <div data-sealed-index></div> : <CaseIndex study={study} locale={locale} />}
+      </nav>
+      <div class="case-main">
+        {sealed ? (
+          <>
+            <div class="case-sealed" data-sealed-sections></div>
+            <div hidden><CaseBlocks blocks={[]} locale={locale} figStart={0} /></div>
+          </>
+        ) : (
+          <CaseSections study={study} locale={locale} />
+        )}
 
-    {next && (
-      <a class="case-next" href={caseHref(next.slug, locale)}>
-        <span class="case-next__label t-label">{c.nextCase[locale]}</span>
-        <span class="case-next__title t-heading-l">{next.title[locale]} <span aria-hidden="true">→</span></span>
-      </a>
-    )}
+        {next && (
+          <a class="case-next" href={caseHref(next.slug, locale)}>
+            <span class="case-next__label t-label">{c.nextCase[locale]}</span>
+            <span class="case-next__title t-heading-l">{next.title[locale]} <span aria-hidden="true">→</span></span>
+          </a>
+        )}
+      </div>
+    </div>
   </article>
 
 
@@ -131,7 +134,9 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
      after unlock and keep the class names they were sealed with. */
 
   /* Header. */
-  .case-hero { display: grid; justify-items: start; gap: var(--space-4); padding-block: var(--space-16) var(--space-12); }
+  .case__back { display: inline-flex; align-items: center; min-height: var(--tap-min); margin-top: var(--space-6); font-family: var(--font-system); font-size: var(--type-caption); letter-spacing: 0.04em; color: var(--color-graphite-soft); text-decoration: none; }
+  .case__back:hover { color: var(--color-ink); }
+  .case-hero { display: grid; justify-items: start; gap: var(--space-4); padding-block: var(--space-8) var(--space-12); }
   .case-hero__eyebrow { color: var(--color-graphite-soft); }
   .case-hero__title { max-width: 22ch; font-size: var(--type-heading-xl); }
   .case-hero__line {
@@ -154,25 +159,30 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   .case-hero__facts dt { margin-bottom: var(--space-1); font-size: var(--type-caption); color: var(--color-graphite-soft); }
   .case-hero__facts dd { font-size: var(--type-body-s); line-height: 1.5; color: var(--color-ink); }
   .case-hero__live { margin-top: var(--space-2); font-size: var(--type-body-s); }
-  @media (min-width: 64.0625rem) { .case-hero { padding-top: var(--space-24); } }
   @media (max-width: 40rem) {
-    .case-hero { padding-top: var(--space-12); }
+    .case-hero { padding-top: var(--space-6); }
     .case-hero__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-4); }
   }
 
   .case-cover { --cover-ratio: 16 / 9; overflow: hidden; margin-bottom: var(--space-16); border: var(--rule-hair); border-radius: var(--radius-soft); }
   @media (max-width: 40rem) { .case-cover { --cover-ratio: 4 / 3; } }
 
-  /* Index: in the sidebar on desktop (sticky), hidden on smaller screens. */
-  .case-index { display: grid; gap: var(--space-4); }
-  .case-index__back { display: inline-flex; align-items: center; min-height: 2rem; font-size: var(--type-nav); color: var(--color-graphite-soft); text-decoration: none; }
-  .case-index__back:hover { color: var(--color-ink); }
+  /* Body: index on the left (sticky), sections on the right; one column
+     below desktop, without the index. */
+  .case-body { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--space-12); }
+  .case-main { min-width: 0; }
+  .case-index { position: sticky; top: calc(var(--nav-height) + var(--space-8)); align-self: start; }
+  @media (max-width: 64rem) {
+    .case-body { grid-template-columns: 1fr; gap: 0; }
+    .case-index { display: none; }
+  }
   .case-index ol { display: grid; }
   .case-index a[data-index-link] {
     position: relative;
     display: flex;
     gap: var(--space-2);
     padding-block: 0.3rem;
+    font-family: var(--font-system);
     font-size: var(--type-caption);
     line-height: 1.4;
     color: var(--color-graphite-soft);
@@ -194,7 +204,7 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   }
 
   /* Sections. */
-  .case-sec { padding-block: var(--space-12) var(--space-16); border-top: var(--rule-hair); scroll-margin-top: var(--space-8); }
+  .case-sec { padding-block: var(--space-12) var(--space-16); border-top: var(--rule-hair); scroll-margin-top: var(--nav-height); }
   .case-intro + .case-sec, .case-sealed > .case-sec:first-child { border-top: 0; padding-top: 0; }
   .case-sec__head { display: grid; gap: var(--space-3); margin-bottom: var(--space-8); }
   .case-sec__head .section-label { color: var(--color-graphite-soft); }
@@ -266,8 +276,7 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   .lightbox__close:hover { color: var(--color-ink); }
 
   /* The gate: where the case would be, a short note and a password field. */
-  .gate { display: grid; align-content: start; gap: var(--space-12); padding-block: var(--space-16) var(--space-24); }
-  @media (min-width: 64.0625rem) { .gate { padding-top: var(--space-24); } }
+  .gate { display: grid; align-content: start; gap: var(--space-12); padding-block: var(--space-6) var(--space-24); }
   .gate__back { justify-self: start; display: inline-flex; align-items: center; min-height: var(--tap-min); font-size: var(--type-nav); color: var(--color-graphite-soft); text-decoration: none; }
   .gate__back:hover { color: var(--color-ink); }
   .gate__top { display: flex; }
@@ -309,8 +318,6 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
   .gate.is-wrong .gate__card { animation: gate-shake 0.3s var(--ease-soft); }
   @keyframes gate-shake { 25% { translate: -4px 0; } 50% { translate: 3px 0; } 75% { translate: -2px 0; } }
   @media (prefers-reduced-motion: reduce) { .gate.is-wrong .gate__card { animation: none; } }
-  /* Locked: only the way back; the site's links return once the case opens. */
-  body:has(.gate) :is(.site-side, .site-header__nav) { visibility: hidden; }
   .case-sealed:empty { display: none; }
   @media (max-width: 40rem) { .gate__form { flex-direction: column; } }
 </style>

@@ -3,7 +3,8 @@
 A quieter, more senior take on [inasilva.com](https://inasilva.com) (source:
 `inargb/portfolio`). Same cases, About page, copy and links; a new layout:
 off-white paper, slate ink, IBM Plex Mono for headings and labels, Inter for
-reading, a sticky sidebar for navigation and one content column.
+reading, the top bar from inasilva.com (same type, order and EN/PT switch, in
+capitals) and one centred content column.
 The headline keeps the interactive word "frames" (Figma frame, film frame,
 frames per second); the doodles, custom cursor, film reel and easter eggs are gone.
 
@@ -35,10 +36,10 @@ src/
   i18n/config.ts           locales, routes, base-path helpers
   i18n/ui.ts               interface strings (EN / PT)
   content/*.ts             page content, bilingual, typed (projects, home, about, photos)
-  components/              Nav (header + sidebar), Footer, LanguageSwitch,
+  components/              Nav (top bar + phone menu), Footer, LanguageSwitch,
                            FramesWord, ProjectGrid, ProjectCover
   components/case/         case-study blocks, figures, sections, index
-  layouts/Base.astro       the page shell: header, sidebar, content column, footer
+  layouts/Base.astro       the page shell: top bar, content column, footer
   views/                   one view per page, rendered by thin EN/PT page files
   pages/                   routes: /, /about, /works/[slug] (+ /pt-br/…)
   scripts/                 prefs (reduced motion), motion (reveals), sealed (gate)
@@ -74,7 +75,7 @@ A case is content only: `src/content/cases/<slug>.ts` exports a `CaseStudy`
 (types in `src/content/cases/types.ts`) and is listed in
 `src/content/cases/index.ts`. The page (`views/CaseView.astro`) renders a
 header with the project's facts, the cover, numbered sections, and the next
-project. On desktop the case's index replaces the navigation in the sidebar.
+project. On desktop a sticky index runs beside the sections.
 Blocks render in `components/case/CaseBlocks.astro` (text, stats, figures,
 galleries, steps, decisions, before/after, tables, timelines…).
 
