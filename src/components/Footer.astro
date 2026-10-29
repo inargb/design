@@ -28,7 +28,7 @@ const links = [
         <ul class="footer__links" role="list">
           {links.map((l) => (
             <li>
-              <a class="footer__link t-nav" href={l.href} target="_blank" rel="noopener">
+              <a class="footer__link" href={l.href} target="_blank" rel="noopener">
                 {l.label}<span aria-hidden="true"> ↗</span>
                 <span class="visually-hidden">{ui.nav.newTab[locale]}</span>
               </a>
@@ -79,6 +79,8 @@ const links = [
     display: inline-flex;
     align-items: center;
     min-height: var(--tap-min);
+    font-family: var(--font-body);
+    font-size: var(--type-body);
     color: var(--color-ink);
     text-decoration: none;
   }
