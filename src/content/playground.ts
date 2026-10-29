@@ -110,8 +110,8 @@ export const ipodContent = {
     label: l('iPod', 'iPod'),
     close: l('Close', 'Fechar'),
     help: l(
-      'Turn the wheel (drag around it or scroll) or use the arrow keys to move; the centre button or Enter selects; MENU or Backspace goes back; the bottom of the wheel or Space plays and pauses; Esc closes.',
-      'Gire a roda (arraste em volta ou role) ou use as setas para navegar; o botão do centro ou Enter seleciona; MENU ou Backspace volta; a parte de baixo da roda ou Espaço toca e pausa; Esc fecha.',
+      '⏭ and ⏮ move down and up in menus, and skip to the next or previous song elsewhere. The centre button selects in menus and plays or pauses a song. MENU opens the menu. The bottom of the wheel plays or pauses. You can also turn the wheel (drag around it or scroll), use the arrow keys, Enter, Backspace and Space; Esc closes.',
+      '⏭ e ⏮ descem e sobem nos menus, e fora deles passam para a próxima música ou voltam para a anterior. O botão do meio seleciona nos menus e dá play ou pause na música. MENU abre o menu. A parte de baixo da roda dá play ou pause. Também dá para girar a roda (arraste em volta ou role) e usar as setas, Enter, Backspace e Espaço; Esc fecha.',
     ),
     hint: l('i love music <3', 'eu amo música <3'),
   },

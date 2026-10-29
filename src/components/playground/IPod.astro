@@ -38,7 +38,7 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
         <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M18 1v10M10 6L2 1v10zM18 6l-8-5v10z" /></svg>
       </button>
       <button class="ipod__key ipod__key--play" type="button" data-key="play" aria-label="Play / pause">
-        <svg viewBox="0 0 20 12" aria-hidden="true"><path d="M3 1l7 5-7 5zM13 1v10M17 1v10" /></svg>
+        <svg viewBox="0 0 22 12" aria-hidden="true"><path d="M2 1l8 5-8 5z" /><rect x="13" y="1" width="2.6" height="10" /><rect x="17.4" y="1" width="2.6" height="10" /></svg>
       </button>
       <button class="ipod__center" type="button" data-key="select" aria-label="Select"></button>
     </div>
@@ -352,6 +352,26 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
       }
       render();
     }
+    // ⏭ / ⏮: in a menu they move the selection down / up; anywhere else
+    // they skip to the next / previous song (or photo).
+    function skip(dir: 1 | -1) {
+      const v = top();
+      if (v.kind === 'list' || v.kind === 'photo') step(dir);
+      else if (dir === 1) advance(1);
+      else prev();
+    }
+    // The centre button: in a menu it selects; on Now Playing it plays or pauses.
+    function center() {
+      const v = top();
+      if (v.kind === 'now') playPause();
+      else select();
+    }
+    // MENU opens the menu: one level back, like the real thing (from a song,
+    // back to the list it was played from).
+    function menu() {
+      back();
+      if (top().kind !== 'list') { stack = [mainMenu()]; render(); }
+    }
     function select() {
       const v = top();
       if (v.kind !== 'list') return;
@@ -479,11 +499,11 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
       // Enter / Space on a focused key are handled by the keyboard below.
       if (e.detail === 0) return;
       const k = b.dataset.key;
-      if (k === 'menu') back();
-      if (k === 'select') select();
+      if (k === 'menu') menu();
+      if (k === 'select') center();
       if (k === 'play') playPause();
-      if (k === 'next') advance(1);
-      if (k === 'prev') prev();
+      if (k === 'next') skip(1);
+      if (k === 'prev') skip(-1);
     }));
 
     // Turning the wheel: every ~28° of drag around its centre is one step.
@@ -534,13 +554,13 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
       const key = t.closest<HTMLElement>('[data-key]')?.dataset.key;
       if (k === 'ArrowDown') { e.preventDefault(); step(1); }
       else if (k === 'ArrowUp') { e.preventDefault(); step(-1); }
-      else if (k === 'ArrowRight') { e.preventDefault(); advance(1); }
-      else if (k === 'ArrowLeft') { e.preventDefault(); prev(); }
+      else if (k === 'ArrowRight') { e.preventDefault(); skip(1); }
+      else if (k === 'ArrowLeft') { e.preventDefault(); skip(-1); }
       else if (k === 'Enter') {
         e.preventDefault();
-        if (key === 'menu') back(); else if (key === 'play') playPause(); else if (key === 'next') advance(1); else if (key === 'prev') prev(); else select();
+        if (key === 'menu') menu(); else if (key === 'play') playPause(); else if (key === 'next') skip(1); else if (key === 'prev') skip(-1); else center();
       }
-      else if (k === 'Backspace') { e.preventDefault(); back(); }
+      else if (k === 'Backspace') { e.preventDefault(); menu(); }
       else if (k === ' ') { e.preventDefault(); if (!e.repeat) playPause(); }
     });
     // Space would also "click" the focused button on release: stop that.
