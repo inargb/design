@@ -19,7 +19,7 @@ export interface Project {
   line: L10n;                 // description, 15+ words (card + case page)
   context: L10n;              // client / setting
   role: L10n;                 // '—' until known
-  period: L10n;               // always a year range, '—' until known
+  period: L10n;               // a year or a range (2024 → 2026), '—' until known
   duration?: L10n;            // lives on the case page, never on the card
   status: L10n;
   statusKind: StatusKind;
@@ -60,7 +60,7 @@ export const projects: Project[] = [
     },
     context: { en: 'POS · Hospitality', pt: 'PDV · Hospitalidade' },
     role: { en: 'UX/UI designer', pt: 'UX/UI designer' },
-    period: { en: '2024 — 2026', pt: '2024 — 2026' },
+    period: { en: '2024 → 2026', pt: '2024 → 2026' },
     status: { en: 'protected case', pt: 'case protegido' },
     statusKind: 'locked',
     tags: [tag('POS', 'PDV'), tag('Design systems', 'Design systems')],
@@ -82,7 +82,7 @@ export const projects: Project[] = [
     },
     context: { en: 'Enterprise · Back office', pt: 'Enterprise · Back office' },
     role: { en: 'UX/UI designer', pt: 'UX/UI designer' },
-    period: { en: '2025 — ongoing', pt: '2025 — em andamento' },
+    period: { en: '2025 → ongoing', pt: '2025 → em andamento' },
     status: { en: 'protected case', pt: 'case protegido' },
     statusKind: 'locked',
     tags: [

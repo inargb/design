@@ -99,19 +99,19 @@ export const about = {
         heading: l('Degrees', 'Formação'),
         items: [
           {
-            period: l('2025 — 2026', '2025 — 2026'),
+            period: l('2025 → 2026', '2025 → 2026'),
             title: l('Postgraduate Specialization in User Experience Design', 'Especialização em User Experience Design'),
             org: l('PUCRS', 'PUCRS'),
           },
           {
-            period: l('2021 — 2023', '2021 — 2023'),
+            period: l('2021 → 2023', '2021 → 2023'),
             title: l('Bachelor’s degree (Technologist) in Graphic Design', 'Tecnólogo em Design Gráfico'),
             org: l('IESB University Center', 'Centro Universitário IESB'),
           },
         ],
       },
       {
-        heading: l('Courses', 'Cursos'),
+        heading: l('Certifications', 'Certificações'),
         items: [
           { period: l('2026', '2026'), title: l('WAI0.1x: Introduction to Web Accessibility', 'WAI0.1x: Introduction to Web Accessibility'), org: l('W3C (edX)', 'W3C (edX)') },
           { period: l('2023', '2023'), title: l('Foundations of User Experience (UX) Design', 'Foundations of User Experience (UX) Design'), org: l('Google', 'Google') },

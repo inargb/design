@@ -14,8 +14,8 @@ interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const p = ui.project;
 
-// "2024 — 2026" → "2024–2026"
-const year = (v: string) => (v === '—' ? '' : v.replace(/\s*—\s*/g, '–'));
+// '—' means not known yet: leave the year out.
+const year = (v: string) => (v === '—' ? '' : v);
 ---
 
 <ul class="work-grid" role="list" data-stagger>
