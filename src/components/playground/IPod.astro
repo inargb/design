@@ -46,7 +46,6 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
   <a class="ipodv__spotify" href="https://open.spotify.com/" target="_blank" rel="noopener" hidden data-spotify>
     <span data-spotify-label>{u.spotify[locale]}</span><span aria-hidden="true">&thinsp;↗</span><span class="visually-hidden"> {u.opens[locale]}</span>
   </a>
-  <p class="ipodv__hint" aria-hidden="true">{u.hint[locale]}</p>
 </dialog>
 
 <style>
@@ -99,16 +98,6 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
   }
   .ipodv__spotify:hover { background: #1ed760; }
   .ipodv__spotify[hidden] { display: none; }
-  .ipodv__hint {
-    position: absolute;
-    right: var(--space-6);
-    bottom: var(--space-6);
-    padding: var(--space-2) var(--space-3);
-    background: var(--color-ink);
-    color: var(--color-paper);
-    font-family: var(--font-system);
-    font-size: var(--type-caption);
-  }
 
   /* ---- The body --------------------------------------------------------- */
   .ipod {
@@ -247,7 +236,6 @@ const data = JSON.stringify({ owner: ip.owner, songs: ip.songs, photos: pics });
   .ipod__center:active { box-shadow: 0 1px 2px rgb(0 0 0 / 0.2) inset; }
   .ipod__center:focus-visible { border-radius: 50%; }
 
-  @media (max-width: 40rem) { .ipodv__hint { display: none; } }
   @media (max-height: 34rem) { .ipod { scale: 0.85; } }
 </style>
 

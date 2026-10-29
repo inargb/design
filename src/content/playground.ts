@@ -116,7 +116,6 @@ export const ipodContent = {
       '⏭ and ⏮ move down and up in menus, and skip to the next or previous song elsewhere. The centre button selects in menus and plays or pauses a song. MENU opens the menu. The bottom of the wheel plays or pauses. You can also turn the wheel (drag around it or scroll), use the arrow keys, Enter, Backspace and Space; Esc closes.',
       '⏭ e ⏮ descem e sobem nos menus, e fora deles passam para a próxima música ou voltam para a anterior. O botão do meio seleciona nos menus e dá play ou pause na música. MENU abre o menu. A parte de baixo da roda dá play ou pause. Também dá para girar a roda (arraste em volta ou role) e usar as setas, Enter, Backspace e Espaço; Esc fecha.',
     ),
-    hint: l('i love music <3', 'eu amo música <3'),
     spotify: l('Listen on Spotify', 'Ouvir no Spotify'),
     opens: l('(opens in a new tab)', '(abre em outra aba)'),
   },
