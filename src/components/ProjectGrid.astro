@@ -28,6 +28,7 @@ const year = (v: string) => (v === '—' ? '' : v.replace(/\s*—\s*/g, '–'));
         <Tag class="card__hit" {...linkProps} data-pcursor-host={proj.state}>
           <div class="card__cover">
             <ProjectCover media={proj.media} label="" locale={locale} sizes="(max-width: 40rem) 100vw, (max-width: 72rem) 50vw, 36rem" />
+            {proj.state === 'soon' && <span class="card__soon" aria-hidden="true">{p.soon[locale]}</span>}
           </div>
           <h3 class="card__title">
             <span class="card__name">{proj.title[locale]}</span>
@@ -87,5 +88,20 @@ const year = (v: string) => (v === '—' ? '' : v.replace(/\s*—\s*/g, '–'));
   a.card__hit:hover .card__name { text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
 
   /* In progress: quieter, not a link. */
-  .card[data-state='soon'] .card__cover :global(.media-cover) { opacity: 0.55; filter: grayscale(0.6); }
+  .card[data-state='soon'] .card__cover { position: relative; }
+  .card[data-state='soon'] .card__cover :global(.media-cover) { filter: blur(4px) grayscale(0.7) brightness(0.92); scale: 1.06; }
+  .card__soon {
+    position: absolute;
+    left: var(--space-3);
+    top: var(--space-3);
+    z-index: 1;
+    padding: var(--space-1) var(--space-2);
+    font-family: var(--font-system);
+    font-size: var(--type-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    background: var(--color-highlight);
+    color: var(--color-on-highlight);
+  }
 </style>
