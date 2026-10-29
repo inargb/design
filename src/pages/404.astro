@@ -1,0 +1,55 @@
+---
+// One 404 for both languages: GitHub Pages serves a single 404.html.
+// Like the password page: no site header or footer, only the way back
+// (in Portuguese for visitors whose browser is set to it): back to the
+// previous page of the site, or home.
+import Base from '../layouts/Base.astro';
+import { href } from '../i18n/config';
+import { ui } from '../i18n/ui';
+const n = ui.notFound;
+const back = { en: 'back', pt: 'voltar' };
+---
+
+<Base locale="en" altHref={href('home', 'pt')} pageId="404" title="404">
+  <section class="nf">
+    <div class="nf__top container">
+      <a class="nf__back t-label" href={href('home', 'en')} data-back data-pt-href={href('home', 'pt')} data-pt-label={`← ${back.pt}`}>← {back.en}</a>
+    </div>
+    <div class="nf__text container">
+      <p class="t-meta">FR ?? · 404</p>
+      <h1 class="t-heading-xl">{n.title.en}</h1>
+      <p class="t-body t-secondary">{n.body.en}</p>
+      <p class="t-body t-secondary" lang="pt-BR"><em>{n.title.pt}</em> {n.body.pt}</p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const a = document.querySelector<HTMLAnchorElement>('[data-back]');
+  if (a && navigator.language?.toLowerCase().startsWith('pt')) {
+    a.href = a.dataset.ptHref!;
+    a.textContent = a.dataset.ptLabel!;
+    a.lang = 'pt-BR';
+  }
+  // Came here from another page of the site: "back" goes back to it.
+  // Otherwise (a stale link from outside) it leads home.
+  a?.addEventListener('click', (e) => {
+    try {
+      if (history.length > 1 && document.referrer && new URL(document.referrer).origin === location.origin) {
+        e.preventDefault();
+        history.back();
+      }
+    } catch { /* follow the link */ }
+  });
+</script>
+
+<style>
+  .nf { position: relative; display: grid; align-items: center; min-height: 100svh; padding-block: var(--space-16); }
+  .nf__top { position: absolute; top: var(--space-6); left: 0; right: 0; }
+  .nf__back { color: var(--color-graphite-soft); }
+  .nf__back:hover { color: var(--color-ink); }
+  .nf__text { display: grid; gap: var(--space-4); }
+  .nf__text > * { max-width: 40rem; }
+  /* Nothing else on the page: no site header, no footer. */
+  :global(body:has(.nf) .nav), :global(body:has(.nf) .footer) { display: none; }
+</style>

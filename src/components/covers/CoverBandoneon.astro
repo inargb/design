@@ -1,0 +1,94 @@
+---
+// Bandoneón Initiative: the instrument's bellows breathe across the frame,
+// next to a phone in step-by-step mode with a timer running. Colours come
+// from the project's own design system (green, lime, wine).
+import CoverShell from './CoverShell.astro';
+interface Props { label: string; }
+---
+
+<CoverShell bg="#aace26" ink="#1f2410" label={Astro.props.label}>
+  <div class="band">
+    <svg class="band__bellows" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,8 12,52 24,8 36,52 48,8 60,52 72,8 84,52 96,8 108,52 120,8 132,52 144,8 156,52 168,8 180,52 192,8 200,30" />
+    </svg>
+    <p class="band__word">Receita<br />do dia</p>
+
+    <div class="band__phone">
+      <div class="band__screen">
+        <p class="band__step">passo 03 / 07</p>
+        <div class="band__img"></div>
+        <i class="band__line"></i>
+        <i class="band__line short"></i>
+        <svg class="band__timer" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="16" class="track" />
+          <circle cx="20" cy="20" r="16" class="run" />
+        </svg>
+        <p class="band__time">04:30</p>
+        <nav class="band__tabs"><i></i><i></i><i></i><i></i></nav>
+      </div>
+    </div>
+  </div>
+</CoverShell>
+
+<style>
+  .band { position: absolute; inset: 0; }
+  .band__bellows {
+    position: absolute;
+    left: 5cqw;
+    top: 30cqw;
+    width: 50cqw;
+    height: 12cqw;
+    overflow: visible;
+    transform-origin: left center;
+    animation: breathe 3.2s var(--ease-soft) infinite alternate;
+  }
+  .band__bellows polyline { fill: none; stroke: #7a211e; stroke-width: 2.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  @keyframes breathe { from { scale: 0.72 1; } to { scale: 1.02 1; } }
+  .band__word {
+    position: absolute;
+    left: 6cqw;
+    top: 8cqw;
+    margin: 0;
+    font-family: var(--font-title);
+    font-size: 5.4cqw;
+    line-height: 1;
+    font-style: italic;
+    color: #7a211e;
+  }
+
+  .band__phone {
+    position: absolute;
+    right: 10cqw;
+    top: 5cqw;
+    width: 27cqw;
+    aspect-ratio: 9 / 19;
+    padding: 1.2cqw;
+    border-radius: 4cqw;
+    background: #1f2410;
+    rotate: 6deg;
+  }
+  .band__screen {
+    display: grid;
+    align-content: start;
+    gap: 1.2cqw;
+    height: 100%;
+    padding: 2.4cqw 2cqw;
+    border-radius: 3cqw;
+    background: #fbfbf2;
+    color: #1f2410;
+    position: relative;
+  }
+  .band__step { margin: 0; font-size: 1.3cqw; color: #7a211e; font-weight: 500; }
+  .band__img { aspect-ratio: 4 / 3; border-radius: 1.2cqw; background: radial-gradient(circle at 40% 45%, #dfdd21 0 18%, #ce1d20 19% 28%, #829d24 29% 60%, #f0eedc 61%); }
+  .band__line { height: 1cqw; border-radius: 1cqw; background: #1f2410; opacity: 0.8; }
+  .band__line.short { width: 60%; opacity: 0.35; }
+  .band__timer { width: 10cqw; justify-self: center; margin-top: 1cqw; rotate: -90deg; }
+  .band__timer circle { fill: none; stroke-width: 4; }
+  .band__timer .track { stroke: #e7ecd0; }
+  .band__timer .run { stroke: #829d24; stroke-linecap: round; stroke-dasharray: 100.5; animation: tick 9s linear infinite; }
+  @keyframes tick { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 100.5; } }
+  .band__time { margin: 0; text-align: center; font-size: 1.6cqw; font-weight: 500; }
+  .band__tabs { position: absolute; left: 2cqw; right: 2cqw; bottom: 2cqw; display: flex; justify-content: space-between; }
+  .band__tabs i { width: 2.2cqw; height: 2.2cqw; border-radius: 50%; border: 0.2cqw solid #1f2410; }
+  .band__tabs i:first-child { background: #829d24; border-color: #829d24; }
+</style>

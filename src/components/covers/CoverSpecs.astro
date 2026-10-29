@@ -1,0 +1,119 @@
+---
+// Responsive Specs & Accessibility Generator: a component being measured.
+// Redlines draw in one after another; values are in px and vw, like the
+// tool's own output; a contrast chip checks itself.
+import CoverShell from './CoverShell.astro';
+interface Props { label: string; }
+---
+
+<CoverShell bg="#f6f3ec" ink="#1c1a17" label={Astro.props.label}>
+  <div class="specs">
+    <p class="specs__head">Product Detail — Desktop <span>base 1440 × 900 · method: viewport</span></p>
+
+    <div class="specs__card">
+      <div class="specs__img"></div>
+      <i class="specs__line w70"></i>
+      <i class="specs__line w45"></i>
+      <span class="specs__btn">Add to order</span>
+
+      <!-- Redlines -->
+      <span class="rl rl--w"><b>320px · 22.22vw</b></span>
+      <span class="rl rl--h"><b>352px · 39.11vh</b></span>
+      <span class="rl rl--pad"><b>24 · 1.67vw</b></span>
+    </div>
+
+    <ul class="specs__table">
+      <li><span>width</span><span>22.2222vw</span></li>
+      <li><span>padding</span><span>1.6667vw</span></li>
+      <li><span>gap</span><span>0.8333vw</span></li>
+      <li><span>font-size</span><span>1.1111vw</span></li>
+      <li><span>radius</span><span>0.5556vw</span></li>
+    </ul>
+
+    <p class="specs__chip"><i></i>4.9:1 · AA ✓</p>
+  </div>
+</CoverShell>
+
+<style>
+  .specs { position: absolute; inset: 0; padding: 5cqw 6cqw; }
+  .specs__head { font-size: 1.9cqw; font-weight: 500; margin: 0; }
+  .specs__head span { margin-left: 1.5cqw; font-weight: 400; opacity: 0.55; font-size: 1.4cqw; }
+
+  .specs__card {
+    position: absolute;
+    left: 10cqw;
+    top: 16cqw;
+    width: 30cqw;
+    padding: 2.2cqw;
+    display: grid;
+    gap: 1.2cqw;
+    background: #fff;
+    border: 0.2cqw solid #1c1a17;
+    box-shadow: 0.9cqw 0.9cqw 0 #1c1a17;
+  }
+  .specs__img { aspect-ratio: 16 / 9; background: repeating-linear-gradient(135deg, #e6e0d3 0 1cqw, #efeae0 1cqw 2cqw); }
+  .specs__line { display: block; height: 1.3cqw; background: #1c1a17; }
+  .specs__line.w70 { width: 70%; }
+  .specs__line.w45 { width: 45%; opacity: 0.35; }
+  .specs__btn { justify-self: start; font-size: 1.35cqw; padding: 0.8cqw 1.6cqw; background: #1c1a17; color: #f6f3ec; }
+
+  /* Redlines */
+  .rl { position: absolute; color: #2447d6; font-size: 1.25cqw; white-space: nowrap; }
+  .rl b { font-weight: 500; background: #2447d6; color: #fff; padding: 0.2cqw 0.6cqw; }
+  .rl::before { content: ''; position: absolute; background: #2447d6; }
+  .rl--w { left: 0; right: 0; top: -4.5cqw; text-align: center; animation: draw-x 6s var(--ease-settle) infinite; transform-origin: left; }
+  .rl--w::before { left: 0; right: 0; top: 50%; height: 0.15cqw; }
+  .rl--w b { position: relative; }
+  .rl--h { top: 0; bottom: 0; right: -9.5cqw; width: 8cqw; display: grid; place-items: center; animation: draw-y 6s var(--ease-settle) infinite; transform-origin: top; }
+  .rl--h::before { left: 0; top: 0; bottom: 0; width: 0.15cqw; }
+  .rl--pad { left: 0; top: 2.2cqw; width: 2.2cqw; height: 0.15cqw; background: #2447d6; animation: fade 6s var(--ease-soft) infinite; }
+  .rl--pad b { position: absolute; top: 0.6cqw; left: 0; font-size: 1cqw; }
+
+  .specs__table {
+    position: absolute;
+    right: 6cqw;
+    top: 16cqw;
+    width: 38cqw;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1.5cqw;
+    border-top: 0.15cqw solid #1c1a17;
+  }
+  .specs__table li {
+    display: flex;
+    justify-content: space-between;
+    padding: 1cqw 0;
+    border-bottom: 0.1cqw solid #cbc2b1;
+    animation: row 6s var(--ease-soft) infinite;
+  }
+  .specs__table li span:last-child { color: #2447d6; }
+  .specs__table li:nth-child(2) { animation-delay: 0.15s; }
+  .specs__table li:nth-child(3) { animation-delay: 0.3s; }
+  .specs__table li:nth-child(4) { animation-delay: 0.45s; }
+  .specs__table li:nth-child(5) { animation-delay: 0.6s; }
+
+  .specs__chip {
+    position: absolute;
+    right: 6cqw;
+    bottom: 6cqw;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 1cqw;
+    padding: 1cqw 1.6cqw;
+    font-size: 1.6cqw;
+    font-weight: 500;
+    border: 0.15cqw solid #1c1a17;
+    background: #f3cf1c;
+    animation: pop 6s var(--ease-settle) infinite;
+  }
+  .specs__chip i { width: 2cqw; height: 2cqw; border-radius: 50%; background: linear-gradient(90deg, #1c1a17 50%, #fff 50%); border: 0.15cqw solid #1c1a17; }
+
+  @keyframes draw-x { 0%, 8% { scale: 0 1; opacity: 0; } 20%, 85% { scale: 1 1; opacity: 1; } 100% { opacity: 0; } }
+  @keyframes draw-y { 0%, 22% { scale: 1 0; opacity: 0; } 34%, 85% { scale: 1 1; opacity: 1; } 100% { opacity: 0; } }
+  @keyframes fade { 0%, 36% { opacity: 0; } 46%, 85% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes row { 0%, 40% { opacity: 0.25; } 50%, 90% { opacity: 1; } 100% { opacity: 0.25; } }
+  @keyframes pop { 0%, 60% { scale: 0.85; opacity: 0; } 68% { scale: 1.06; opacity: 1; } 74%, 92% { scale: 1; opacity: 1; } 100% { opacity: 0; } }
+
+</style>

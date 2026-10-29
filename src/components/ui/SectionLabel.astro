@@ -1,0 +1,24 @@
+---
+// "works_", "about_": the underscore label from the current portfolio,
+// kept as the site's section marker. Optional frame number in front.
+interface Props { text: string; frame?: string; as?: 'p' | 'span'; }
+const { text, frame, as: Tag = 'p' } = Astro.props;
+---
+
+<Tag class="section-label t-label">
+  {frame && <span class="section-label__no">{frame}</span>}
+  <span>{text}<span class="caret" aria-hidden="true"></span></span>
+</Tag>
+
+<style>
+  .section-label {
+    display: inline-flex;
+    gap: var(--space-3);
+    align-items: baseline;
+    color: var(--color-ink);
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+    font-size: var(--type-caption);
+  }
+  .section-label__no { color: var(--color-accent); }
+</style>

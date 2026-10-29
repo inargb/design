@@ -1,0 +1,42 @@
+---
+// Buttons are printed, not glowing: an ink outline and a hard offset shadow
+// that presses in when you click. Renders <a> when href is given.
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'quiet';
+  type?: 'button' | 'submit';
+  [key: string]: unknown;
+}
+const { href, variant = 'primary', type = 'button', ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag class:list={['btn', `btn--${variant}`]} href={href} type={href ? undefined : type} {...rest}>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--tap-min);
+    padding: 0 var(--space-6);
+    font-family: var(--font-system);
+    font-size: var(--type-nav);
+    font-weight: 500;
+    text-decoration: none;
+    border: var(--rule-ink);
+    border-radius: var(--radius-none);
+    transition: translate var(--duration-quick) var(--ease-soft), box-shadow var(--duration-quick) var(--ease-soft),
+      background-color var(--duration-quick);
+  }
+  .btn--primary { background: var(--color-ink); color: var(--color-paper); box-shadow: 4px 4px 0 var(--color-highlight), 4px 4px 0 1px var(--color-ink); }
+  .btn--secondary { background: var(--color-paper); color: var(--color-ink); box-shadow: var(--shadow-offset); }
+  .btn--quiet { background: none; color: var(--color-ink); border-color: transparent; text-decoration: underline; text-underline-offset: 0.3em; }
+  .btn--primary:hover, .btn--secondary:hover { translate: -2px -2px; }
+  .btn--primary:hover { box-shadow: 6px 6px 0 var(--color-highlight), 6px 6px 0 1px var(--color-ink); }
+  .btn--secondary:hover { box-shadow: 6px 6px 0 var(--color-shadow); }
+  .btn:active { translate: 3px 3px; box-shadow: 0 0 0 var(--color-shadow); }
+</style>

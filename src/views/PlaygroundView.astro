@@ -1,0 +1,395 @@
+---
+// The kit: a living reference for the design system. Everything reads the
+// real tokens at runtime, so it stays true after edits.
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Pill from '../components/ui/Pill.astro';
+import Button from '../components/ui/Button.astro';
+import SectionLabel from '../components/ui/SectionLabel.astro';
+import Doodle from '../components/Doodle.astro';
+import ProjectCover from '../components/ProjectCover.astro';
+import LanguageSwitch from '../components/LanguageSwitch.astro';
+import { href, type Locale } from '../i18n/config';
+import { projects } from '../content/projects';
+import { catalog } from '../scripts/eggs/catalog';
+import { photos } from '../content/photos';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const other: Locale = locale === 'en' ? 'pt' : 'en';
+const L = <T extends { en: string; pt: string }>(v: T) => v[locale];
+
+const colors = [
+  ['--color-paper', 'paper', 'page background'],
+  ['--color-paper-shade', 'paper.shade', 'secondary surface'],
+  ['--color-paper-deep', 'paper.deep', 'pressed surface'],
+  ['--color-ink', 'ink', 'primary text'],
+  ['--color-graphite', 'graphite', 'secondary text'],
+  ['--color-graphite-soft', 'graphite.soft', 'muted text (AA)'],
+  ['--color-rule', 'rule', 'hairlines, never text'],
+  ['--color-highlight', 'highlight', 'doodle yellow, marker'],
+  ['--color-accent', 'accent', 'numbers, status, links, focus'],
+  ['--color-accent-hover', 'accent.hover', 'hover and pressed'],
+  ['--color-accent-tint', 'accent.tint', 'selected backgrounds only'],
+];
+const pairs = [
+  ['--color-ink', '--color-paper'],
+  ['--color-graphite', '--color-paper'],
+  ['--color-graphite-soft', '--color-paper'],
+  ['--color-accent', '--color-paper'],
+  ['--color-accent-hover', '--color-paper'],
+  ['--color-accent', '--color-accent-tint'],
+  ['--color-on-accent', '--color-accent'],
+  ['--color-ink', '--color-paper-shade'],
+  ['--color-on-highlight', '--color-highlight'],
+];
+const type = [
+  ['t-display', 'display', '--type-display', { en: 'Frames, all the way down.', pt: 'Frames, até o fim.' }],
+  ['t-heading-xl', 'heading.xl', '--type-heading-xl', { en: 'A very detailed little world', pt: 'Um mundinho muito detalhado' }],
+  ['t-heading-l', 'heading.l', '--type-heading-l', { en: 'Five decisions that shaped the module', pt: 'Cinco decisões que moldaram o módulo' }],
+  ['t-heading-m', 'heading.m', '--type-heading-m', { en: 'Responsive Specs & Accessibility Generator', pt: 'Gerador de Specs Responsivas' }],
+  ['t-heading-s', 'heading.s', '--type-heading-s', { en: 'Items and Config: two ways into the same menu.', pt: 'Items e Config: dois caminhos para o mesmo cardápio.' }],
+  ['t-body', 'body', '--type-body', { en: 'Operators who know their menus intimately had to hold the structure in their heads, because the tool scattered it across screens.', pt: 'Operadores que conhecem seus cardápios de cor precisavam guardar a estrutura na cabeça, porque a ferramenta espalhava tudo em várias telas.' }],
+  ['t-body-s', 'body.s', '--type-body-s', { en: 'Captions, card lines, secondary reading.', pt: 'Legendas, linhas de card, leitura secundária.' }],
+  ['t-meta', 'meta', '--type-meta', { en: 'Enterprise · 2025 – ongoing · protected case', pt: 'Enterprise · 2025 – em andamento · case protegido' }],
+  ['t-label', 'label', '--type-label', { en: 'role · timeline · status', pt: 'papel · duração · status' }],
+  ['t-caption', 'caption', '--type-caption', { en: 'a frame I don’t remember taking', pt: 'um frame que eu nem lembro de ter tirado' }],
+  ['t-code', 'code', '--type-code', { en: 'width: 22.2222vw; /* 320px @1440 */', pt: 'width: 22.2222vw; /* 320px @1440 */' }],
+] as const;
+const spaces = ['1', '2', '3', '4', '6', '8', '12', '16', '24', '32'];
+const durations = ['--duration-instant', '--duration-quick', '--duration-settle', '--duration-slow', '--duration-develop'];
+const easings = ['--ease-soft', '--ease-settle', '--ease-snap', '--ease-develop'];
+const cursors = [
+  ['link', { en: 'links & buttons', pt: 'links e botões' }],
+  ['project', { en: 'open project', pt: 'projeto aberto' }],
+  ['secret', { en: 'protected project', pt: 'projeto protegido' }],
+  ['soon', { en: 'coming soon', pt: 'em breve' }],
+  ['look', { en: 'images', pt: 'imagens' }],
+  ['drag', { en: 'draggable', pt: 'arrastável' }],
+  ['open', { en: 'expandable', pt: 'expansível' }],
+] as const;
+const t = {
+  title: { en: 'The kit.', pt: 'O kit.' },
+  intro: {
+    en: 'The design system behind this portfolio, running live. Every value on this page is read from the real tokens. Try S (spec mode).',
+    pt: 'O design system por trás deste portfólio, rodando ao vivo. Cada valor aqui é lido dos tokens reais. Teste S (modo spec).',
+  },
+  color: { en: 'color', pt: 'cor' },
+  pairs: { en: 'Text pairings, checked live against WCAG.', pt: 'Pares de texto, checados ao vivo contra a WCAG.' },
+  type: { en: 'type', pt: 'tipografia' },
+  typeNote: { en: 'Two voices: IBM Plex Mono for the header, titles and measurements; Inter for everything you read.', pt: 'Duas vozes: IBM Plex Mono no cabeçalho, nos títulos e nas medidas; Inter em tudo que se lê.' },
+  space: { en: 'space', pt: 'espaço' },
+  shape: { en: 'shape & rules', pt: 'forma e linhas' },
+  motion: { en: 'motion', pt: 'movimento' },
+  motionNote: { en: 'Soft and a little imperfect. It steps aside when a system asks for reduced motion. Press play.', pt: 'Suave e um pouco imperfeito. Sai de cena quando o sistema pede menos movimento. Aperte play.' },
+  play: { en: 'play', pt: 'play' },
+  stagger: { en: 'stagger + jitter', pt: 'stagger + jitter' },
+  develop: { en: 'develop (image reveal)', pt: 'revelar (entrada de imagem)' },
+  cursor: { en: 'cursor', pt: 'cursor' },
+  cursorNote: { en: 'Hover each frame with a mouse. On touch screens the cursor simply isn’t there, and nothing depends on it.', pt: 'Passe o mouse em cada frame. Em telas de toque o cursor simplesmente não existe, e nada depende dele.' },
+  components: { en: 'components', pt: 'componentes' },
+  covers: { en: 'project covers', pt: 'capas dos projetos' },
+  eggs: { en: 'secrets', pt: 'segredos' },
+  eggsNote: { en: 'The catalog. Names stay hidden until found.', pt: 'O catálogo. Os nomes ficam escondidos até serem encontrados.' },
+  reset: { en: 'forget everything I found', pt: 'esquecer tudo o que encontrei' },
+};
+---
+
+<Base locale={locale} route="playground" altHref={href('playground', other)} pageId="playground" title="Playground">
+  <header class="pg-hero container">
+    <SectionLabel text="playground" frame="00" />
+    <h1 class="t-display">{L(t.title)}</h1>
+    <p class="t-body t-secondary measure">{L(t.intro)}</p>
+    <nav class="pg-toc t-nav" aria-label="Playground">
+      {['color', 'type', 'space', 'shape', 'motion', 'cursor', 'components', 'covers', 'eggs'].map((id, i) => (
+        <a class="link" href={`#pg-${id}`}>{String(i + 1).padStart(2, '0')} {L(t[id as keyof typeof t])}</a>
+      ))}
+    </nav>
+  </header>
+
+  <!-- 01 color -->
+  <section id="pg-color" class="pg container" aria-labelledby="pg-color-h">
+    <h2 id="pg-color-h" class="pg__h"><SectionLabel as="span" text={L(t.color)} frame="01" /></h2>
+    <ul class="swatches" role="list">
+      {colors.map(([v, name, use]) => (
+        <li class="swatch">
+          <span class="swatch__chip" style={`background: var(${v})`}></span>
+          <span class="t-meta swatch__name">color.{name}</span>
+          <span class="t-caption">{use}</span>
+          <code class="t-code swatch__hex" data-color-var={v}></code>
+        </li>
+      ))}
+    </ul>
+    <p class="t-body-s t-secondary">{L(t.pairs)}</p>
+    <ul class="pairs" role="list">
+      {pairs.map(([fg, bg]) => (
+        <li class="pair" style={`color: var(${fg}); background: var(${bg})`} data-pair={`${fg}|${bg}`}>
+          <span class="t-heading-s">Aa</span>
+          <span class="t-caption pair__label" style="color: inherit">{fg.replace('--color-', '')} / {bg.replace('--color-', '')}</span>
+          <span class="t-meta pair__ratio" style="color: inherit" data-ratio></span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- 02 type -->
+  <section id="pg-type" class="pg container" aria-labelledby="pg-type-h">
+    <h2 id="pg-type-h" class="pg__h"><SectionLabel as="span" text={L(t.type)} frame="02" /></h2>
+    <p class="t-body-s t-secondary">{L(t.typeNote)}</p>
+    <ul class="specimens" role="list" data-specimens>
+      {type.map(([cls, name, token, sample]) => (
+        <li class="specimen">
+          <p class="t-meta specimen__meta">{name} <span data-size-of={token}></span></p>
+          <p class={cls}>{L(sample)}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- 03 space -->
+  <section id="pg-space" class="pg container" aria-labelledby="pg-space-h">
+    <h2 id="pg-space-h" class="pg__h"><SectionLabel as="span" text={L(t.space)} frame="03" /></h2>
+    <ul class="spaces" role="list">
+      {spaces.map((s) => (
+        <li><span class="t-meta">space.{s}</span><i style={`width: var(--space-${s})`}></i><span class="t-caption" data-size-of={`--space-${s}`}></span></li>
+      ))}
+    </ul>
+    <p class="t-caption">layout.max <span data-size-of="--layout-max"></span> · layout.gutter <span data-size-of="--layout-gutter"></span> · layout.gap <span data-size-of="--layout-gap"></span> · section.space <span data-size-of="--section-space"></span> · 12 / 6 / 4 columns</p>
+  </section>
+
+  <!-- 04 shape -->
+  <section id="pg-shape" class="pg container" aria-labelledby="pg-shape-h">
+    <h2 id="pg-shape-h" class="pg__h"><SectionLabel as="span" text={L(t.shape)} frame="04" /></h2>
+    <div class="shapes">
+      <div class="shape" style="border-radius: var(--radius-none)"><span class="t-meta">radius.none</span><span class="t-caption">default</span></div>
+      <div class="shape" style="border-radius: var(--radius-soft)"><span class="t-meta">radius.soft</span><span class="t-caption">inputs, keycaps</span></div>
+      <div class="shape" style="border-radius: var(--radius-pill)"><span class="t-meta">radius.pill</span><span class="t-caption">pills only</span></div>
+      <div class="shape" style="border: var(--rule-hair)"><span class="t-meta">rule.hair</span></div>
+      <div class="shape" style="box-shadow: var(--shadow-offset)"><span class="t-meta">shadow.offset</span></div>
+      <div class="shape crop"><span class="t-meta">crop marks</span></div>
+    </div>
+  </section>
+
+  <!-- 05 motion -->
+  <section id="pg-motion" class="pg container" aria-labelledby="pg-motion-h">
+    <h2 id="pg-motion-h" class="pg__h"><SectionLabel as="span" text={L(t.motion)} frame="05" /></h2>
+    <p class="t-body-s t-secondary">{L(t.motionNote)}</p>
+    <div class="tracks" data-tracks>
+      {easings.map((e) => (
+        <div class="track"><span class="t-meta">{e.replace('--', '').replace('-', '.')}</span><div class="track__rail"><i style={`--ease: var(${e})`}></i></div></div>
+      ))}
+      {durations.map((d) => (
+        <div class="track"><span class="t-meta">{d.replace('--', '').replace('-', '.')} <span data-time-of={d}></span></span><div class="track__rail"><i style={`--dur: var(${d})`}></i></div></div>
+      ))}
+    </div>
+    <div class="motion-demos">
+      <Button variant="secondary" data-play-tracks>▶ {L(t.play)}</Button>
+      <div class="demo">
+        <p class="t-meta">{L(t.stagger)}</p>
+        <div class="demo__row" data-stagger-demo>{Array.from({ length: 10 }, () => <i></i>)}</div>
+        <Button variant="quiet" data-play-stagger>▶ {L(t.play)}</Button>
+      </div>
+      <div class="demo">
+        <p class="t-meta">{L(t.develop)}</p>
+        <div class="demo__develop" data-develop-demo>
+          <Image src={photos[1].src} alt={photos[1].alt[locale]} widths={[320, 640]} sizes="20rem" />
+        </div>
+        <Button variant="quiet" data-play-develop>▶ {L(t.play)}</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 cursor -->
+  <section id="pg-cursor" class="pg container" aria-labelledby="pg-cursor-h">
+    <h2 id="pg-cursor-h" class="pg__h"><SectionLabel as="span" text={L(t.cursor)} frame="06" /></h2>
+    <p class="t-body-s t-secondary">{L(t.cursorNote)}</p>
+    <ul class="cursor-zones" role="list">
+      {cursors.map(([state, label]) => (
+        <li class="cursor-zone" data-cursor={state}><span class="t-meta">{state}</span><span class="t-caption">{L(label)}</span></li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- 07 components -->
+  <section id="pg-components" class="pg container" aria-labelledby="pg-components-h">
+    <h2 id="pg-components-h" class="pg__h"><SectionLabel as="span" text={L(t.components)} frame="07" /></h2>
+    <div class="comp-grid">
+      <div class="comp"><p class="t-label">Button</p><div class="comp__row"><Button>primary</Button><Button variant="secondary">secondary</Button><Button variant="quiet">quiet</Button></div></div>
+      <div class="comp"><p class="t-label">Pill</p><div class="comp__row"><Pill>outline</Pill><Pill glyph="◐">with glyph</Pill><Pill tone="filled">filled</Pill><Pill tone="mark">mark</Pill></div></div>
+      <div class="comp"><p class="t-label">Keycap</p><div class="comp__row"><kbd class="keycap">S</kbd><kbd class="keycap">L</kbd><kbd class="keycap">M</kbd><kbd class="keycap">?</kbd><kbd class="keycap">Fi</kbd></div></div>
+      <div class="comp"><p class="t-label">SectionLabel</p><div class="comp__row"><SectionLabel text="works" /><SectionLabel text="overview" frame="01" /></div></div>
+      <div class="comp"><p class="t-label">LanguageSwitch</p><div class="comp__row"><LanguageSwitch locale={locale} altHref={href('playground', other)} /></div></div>
+      <div class="comp"><p class="t-label">Link · Mark</p><p class="t-body"><a class="link" href="#pg-components">a quiet link</a> and a <span class="mark">highlighted phrase</span>.</p></div>
+      <div class="comp"><p class="t-label">Doodle</p><div class="comp__row"><div class="comp__doodle"><Doodle locale={locale} variant="happy" /></div><div class="comp__doodle"><Doodle locale={locale} variant="wonder" /></div></div></div>
+    </div>
+  </section>
+
+  <!-- 08 covers -->
+  <section id="pg-covers" class="pg container" aria-labelledby="pg-covers-h">
+    <h2 id="pg-covers-h" class="pg__h"><SectionLabel as="span" text={L(t.covers)} frame="08" /></h2>
+    <ul class="covers" role="list">
+      {projects.map((p) => (
+        <li><div class="covers__frame"><ProjectCover cover={p.cover} media={p.media} label={p.title[locale]} locale={locale} sizes="(max-width: 40rem) 100vw, 22rem" /></div><p class="t-meta">FR {p.frame} · {p.title[locale]}</p></li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- 09 eggs -->
+  <section id="pg-eggs" class="pg container" aria-labelledby="pg-eggs-h">
+    <h2 id="pg-eggs-h" class="pg__h"><SectionLabel as="span" text={L(t.eggs)} frame="09" /></h2>
+    <p class="t-body-s t-secondary">{L(t.eggsNote)}</p>
+    <ul class="eggs" role="list" data-egg-catalog>
+      {catalog.map((e) => (
+        <li data-egg={e.id}><span class="t-meta eggs__name" data-name={e.name[locale]}>???</span><span class="t-caption eggs__hint" data-hint={e.hint[locale]}>—</span></li>
+      ))}
+    </ul>
+    <Button variant="secondary" data-reset-eggs>{L(t.reset)}</Button>
+  </section>
+</Base>
+
+<style>
+  .pg-hero { display: grid; gap: var(--space-4); padding-block: var(--space-12) var(--space-8); }
+  .pg-toc { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); margin-top: var(--space-4); }
+  .pg { display: grid; gap: var(--space-6); padding-block: var(--space-12); border-top: var(--rule-hair); }
+  .pg__h { font-size: inherit; }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: var(--space-6) var(--layout-gap); }
+  .swatch { display: grid; gap: var(--space-1); }
+  .swatch__chip { height: 5rem; border: var(--rule-ink); }
+  .swatch__name { color: var(--color-ink); }
+  .swatch__hex { color: var(--color-graphite); }
+  .pairs { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: var(--layout-gap); }
+  .pair { display: grid; gap: var(--space-1); padding: var(--space-4); border: var(--rule-hair); }
+
+  .specimens { display: grid; gap: var(--space-8); }
+  .specimen { display: grid; gap: var(--space-2); padding-bottom: var(--space-6); border-bottom: var(--rule-hair); }
+  .specimen__meta span { color: var(--color-accent); }
+
+  .spaces { display: grid; gap: var(--space-2); }
+  .spaces li { display: grid; grid-template-columns: 6rem 1fr; align-items: center; gap: var(--space-4); }
+  .spaces i { display: block; height: 0.75rem; background: var(--color-accent); grid-column: 2; grid-row: 1; }
+  .spaces .t-caption { grid-column: 2; grid-row: 1; margin-left: calc(var(--space-32) + var(--space-4)); }
+
+  .shapes { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: var(--space-8) var(--layout-gap); }
+  .shape { display: grid; align-content: end; gap: 2px; min-height: 6rem; padding: var(--space-3); border: var(--rule-ink); background: var(--color-paper-shade); }
+
+  .tracks { display: grid; gap: var(--space-3); }
+  .track { display: grid; grid-template-columns: 14rem 1fr; gap: var(--space-4); align-items: center; }
+  .track__rail { position: relative; height: 1.25rem; border-bottom: var(--rule-hair); }
+  .track__rail i { position: absolute; left: 0; bottom: -0.35rem; width: 0.7rem; height: 0.7rem; background: var(--color-ink); border-radius: 50%;
+    transition: left var(--dur, 900ms) var(--ease, var(--ease-soft)); }
+  .tracks.is-played .track__rail i { left: calc(100% - 0.7rem); }
+  @media (max-width: 40rem) { .track { grid-template-columns: 1fr; gap: var(--space-1); } }
+  .motion-demos { display: grid; grid-template-columns: auto 1fr 1fr; gap: var(--space-8); align-items: start; }
+  @media (max-width: 48rem) { .motion-demos { grid-template-columns: 1fr; } }
+  .demo { display: grid; gap: var(--space-3); justify-items: start; }
+  .demo__row { display: flex; gap: var(--space-2); }
+  .demo__row i { width: 1.5rem; height: 2.25rem; background: var(--color-ink); }
+  .demo__develop { width: min(20rem, 100%); }
+  .demo__develop :global(img) { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+
+  .cursor-zones { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: var(--layout-gap); }
+  .cursor-zone { display: grid; align-content: space-between; min-height: 8rem; padding: var(--space-4); border: 1px dashed var(--color-graphite-soft); }
+  .cursor-zone:hover { border-style: solid; border-color: var(--color-ink); background: var(--color-paper-shade); }
+
+  .comp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: var(--space-8) var(--layout-gap); }
+  .comp { display: grid; gap: var(--space-3); align-content: start; padding: var(--space-4); border: var(--rule-hair); }
+  .comp__row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .comp__doodle { width: 5rem; }
+
+  .covers { display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: var(--space-8) var(--layout-gap); }
+  .covers li { display: grid; gap: var(--space-2); }
+  .covers__frame { border: var(--rule-ink); }
+
+  .eggs { display: grid; gap: var(--space-2); }
+  .eggs li { display: grid; grid-template-columns: 14rem 1fr; gap: var(--space-4); padding-block: var(--space-2); border-bottom: var(--rule-hair); }
+  .eggs li.is-found .eggs__name { color: var(--color-ink); }
+  .eggs li.is-found .eggs__name::before { content: '✓ '; color: var(--color-accent); }
+  @media (max-width: 40rem) { .eggs li { grid-template-columns: 1fr; gap: 0; } }
+</style>
+
+<script>
+  import { foundEggs } from '../scripts/eggs/registry';
+
+  const root = document.documentElement;
+  const css = (v: string) => getComputedStyle(root).getPropertyValue(v).trim();
+
+  function rgb(c: string): [number, number, number] {
+    const probe = document.createElement('span');
+    probe.style.color = c;
+    document.body.append(probe);
+    const m = getComputedStyle(probe).color.match(/\d+(\.\d+)?/g)!.map(Number);
+    probe.remove();
+    return [m[0], m[1], m[2]];
+  }
+  const hex = (c: [number, number, number]) => '#' + c.map((x) => Math.round(x).toString(16).padStart(2, '0')).join('');
+  const lum = ([r, g, b]: [number, number, number]) => {
+    const f = (v: number) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+  };
+  const ratio = (a: [number, number, number], b: [number, number, number]) => {
+    const x = lum(a), y = lum(b);
+    return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+  };
+
+  function paint() {
+    document.querySelectorAll<HTMLElement>('[data-color-var]').forEach((el) => (el.textContent = hex(rgb(css(el.dataset.colorVar!)))));
+    document.querySelectorAll<HTMLElement>('[data-pair]').forEach((el) => {
+      const [fg, bg] = el.dataset.pair!.split('|');
+      const r = ratio(rgb(css(fg)), rgb(css(bg)));
+      el.querySelector('[data-ratio]')!.textContent = `${r.toFixed(2)}:1 ${r >= 7 ? 'AAA' : r >= 4.5 ? 'AA' : r >= 3 ? 'AA large' : 'fail'}`;
+    });
+    document.querySelectorAll<HTMLElement>('[data-size-of]').forEach((el) => {
+      const probe = document.createElement('div');
+      probe.style.width = `var(${el.dataset.sizeOf})`;
+      probe.style.position = 'absolute';
+      document.body.append(probe);
+      el.textContent = `${Math.round(probe.getBoundingClientRect().width * 10) / 10}px`;
+      probe.remove();
+    });
+    document.querySelectorAll<HTMLElement>('[data-time-of]').forEach((el) => (el.textContent = css(el.dataset.timeOf!)));
+    const found = foundEggs();
+    document.querySelectorAll<HTMLElement>('[data-egg]').forEach((li) => {
+      const on = found.includes(li.dataset.egg!);
+      li.classList.toggle('is-found', on);
+      const n = li.querySelector<HTMLElement>('[data-name]')!;
+      const h = li.querySelector<HTMLElement>('[data-hint]')!;
+      n.textContent = on ? n.dataset.name! : '???';
+      h.textContent = on ? h.dataset.hint! : '—';
+    });
+  }
+  paint();
+  window.addEventListener('ina:prefs', () => requestAnimationFrame(paint));
+  window.addEventListener('ina:egg-found', paint);
+  window.addEventListener('resize', () => requestAnimationFrame(paint));
+
+  // Motion demos.
+  document.querySelector('[data-play-tracks]')?.addEventListener('click', () => {
+    const t = document.querySelector('[data-tracks]')!;
+    t.classList.toggle('is-played');
+  });
+  document.querySelector('[data-play-stagger]')?.addEventListener('click', () => {
+    const cells = document.querySelectorAll<HTMLElement>('[data-stagger-demo] i');
+    const step = parseFloat(css('--stagger-step')) || 0;
+    const jitter = parseFloat(css('--jitter')) || 0;
+    cells.forEach((c, i) => {
+      c.animate(
+        [{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }],
+        { duration: parseFloat(css('--duration-slow')) || 1, delay: i * step + Math.random() * jitter, easing: css('--ease-settle'), fill: 'backwards' },
+      );
+    });
+  });
+  document.querySelector('[data-play-develop]')?.addEventListener('click', () => {
+    const img = document.querySelector<HTMLElement>('[data-develop-demo] img');
+    img?.animate(
+      [{ filter: 'grayscale(1) contrast(0.55) brightness(1.35) sepia(0.25)', opacity: 0.35 }, { filter: 'none', opacity: 1 }],
+      { duration: parseFloat(css('--duration-develop')) || 1, easing: css('--ease-develop') },
+    );
+  });
+
+  // Reset (for testing the secrets again).
+  document.querySelector('[data-reset-eggs]')?.addEventListener('click', () => {
+    ['ina:eggs', 'ina:roll', 'ina:shelf'].forEach((k) => { try { localStorage.removeItem(k); } catch { /* ignore */ } });
+    location.reload();
+  });
+</script>

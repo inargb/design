@@ -1,0 +1,111 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:N;src:url(nunito-400.woff2);font-weight:400}
+@font-face{font-family:N;src:url(nunito-600.woff2);font-weight:600}
+@font-face{font-family:N;src:url(nunito-700.woff2);font-weight:700}
+@font-face{font-family:N;src:url(nunito-900.woff2);font-weight:900}
+@font-face{font-family:M;src:url(../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-italic.woff2);font-style:italic}
+@font-face{font-family:M;src:url(../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2);font-weight:500}
+:root{--g:#829d24;--lime:#aace26;--y:#dfdd21;--r:#ce1d20;--w:#7a211e;--ink:#2b2b2b;--mut:#8a8a8a;--line:#e6e6e6;--bg:#f6f6f4}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1800px;background:#f3f3f1;font-family:N,sans-serif;color:var(--ink);padding:70px 80px}
+h1{font-family:M;font-style:normal;font-weight:500;font-size:40px;color:#3a3a3a;margin-bottom:44px;letter-spacing:-.01em}
+h1 b{font-style:normal;font-weight:500;color:var(--g)}
+.card{background:#fff;border-radius:18px;box-shadow:0 2px 14px rgb(0 0 0/.06);padding:60px 56px;display:grid;grid-template-columns:1.05fr 1fr 1fr 1.15fr;gap:56px}
+h2{font-size:22px;font-weight:700;padding-bottom:18px;border-bottom:2px solid var(--line);margin-bottom:26px}
+.k{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:30px 0 14px}
+.k:first-of-type{margin-top:0}
+.type p{line-height:1.25;margin-bottom:12px}
+.sw{display:flex;align-items:center;gap:14px;margin-bottom:12px}.sw i{width:44px;height:44px;border-radius:10px;display:block}.sw b{font-size:15px;font-weight:700;display:block}.sw span{font-size:13px;color:var(--mut)}
+.row{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.btn{border:0;border-radius:999px;font-family:N;font-weight:700;font-size:16px;padding:12px 26px}
+.p{background:var(--lime);color:#243200}.p.h{background:var(--g);color:#fff}.p.d{background:#e3e3e3;color:#a5a5a5}
+.s{background:var(--w);color:#fff}.s.h{background:var(--r)}.s.o{background:#fff;color:var(--w);box-shadow:inset 0 0 0 2px var(--w)}
+.pill{border-radius:999px;padding:7px 16px;font-weight:800;font-size:14px}
+.fab{width:54px;height:54px;border-radius:50%;display:grid;place-items:center}
+svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.in{border:0;border-bottom:2px solid var(--line);padding:12px 2px;font-size:16px;color:var(--mut);display:flex;justify-content:space-between;margin-bottom:14px}
+.in.f{border-color:var(--g);color:var(--ink)}
+.search{background:var(--bg);border-radius:12px;padding:13px 16px;display:flex;justify-content:space-between;color:var(--mut);font-size:15px;margin-bottom:10px}
+.ck{display:flex;align-items:center;gap:14px;font-size:16px;margin-bottom:12px}.ck i{width:24px;height:24px;border-radius:7px;background:var(--lime);display:grid;place-items:center}.ck i.x{background:var(--w)}
+.ck i.x svg{width:16px;height:16px;stroke:#fff;stroke-width:3}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:999px;overflow:hidden;font-weight:700;font-size:15px}.seg span{padding:9px 24px}.seg .on{background:var(--lime);color:#243200}
+.timer{border:2px solid var(--lime);border-radius:16px;padding:18px;text-align:center}
+.timer b{display:block;font-size:17px;margin-bottom:10px}.timer .d{display:flex;gap:8px;justify-content:center;font-weight:700;font-size:20px;color:#666}.timer .d span{border:1.5px solid #bbb;border-radius:6px;padding:2px 8px}
+.recipe{border-radius:16px;box-shadow:0 2px 10px rgb(0 0 0/.08);overflow:hidden;margin-bottom:18px}
+.recipe .hd{background:var(--lime);font-weight:900;font-size:17px;color:#243200;padding:12px 18px;letter-spacing:.02em}
+.recipe .bd{display:flex;gap:14px;padding:16px 18px}.recipe .img{width:92px;height:74px;border-radius:12px;background:linear-gradient(135deg,#e7c79d,#c0582c 60%,#7a211e)}
+.recipe .t{font-weight:700;color:var(--w);font-size:16px;margin-bottom:6px}.recipe .m{font-size:13px;color:var(--mut);line-height:1.4}
+.notif{background:var(--w);border-radius:16px;padding:18px;margin-bottom:18px}
+.notif .it{background:#fff;border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:center;font-size:13.5px;line-height:1.35}.notif .it svg{color:var(--g);flex:none}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.cat{text-align:center;font-size:12px;font-weight:700;letter-spacing:.06em;color:#555}.cat i{display:block;aspect-ratio:1;border-radius:50%;border:4px solid var(--lime);margin-bottom:8px}
+.tab{display:flex;justify-content:space-around;border-top:2px solid var(--line);padding:14px 0 4px;color:var(--w)}.tab .on{position:relative}.tab .on::after{content:'';position:absolute;left:-6px;right:-6px;bottom:-8px;height:3px;background:var(--r);border-radius:2px}
+.ic{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;color:var(--g)}
+</style></head><body>
+<h1>Design System Preview · <b>Bandoneón</b></h1>
+<div class="card">
+<section class="type"><h2>Styles</h2>
+<p class="k">Typography · Nunito</p>
+<p style="font-weight:900;font-size:34px">Black 900</p>
+<p style="font-weight:700;font-size:26px">Bold 700</p>
+<p style="font-weight:600;font-size:21px">SemiBold 600</p>
+<p style="font-size:17px">Regular 400 · body</p>
+<p style="font-size:13px;color:var(--mut)">Line height 1.5×</p>
+<p class="k">Colours</p>
+<div class="sw"><i style="background:#829d24"></i><div><b>green.dark</b><span>#829D24</span></div></div>
+<div class="sw"><i style="background:#aace26"></i><div><b>green.lime</b><span>#AACE26</span></div></div>
+<div class="sw"><i style="background:#dfdd21"></i><div><b>yellow</b><span>#DFDD21</span></div></div>
+<div class="sw"><i style="background:#ce1d20"></i><div><b>red</b><span>#CE1D20</span></div></div>
+<div class="sw"><i style="background:#7a211e"></i><div><b>wine</b><span>#7A211E</span></div></div>
+<p class="k">Iconography</p>
+<div class="ic">
+<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+<svg viewBox="0 0 24 24"><path d="M4 11h16v3a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6zM2 11h20M9 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/></svg>
+<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+<svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4"/></svg>
+<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>
+<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>
+<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>
+<svg viewBox="0 0 24 24"><path d="M3 6h18l-7 8v6l-4-2v-4z"/></svg>
+<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+</div></section>
+<section><h2>Buttons</h2>
+<p class="k">Primary</p>
+<div class="row"><button class="btn p">Entrar</button><button class="btn p h">Hover</button><button class="btn p d">Inativo</button></div>
+<p class="k">Secondary</p>
+<div class="row"><button class="btn s">Veja a receita!</button><button class="btn s h">Hover</button></div>
+<div class="row"><button class="btn s o">Cadastrar</button></div>
+<p class="k">Tags</p>
+<div class="row"><span class="pill" style="background:var(--lime);color:#243200">Ingredientes</span><span class="pill" style="background:var(--w);color:#fff">Macarrão com tomate cereja</span></div>
+<div class="row"><span class="pill" style="background:var(--lime);color:#243200">RECEITA CONCLUÍDA</span><span class="pill" style="background:var(--y);color:#3d3a00">Fácil</span></div>
+<p class="k">Actions</p>
+<div class="row"><span class="fab" style="background:var(--w);color:#fff"><svg viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg></span><span class="fab" style="background:var(--lime);color:#243200"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span class="fab" style="background:#fff;color:var(--g);box-shadow:inset 0 0 0 2px var(--g)"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg></span></div>
+</section>
+<section><h2>Forms</h2>
+<p class="k">Text input</p>
+<div class="in">Entrar com email ou usuário</div>
+<div class="in f">maria@email.com</div>
+<p class="k">Search</p>
+<div class="search">O que você quer cozinhar? <svg viewBox="0 0 24 24" style="width:20px;height:20px"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></div>
+<p class="k">Segmented</p>
+<div class="seg"><span class="on">Entrar</span><span>Cadastrar</span></div>
+<p class="k">Checklist</p>
+<div class="ck"><i></i>80g de espaguete</div>
+<div class="ck"><i class="x"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></i>½ xícara de tomate cereja</div>
+<div class="ck"><i></i>1 dente de alho</div>
+<p class="k">Timer</p>
+<div class="timer"><b>TEMPORIZADOR</b><div class="d"><span>00</span>:<span>08</span>:<span>00</span></div></div>
+</section>
+<section><h2>Components</h2>
+<p class="k">Recipe card</p>
+<div class="recipe"><div class="hd">RECEITA DO DIA</div><div class="bd"><div class="img"></div><div><p class="t">Macarrão com tomate cereja</p><p class="m">Hoje separamos uma receita ideal para um jantar especial.</p></div></div></div>
+<p class="k">Notification</p>
+<div class="notif"><div class="it"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8"/></svg>Uma receita vegana novinha em folha foi postada!</div></div>
+<p class="k">Categories</p>
+<div class="cats"><div class="cat"><i style="background:radial-gradient(circle at 40% 40%,#f4e2a8,#d9a441)"></i>MASSAS</div><div class="cat"><i style="background:radial-gradient(circle at 40% 40%,#9bd06a,#4c8a2a)"></i>SALADAS</div><div class="cat"><i style="background:radial-gradient(circle at 40% 40%,#8a5a3c,#3b2418)"></i>BOLOS</div></div>
+<p class="k">Tab bar</p>
+<div class="tab"><svg class="on" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><svg viewBox="0 0 24 24"><path d="M4 11h16v3a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6zM2 11h20"/></svg><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></div>
+</section>
+</div></body></html>

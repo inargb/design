@@ -1,0 +1,90 @@
+---
+import '@fontsource-variable/inter/opsz.css';
+import '@fontsource-variable/inter/opsz-italic.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/ibm-plex-mono/400-italic.css';
+import '@fontsource/ibm-plex-mono/500-italic.css';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components.css';
+
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Cursor from '../components/Cursor.astro';
+import BackToTop from '../components/BackToTop.astro';
+import Polaroid from '../components/Polaroid.astro';
+import ShortcutsDialog from '../components/ShortcutsDialog.astro';
+import { htmlLang, type Locale, type RouteId } from '../i18n/config';
+import { ui } from '../i18n/ui';
+import { site } from '../content/site';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+  route?: RouteId;            // current top-level route (for nav state)
+  altHref: string;            // same page in the other language
+  pageId: string;             // stable id for the frame counter
+}
+
+const { locale, title, description, route, altHref, pageId } = Astro.props;
+// Tab: "inaiá silva_portfolio" on the home page; elsewhere the page's own
+// name first, lowercase, e.g. "about_inaiá silva", "portal de sistemas_inaiá silva".
+const tabTitle = title ? `${title.toLocaleLowerCase(locale === 'pt' ? 'pt-BR' : 'en')}_inaiá silva` : 'inaiá silva_portfolio';
+const root = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const fullTitle = title ? `${title} · ${site.name}` : site.title[locale];
+const desc = description ?? site.description[locale];
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang={htmlLang[locale]} data-page={pageId}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tabTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={locale === 'en' ? 'pt-BR' : 'en'} href={new URL(altHref, Astro.site)} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta name="theme-color" content="#fbfbfd" />
+    <meta name="color-scheme" content="light" />
+    <!-- Favicon: the doodle face (source: design/favicon-source.png). -->
+    <link rel="icon" href={`${root}favicon.ico`} sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href={`${root}favicon-32.png`} />
+    <link rel="icon" type="image/png" sizes="48x48" href={`${root}favicon-48.png`} />
+    <link rel="apple-touch-icon" href={`${root}apple-touch-icon.png`} />
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        // Light only: forget a theme saved by an earlier version.
+        try { localStorage.removeItem('ina:theme'); } catch (e) {}
+        d.classList.add('js');
+        if ('IntersectionObserver' in window) d.classList.add('js-reveal');
+      })();
+    </script>
+    {import.meta.env.PROD && (
+      // Cloudflare Web Analytics: page views only, no cookies. The token is public.
+      <script is:inline type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "c3432185dbb8418e86c8ba7076023b80"}'></script>
+    )}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{ui.skip[locale]}</a>
+    <Nav locale={locale} route={route} altHref={altHref} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+    <BackToTop locale={locale} />
+    <Cursor locale={locale} />
+    <ShortcutsDialog locale={locale} />
+    <Polaroid locale={locale} />
+    <script>
+      import '../scripts/prefs';
+      import '../scripts/motion';
+      import '../scripts/eggs/index';
+    </script>
+  </body>
+</html>

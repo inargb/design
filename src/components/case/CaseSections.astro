@@ -1,0 +1,40 @@
+---
+// A case's body: intro blocks, then numbered sections. Styles live
+// (globally) in views/CaseView.astro so sealed cases, injected after
+// unlocking, look exactly like open ones.
+import CaseBlocks from './CaseBlocks.astro';
+import { figures } from './figures';
+import SectionLabel from '../ui/SectionLabel.astro';
+import type { Locale } from '../../i18n/config';
+import type { CaseStudy } from '../../content/cases/types';
+interface Props { study: CaseStudy; locale: Locale; }
+const { study, locale } = Astro.props;
+const two = (i: number) => String(i + 1).padStart(2, '0');
+// Figure numbers run through the whole case.
+let fig = 1;
+const introStart = fig;
+for (const b of study.intro ?? []) fig += figures(b);
+const sections = study.sections.map((s) => {
+  const figStart = fig;
+  for (const b of s.blocks) fig += figures(b);
+  return { s, figStart };
+});
+---
+{study.intro && <div class="case-intro"><CaseBlocks blocks={study.intro} locale={locale} figStart={introStart} /></div>}
+{sections.map(({ s, figStart }, i) => (
+  <section class="case-sec" id={s.id} aria-labelledby={`${s.id}-title`} data-case-section>
+    <header class="case-sec__head">
+      {s.title ? (
+        <>
+          <SectionLabel text={s.label[locale]} frame={two(i)} />
+          <h2 id={`${s.id}-title`} class="t-heading-l">{s.title[locale]}</h2>
+        </>
+      ) : (
+        <h2 id={`${s.id}-title`} class="case-sec__label t-heading-l"><span class="case-sec__no">{two(i)}</span> {s.label[locale]}<span class="caret" aria-hidden="true"></span></h2>
+      )}
+    </header>
+    <div class="case-sec__blocks">
+      <CaseBlocks blocks={s.blocks} locale={locale} figStart={figStart} />
+    </div>
+  </section>
+))}

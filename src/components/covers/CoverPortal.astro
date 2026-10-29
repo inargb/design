@@ -1,0 +1,97 @@
+---
+// Systems Portal: 100+ systems in one unordered pile, sorting themselves
+// into eight categories under a search bar. Positions are seeded so the
+// pile looks the same on every build.
+import CoverShell from './CoverShell.astro';
+interface Props { label: string; }
+
+let seed = 7;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const cols = 8;
+const perCol = 5;
+const bars = Array.from({ length: cols * perCol }, (_, i) => {
+  const col = i % cols;
+  const row = Math.floor(i / cols);
+  return {
+    x0: 6 + rnd() * 80, y0: 24 + rnd() * 62, r0: (rnd() - 0.5) * 50,
+    x1: 6 + col * 11, y1: 34 + row * 7.6,
+    w: 7 + rnd() * 2.5,
+  };
+});
+const labels = ['vegetal', 'animal', 'admin', 'TI', 'orçam.', '·', '·', '·'];
+---
+
+<CoverShell bg="#e4ece1" ink="#18402a" label={Astro.props.label}>
+  <div class="portal">
+    <div class="portal__search"><span>pesq</span><i></i></div>
+    <div class="portal__labels">
+      {labels.map((l, i) => <span style={`left:${6 + i * 11}cqw`}>{l}</span>)}
+    </div>
+    {bars.map((b, i) => (
+      <i
+        class="portal__bar"
+        style={`--x0:${b.x0}cqw;--y0:${b.y0}cqw;--r0:${b.r0}deg;--x1:${b.x1}cqw;--y1:${b.y1}cqw;width:${b.w}cqw;--d:${(i % 8) * 40}ms`}
+      ></i>
+    ))}
+    <span class="portal__count">100+ → 8</span>
+  </div>
+</CoverShell>
+
+<style>
+  .portal { position: absolute; inset: 0; font-size: 1.5cqw; }
+  .portal__search {
+    position: absolute;
+    left: 6cqw;
+    right: 6cqw;
+    top: 6cqw;
+    display: flex;
+    align-items: center;
+    gap: 0.3cqw;
+    padding: 1.3cqw 2cqw;
+    border: 0.2cqw solid #18402a;
+    background: #f5f8f3;
+    font-size: 1.8cqw;
+  }
+  .portal__search span { overflow: hidden; white-space: nowrap; width: 5ch; animation: type 7s steps(5) infinite; }
+  .portal__search i { width: 0.2cqw; height: 2.2cqw; background: #18402a; animation: blink 1s steps(1) infinite; }
+  @keyframes type { 0%, 10% { width: 0; } 30%, 90% { width: 5ch; } 100% { width: 0; } }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .portal__labels span {
+    position: absolute;
+    top: 27cqw;
+    font-size: 1.3cqw;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    animation: labels 7s var(--ease-soft) infinite;
+  }
+  @keyframes labels { 0%, 30% { opacity: 0; } 42%, 90% { opacity: 1; } 100% { opacity: 0; } }
+
+  .portal__bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 1.6cqw;
+    background: #18402a;
+    translate: var(--x1) var(--y1);
+    animation: sort 7s var(--ease-settle) infinite;
+    animation-delay: var(--d);
+  }
+  .portal__bar:nth-child(3n) { background: #2f7a4b; }
+  .portal__bar:nth-child(5n) { background: #8fb89a; }
+  @keyframes sort {
+    0%, 14% { translate: var(--x0) var(--y0); rotate: var(--r0); }
+    40%, 88% { translate: var(--x1) var(--y1); rotate: 0deg; }
+    100% { translate: var(--x0) var(--y0); rotate: var(--r0); }
+  }
+  .portal__count {
+    position: absolute;
+    right: 6cqw;
+    bottom: 4cqw;
+    padding: 0.6cqw 1.2cqw;
+    background: #18402a;
+    color: #e4ece1;
+    font-weight: 500;
+  }
+</style>

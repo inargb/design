@@ -1,0 +1,64 @@
+---
+// Not a dropdown: two languages in one gate. The marker sits behind the
+// current one and leans toward the other on hover, like a frame advancing.
+import type { Locale } from '../i18n/config';
+import { ui } from '../i18n/ui';
+
+interface Props { locale: Locale; altHref: string; }
+const { locale, altHref } = Astro.props;
+const other: Locale = locale === 'en' ? 'pt' : 'en';
+---
+
+<a
+  class="lang"
+  href={altHref}
+  hreflang={other === 'pt' ? 'pt-BR' : 'en'}
+  lang={other === 'pt' ? 'pt-BR' : 'en'}
+  aria-label={ui.lang.switchTo[locale]}
+  data-current={locale}
+  data-cursor="link"
+>
+  <span class="lang__marker" aria-hidden="true"></span>
+  <span class="lang__opt" data-on={locale === 'en'} aria-hidden="true">EN</span>
+  <span class="lang__opt" data-on={locale === 'pt'} aria-hidden="true">PT</span>
+</a>
+
+<style>
+  .lang {
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    min-height: var(--tap-min);
+    padding-inline: var(--space-1);
+    font-family: var(--font-system);
+    font-size: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    color: var(--color-graphite);
+    text-decoration: none;
+    isolation: isolate;
+  }
+  .lang__opt {
+    position: relative;
+    padding: var(--space-1) var(--space-2);
+    transition: color var(--duration-quick) var(--ease-soft);
+  }
+  .lang__opt[data-on='true'] { color: var(--color-on-highlight); font-weight: 500; }
+  .lang__marker {
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    left: var(--space-1);
+    width: calc(50% - var(--space-1));
+    height: 1.5em;
+    translate: 0 -50%;
+    background: var(--color-highlight);
+    transition: translate var(--duration-settle) var(--ease-settle),
+      scale var(--duration-settle) var(--ease-settle);
+  }
+  .lang[data-current='pt'] .lang__marker { translate: 100% -50%; }
+  .lang:hover .lang__marker,
+  .lang:focus-visible .lang__marker { scale: 1.12 1; translate: 12% -50%; }
+  .lang[data-current='pt']:hover .lang__marker,
+  .lang[data-current='pt']:focus-visible .lang__marker { translate: 88% -50%; }
+</style>

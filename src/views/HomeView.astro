@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import Doodle from '../components/Doodle.astro';
+import FramesWord from '../components/FramesWord.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import SectionLabel from '../components/ui/SectionLabel.astro';
+import { href, type Locale } from '../i18n/config';
+import { home } from '../content/home';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const other: Locale = locale === 'en' ? 'pt' : 'en';
+---
+
+<Base locale={locale} route="home" altHref={href('home', other)} pageId="home">
+  <section class="hero container" aria-labelledby="hero-title">
+    <h1 id="hero-title" class="hero__title t-display" data-spec-label="display · clamp(2rem → 4.4rem)">
+      {home.headlineBefore[locale]}<FramesWord locale={locale} word={home.word[locale]} after={home.headlineAfter[locale]} />
+    </h1>
+
+    <div class="hero__doodles">
+      <div class="hero__doodle hero__doodle--happy" data-doodle-drag data-cursor="drag"><Doodle variant="happy" /></div>
+      <div class="hero__doodle hero__doodle--wonder" data-doodle-drag data-cursor="drag"><Doodle variant="wonder" /></div>
+    </div>
+  </section>
+
+  <section id="work" class="work container" aria-labelledby="work-title">
+    <header class="work__head">
+      <SectionLabel text={home.workLabel[locale]} />
+      <h2 id="work-title" class="visually-hidden">{home.workLabel[locale]}</h2>
+    </header>
+    <ProjectGrid locale={locale} />
+  </section>
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    align-items: start;
+    gap: var(--space-8);
+    /* Fills the first screen but leaves a peek of the work below (~13rem). */
+    min-height: max(20rem, calc(100svh - var(--nav-height) - 13rem));
+    padding-block: clamp(var(--space-6), 11svh, 8rem) var(--space-4);
+  }
+  .hero__title { max-width: 22ch; position: relative; z-index: 2; }
+
+  /* Two of Inaiá's doodles keep each other company on the right. */
+  .hero__doodles { position: absolute; inset: 0 var(--layout-gutter); pointer-events: none; }
+  /* They can be picked up and moved anywhere on the page (scripts/eggs/doodle.ts). */
+  .hero__doodle {
+    position: absolute;
+    z-index: 3;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    translate: var(--drag-x, 0px) var(--drag-y, 0px);
+    transition: scale var(--duration-quick) var(--ease-settle);
+  }
+  .hero__doodle.is-held { scale: 1.08; }
+  .hero__doodle--happy { right: 2%; top: 8%; width: clamp(6rem, 4rem + 9vw, 13rem); rotate: 8deg; }
+  .hero__doodle--wonder { right: 17%; bottom: 8%; width: clamp(4.5rem, 3rem + 6vw, 9rem); rotate: -10deg; }
+  @media (max-width: 40rem) {
+    .hero { min-height: auto; padding-top: var(--space-6); }
+    .hero__doodles { position: relative; inset: auto; display: flex; justify-content: flex-end; align-items: flex-end; gap: var(--space-3); order: -1; }
+    .hero__doodle { position: relative; right: auto; top: auto; bottom: auto; }
+    .hero__doodle--happy { width: 6rem; }
+    .hero__doodle--wonder { width: 4.5rem; order: -1; }
+  }
+
+  .work { padding-top: var(--space-6); scroll-margin-top: var(--nav-height); }
+  .work__head { margin-bottom: var(--space-6); }
+
+</style>

@@ -1,0 +1,66 @@
+---
+// Photocard Binder (coming soon): a binder spread of sleeves; one card
+// flips to show its back. Abstract cards, no real photos.
+import CoverShell from './CoverShell.astro';
+interface Props { label: string; }
+const palette = ['#f7c6d9', '#c9e4f5', '#fde7a8', '#d8cdf2', '#bfe8d6', '#f9d3b8'];
+const cards = Array.from({ length: 18 }, (_, i) => palette[(i * 5) % palette.length]);
+---
+
+<CoverShell bg="#e9e3f3" ink="#2b2340" label={Astro.props.label}>
+  <div class="binder">
+    <div class="binder__page">
+      {cards.slice(0, 9).map((c, i) => <div class="binder__sleeve"><i class:list={['binder__card', { 'is-flip': i === 4 }]} style={`--c:${c}`}></i></div>)}
+    </div>
+    <div class="binder__rings" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="binder__page">
+      {cards.slice(9).map((c, i) => <div class="binder__sleeve"><i class:list={['binder__card', { 'is-empty': i === 7 }]} style={`--c:${c}`}></i></div>)}
+    </div>
+    <span class="binder__tag">collected 17 / 18</span>
+  </div>
+</CoverShell>
+
+<style>
+  .binder {
+    position: absolute;
+    inset: 5cqw 8cqw 7cqw;
+    display: grid;
+    grid-template-columns: 1fr 4cqw 1fr;
+    padding: 2cqw;
+    background: #fbf9ff;
+    border: 0.2cqw solid #2b2340;
+    box-shadow: 1cqw 1cqw 0 #2b2340;
+  }
+  .binder__page { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2cqw; }
+  .binder__sleeve { aspect-ratio: 5 / 7.2; padding: 0.5cqw; border: 0.12cqw solid #c9c0dc; perspective: 40cqw; }
+  .binder__card {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.6cqw;
+    background:
+      radial-gradient(circle at 50% 38%, rgb(255 255 255 / 0.8) 0 18%, transparent 19%),
+      linear-gradient(to top, rgb(43 35 64 / 0.18) 0 22%, transparent 22%),
+      var(--c);
+  }
+  .binder__card.is-empty { background: repeating-linear-gradient(45deg, transparent 0 0.6cqw, #e3dcef 0.6cqw 1.2cqw); }
+  .binder__card.is-flip { animation: flip 5s var(--ease-settle) infinite; transform-style: preserve-3d; }
+  @keyframes flip {
+    0%, 35% { rotate: y 0deg; }
+    50%, 85% { rotate: y 180deg; background: #2b2340; }
+    100% { rotate: y 360deg; }
+  }
+  .binder__rings { display: grid; align-content: space-evenly; justify-items: center; }
+  .binder__rings i { width: 3cqw; height: 1.6cqw; border: 0.3cqw solid #8a80a3; border-radius: 1cqw; }
+  .binder__tag {
+    position: absolute;
+    right: -2cqw;
+    bottom: -3.4cqw;
+    padding: 0.7cqw 1.4cqw;
+    font-size: 1.4cqw;
+    font-weight: 500;
+    background: #2b2340;
+    color: #fbf9ff;
+    rotate: -3deg;
+  }
+</style>

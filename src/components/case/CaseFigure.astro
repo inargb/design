@@ -1,0 +1,60 @@
+---
+// A case-study image. It's a print: it lifts on hover (the print lift) and
+// opens larger in the lightbox on click or Enter. The caption is numbered
+// like a figure in a spec sheet: FIG. 02.
+import { Image, getImage } from 'astro:assets';
+import type { Locale, L10n } from '../../i18n/config';
+import { ui } from '../../i18n/ui';
+import type { CaseImage } from '../../content/cases/types';
+
+interface Props {
+  image: CaseImage;
+  locale: Locale;
+  n: number;                 // figure number within the case
+  caption?: L10n;
+  sizes?: string;
+  bare?: boolean;            // inside a gallery: no figure/figcaption of its own
+}
+const { image, locale, n, caption, sizes = '(max-width: 64rem) 100vw, 60rem', bare = false } = Astro.props;
+const full = await getImage({ src: image.src, width: Math.min(image.src.width, 2000), format: 'webp' });
+// A phone-specific version, when the case provides one (e.g. a taller diagram).
+const phone = image.mobile ? await getImage({ src: image.mobile, widths: [480, 960, Math.min(image.mobile.width, 1400)], sizes: '100vw', format: 'webp' }) : undefined;
+const alt = image.alt[locale];
+// An animation plays in place (muted, looping); its still is the poster.
+const poster = image.video ? await getImage({ src: image.src, width: Math.min(image.src.width, 1400), format: 'webp' }) : undefined;
+const no = `${ui.case.fig[locale]} ${String(n).padStart(2, '0')}`;
+const Wrap = bare ? 'div' : 'figure';
+---
+
+<Wrap class="cfig">
+  {image.video ? (
+    <div class="cfig__print cfig__print--video">
+      <video src={image.video} poster={poster!.src} width={image.src.width} height={image.src.height} autoplay muted loop playsinline preload="metadata" aria-label={alt} data-develop></video>
+    </div>
+  ) : (
+  <button
+    type="button"
+    class="cfig__print lift crop"
+    data-lightbox
+    data-full={full.src}
+    data-alt={alt}
+    data-caption={caption ? `${no} · ${caption[locale]}` : no}
+    data-cursor="look"
+    aria-label={`${ui.case.enlarge[locale]}: ${alt}`}
+  >
+    {phone ? (
+      <picture data-develop>
+        <source media="(max-width: 40rem)" srcset={phone.srcSet.attribute} sizes="100vw" />
+        <Image src={image.src} alt={alt} widths={[640, 1280, Math.min(image.src.width, 1920)]} sizes={sizes} />
+      </picture>
+    ) : (
+      <Image src={image.src} alt={alt} widths={[640, 1280, Math.min(image.src.width, 1920)]} sizes={sizes} data-develop />
+    )}
+  </button>
+  )}
+  {!bare && (
+    <figcaption class="cfig__cap t-caption">
+      <span class="cfig__no">{no}</span>{caption && <span> · {caption[locale]}</span>}
+    </figcaption>
+  )}
+</Wrap>

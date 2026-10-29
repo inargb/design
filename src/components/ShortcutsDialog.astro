@@ -1,0 +1,57 @@
+---
+import type { Locale } from '../i18n/config';
+import { ui } from '../i18n/ui';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const s = ui.shortcuts;
+const keys = [
+  { k: 'S', en: 'spec mode: the site measures itself', pt: 'modo spec: o site se mede' },
+  { k: 'Esc', en: 'close things', pt: 'fechar coisas' },
+  { k: '?', en: 'this sheet', pt: 'esta folha' },
+];
+---
+
+<dialog class="sheet" data-shortcuts aria-labelledby="shortcuts-title">
+  <div class="sheet__inner">
+    <header class="sheet__head">
+      <h2 id="shortcuts-title" class="t-label">{s.title[locale]}</h2>
+      <button class="sheet__close t-nav" type="button" data-shortcuts-close>{s.close[locale]} ×</button>
+    </header>
+    <dl class="sheet__keys">
+      {keys.map((row) => (
+        <div class="sheet__row">
+          <dt><kbd class="keycap">{row.k}</kbd></dt>
+          <dd class="t-caption">{row[locale]}</dd>
+        </div>
+      ))}
+    </dl>
+    <p class="t-label sheet__sub">{ui.footer.secrets[locale]}</p>
+    <ul class="sheet__eggs" role="list" data-egg-list data-unknown={s.unknown[locale]}></ul>
+  </div>
+</dialog>
+
+<style>
+  .sheet {
+    width: min(28rem, calc(100vw - 2 * var(--layout-gutter)));
+    padding: 0;
+    border: var(--rule-ink);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-offset-lift);
+  }
+  .sheet::backdrop { background: var(--color-scrim); }
+  .sheet__inner { padding: var(--space-6); display: grid; gap: var(--space-4); }
+  .sheet__head { display: flex; justify-content: space-between; align-items: center; }
+  .sheet__close { border: 0; background: none; min-height: var(--tap-min); padding-inline: var(--space-2); color: var(--color-graphite); }
+  .sheet__close:hover { color: var(--color-ink); }
+  .sheet__keys { display: grid; gap: var(--space-2); }
+  .sheet__row { display: grid; grid-template-columns: 3.5rem 1fr; align-items: center; }
+  .sheet__row dd { color: var(--color-graphite); }
+  .sheet__sub { margin-top: var(--space-2); padding-top: var(--space-4); border-top: var(--rule-hair); }
+  .sheet__eggs { display: grid; gap: var(--space-2); font-family: var(--font-system); font-size: var(--type-caption); }
+  .sheet__eggs :global(li) { display: grid; grid-template-columns: 11rem 1fr; gap: var(--space-2); color: var(--color-graphite-soft); }
+  .sheet__eggs :global(li.is-found) { color: var(--color-ink); }
+  .sheet__eggs :global(li.is-found .egg-name)::before { content: '✓ '; color: var(--color-accent); }
+  @media (max-width: 30rem) { .sheet__eggs :global(li) { grid-template-columns: 1fr; gap: 0; } }
+</style>

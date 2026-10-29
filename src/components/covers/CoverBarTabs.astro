@@ -1,0 +1,95 @@
+---
+// Bar Tabs: a dark screen for a dark bar. Open tabs as tiles, each server
+// with their own colour; one tab slides over and merges into another.
+import CoverShell from './CoverShell.astro';
+interface Props { label: string; }
+const tabs = [
+  { n: 'AM', c: '#f3cf1c', t: 'Table 4' },
+  { n: 'JR', c: '#7fc8a9', t: 'Bar 2' },
+  { n: 'LS', c: '#ff8a65', t: 'Patio' },
+  { n: 'AM', c: '#f3cf1c', t: 'Bar 5' },
+  { n: 'KT', c: '#b39ddb', t: 'Table 9' },
+  { n: 'JR', c: '#7fc8a9', t: 'Bar 7' },
+  { n: 'LS', c: '#ff8a65', t: 'Table 1' },
+  { n: 'KT', c: '#b39ddb', t: 'Bar 1' },
+];
+---
+
+<CoverShell bg="#101112" ink="#e9e6df" label={Astro.props.label}>
+  <div class="bar">
+    <div class="bar__top">
+      <span class="bar__search">search tabs…</span>
+      <span class="bar__pill">open · 8</span>
+      <span class="bar__moon" aria-hidden="true"></span>
+    </div>
+    <div class="bar__grid">
+      {tabs.map((tab, i) => (
+        <div class="bar__tab" style={`--c:${tab.c}`} data-i={i}>
+          <span class="bar__who">{tab.n}</span>
+          <span class="bar__name">{tab.t}</span>
+          <i></i><i></i>
+        </div>
+      ))}
+    </div>
+    <div class="bar__merge"><span>merge</span></div>
+  </div>
+</CoverShell>
+
+<style>
+  .bar { position: absolute; inset: 0; padding: 4.5cqw 6cqw; font-size: 1.5cqw; }
+  .bar__top { display: flex; align-items: center; gap: 2cqw; margin-bottom: 3cqw; }
+  .bar__search { flex: 1; padding: 1cqw 1.6cqw; border: 0.15cqw solid #3a3b3d; color: #8b8a86; }
+  .bar__pill { padding: 0.8cqw 1.6cqw; border-radius: 99px; background: #26282a; }
+  .bar__moon { width: 2.6cqw; height: 2.6cqw; border-radius: 50%; box-shadow: inset -0.8cqw -0.3cqw 0 0 #e9e6df; }
+
+  .bar__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.8cqw; }
+  .bar__tab {
+    position: relative;
+    display: grid;
+    gap: 0.9cqw;
+    padding: 1.6cqw;
+    background: #1b1c1e;
+    border-top: 0.5cqw solid var(--c);
+  }
+  .bar__who {
+    display: grid;
+    place-items: center;
+    width: 3.6cqw;
+    height: 3.6cqw;
+    border-radius: 50%;
+    background: var(--c);
+    color: #101112;
+    font-weight: 500;
+    font-size: 1.3cqw;
+  }
+  .bar__name { font-size: 1.6cqw; }
+  .bar__tab i { height: 0.9cqw; background: #34363a; }
+  .bar__tab i:last-child { width: 60%; }
+
+  /* Tab 3 (Bar 5) merges into tab 1 (Table 4): same server. */
+  .bar__tab[data-i='3'] { animation: merge 7s var(--ease-settle) infinite; z-index: 2; }
+  .bar__tab[data-i='0'] { animation: receive 7s var(--ease-settle) infinite; }
+  @keyframes merge {
+    0%, 30% { translate: 0 0; opacity: 1; scale: 1; }
+    48% { translate: -330% 0; scale: 0.92; opacity: 1; }
+    56%, 88% { translate: -330% 0; scale: 0.6; opacity: 0; }
+    100% { translate: 0 0; opacity: 1; scale: 1; }
+  }
+  @keyframes receive {
+    0%, 50% { outline: 0 solid transparent; }
+    54% { outline: 0.4cqw solid #f3cf1c; scale: 1.05; }
+    62%, 88% { outline: 0.4cqw solid #f3cf1c; scale: 1; }
+    100% { outline: 0 solid transparent; }
+  }
+  .bar__merge {
+    position: absolute;
+    left: 6cqw;
+    bottom: 5cqw;
+    padding: 0.8cqw 1.6cqw;
+    background: #f3cf1c;
+    color: #101112;
+    font-weight: 500;
+    animation: tag 7s var(--ease-settle) infinite;
+  }
+  @keyframes tag { 0%, 50% { opacity: 0; translate: 0 1cqw; } 56%, 88% { opacity: 1; translate: 0 0; } 100% { opacity: 0; } }
+</style>

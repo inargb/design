@@ -1,0 +1,77 @@
+---
+// Temporary case page (Phase 3). Shows the cover, the facts and the way
+// out: the current case on inasilva.com, or, for protected cases, a note
+// that the gate is coming. Replaced by real case studies in Phase 4.
+import Base from '../layouts/Base.astro';
+import ProjectCover from '../components/ProjectCover.astro';
+import Pill from '../components/ui/Pill.astro';
+import SectionLabel from '../components/ui/SectionLabel.astro';
+import { caseHref, type Locale } from '../i18n/config';
+import { ui } from '../i18n/ui';
+import type { Project } from '../content/projects';
+
+interface Props { locale: Locale; project: Project; }
+const { locale, project } = Astro.props;
+const other: Locale = locale === 'en' ? 'pt' : 'en';
+const p = ui.project;
+const c = {
+  developing: { en: 'This frame is being reprinted.', pt: 'Este frame está sendo reimpresso.' },
+  developingBody: {
+    en: 'The full case study is being rebuilt with the new system. Until then, the current version lives on the old site.',
+    pt: 'O estudo de caso completo está sendo refeito com o novo sistema. Até lá, a versão atual continua no site antigo.',
+  },
+  readCurrent: { en: 'read the current case', pt: 'ler o case atual' },
+  secret: { en: 'This case is a little secret.', pt: 'Este case é um segredinho.' },
+  secretBody: {
+    en: 'It covers confidential client work, so it will sit behind a password. The gate opens in the next phase of this rebuild.',
+    pt: 'Ele mostra trabalho confidencial de cliente, então vai ficar atrás de uma senha. A porta abre na próxima fase desta reconstrução.',
+  },
+};
+const locked = project.state === 'locked';
+---
+
+<Base locale={locale} altHref={caseHref(project.slug, other)} pageId={project.slug} title={project.title[locale]} description={project.line[locale]}>
+  <article>
+    <header class="case-hero container">
+      <SectionLabel text={p.frame[locale]} frame={project.frame} />
+      <h1 class="t-heading-xl">{project.title[locale]}</h1>
+      <p class="t-heading-s t-secondary measure">{project.line[locale]}</p>
+      <dl class="case-hero__meta">
+        <div><dt class="t-label">{p.context[locale]}</dt><dd class="t-meta">{project.context[locale]}</dd></div>
+        <div><dt class="t-label">{p.role[locale]}</dt><dd class="t-meta">{project.role[locale]}</dd></div>
+        <div><dt class="t-label">{p.period[locale]}</dt><dd class="t-meta">{project.period[locale]}</dd></div>
+        {project.duration && <div><dt class="t-label">{p.timeline[locale]}</dt><dd class="t-meta">{project.duration[locale]}</dd></div>}
+        <div><dt class="t-label">{p.status[locale]}</dt><dd class="t-meta">{project.status[locale]}</dd></div>
+      </dl>
+      <ul class="case-hero__tags" role="list">
+        {locked && <li><Pill tone="filled">{p.locked[locale]}</Pill></li>}
+        {project.tags.map((tg) => <li><Pill>{tg[locale]}</Pill></li>)}
+      </ul>
+    </header>
+
+    <div class="case-cover container">
+      <div class="case-cover__frame crop">
+        <ProjectCover cover={project.cover} media={project.media} label={project.title[locale]} locale={locale} sizes="(max-width: 84rem) 100vw, 84rem" />
+      </div>
+    </div>
+
+    <section class="case-note container section">
+      <p class="t-heading-l">{locked ? c.secret[locale] : c.developing[locale]}</p>
+      <p class="t-body t-secondary measure">{locked ? c.secretBody[locale] : c.developingBody[locale]}</p>
+      {!locked && project.liveUrl && (
+        <a class="link t-nav" href={project.liveUrl} target="_blank" rel="noopener">{c.readCurrent[locale]} ↗<span class="visually-hidden"> {ui.nav.newTab[locale]}</span></a>
+      )}
+    </section>
+  </article>
+</Base>
+
+<style>
+  .case-hero { display: grid; gap: var(--space-4); padding-block: var(--space-12) var(--space-8); }
+  .case-hero__meta { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-12); margin-top: var(--space-4); padding-top: var(--space-4); border-top: var(--rule-hair); }
+  .case-hero__meta div { display: grid; gap: var(--space-1); }
+  .case-hero__meta dd { color: var(--color-ink); }
+  .case-hero__tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .case-cover__frame { --cover-ratio: 16 / 9; border: var(--rule-ink); }
+  @media (max-width: 40rem) { .case-cover__frame { --cover-ratio: 4 / 3; } }
+  .case-note { display: grid; gap: var(--space-4); justify-items: start; }
+</style>

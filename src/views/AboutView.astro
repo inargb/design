@@ -1,0 +1,183 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Shelf from '../components/Shelf.astro';
+import Pill from '../components/ui/Pill.astro';
+import SectionLabel from '../components/ui/SectionLabel.astro';
+import KindWordsDrawer from '../components/KindWordsDrawer.astro';
+import FilmStrip from '../components/FilmStrip.astro';
+import { href, type L10n, type Locale } from '../i18n/config';
+import { about } from '../content/about';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const other: Locale = locale === 'en' ? 'pt' : 'en';
+const tr = (v: L10n | string) => (typeof v === 'string' ? v : v[locale]);
+---
+
+<Base locale={locale} route="about" altHref={href('about', other)} pageId="about" title={about.intro.label[locale]}>
+  <!-- 01 · intro + shelf -->
+  <section class="intro container" aria-labelledby="about-title">
+    <div class="intro__text">
+      <SectionLabel text={about.intro.label[locale]} frame="01" />
+      <h1 id="about-title" class="t-heading-xl">{about.intro.title[locale]}</h1>
+      <p class="t-body t-secondary t-pretty">{about.intro.body[locale]}</p>
+      <p class="intro__ask t-heading-s"><span class="mark">{about.intro.ask[locale]}</span></p>
+    </div>
+    <div class="intro__shelf">
+      <Shelf locale={locale} />
+    </div>
+  </section>
+
+  <!-- 02 · hello -->
+  <section class="hello container section" aria-labelledby="hello-title">
+    <div class="hello__photo" data-reveal>
+      <figure class="hello__portrait lift crop" data-cursor="look">
+        <Image src={about.portrait} alt={about.hello.portraitAlt[locale]} widths={[360, 720]} sizes="(max-width: 40rem) 70vw, 22rem" data-develop />
+      </figure>
+    </div>
+    <div class="hello__text">
+      <SectionLabel text={locale === 'pt' ? 'oi' : 'hello'} frame="02" />
+      <h2 id="hello-title" class="t-heading-l">{about.hello.title[locale]}</h2>
+      {about.hello.body.map((p) => <p class="t-body t-pretty measure" data-reveal>{p[locale]}</p>)}
+    </div>
+  </section>
+
+  <!-- 03 · what I do -->
+  <section class="craft container section" aria-labelledby="craft-title">
+    <div class="craft__head">
+      <SectionLabel text={about.disciplines.label[locale]} frame="03" />
+      <h2 id="craft-title" class="visually-hidden">{about.disciplines.label[locale]}</h2>
+    </div>
+    <ul class="craft__pills" role="list" data-stagger>
+      {about.disciplines.items.map((d) => <li data-reveal><Pill glyph={d.glyph}>{d.label[locale]}</Pill></li>)}
+    </ul>
+    <div class="craft__tools">
+      <p class="t-label">{about.tools.label[locale]}</p>
+      <ul class="craft__keys" role="list">
+        {about.tools.items.map((tool) => (
+          <li><kbd class="keycap" aria-hidden="true">{tool.key}</kbd> <span class="t-caption">{tool.name}</span></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 · experience -->
+  <section class="exp container section" aria-labelledby="exp-title">
+    <div class="exp__head">
+      <SectionLabel text={about.experience.label[locale]} frame="04" />
+      <h2 id="exp-title" class="visually-hidden">{about.experience.label[locale]}</h2>
+    </div>
+    <ol class="exp__list" role="list">
+      {about.experience.items.map((x) => (
+        <li class="exp__row" data-reveal>
+          <span class="exp__when t-meta">{x.when[locale]}</span>
+          <span class="exp__org t-heading-m">{tr(x.org)}</span>
+          <span class="exp__role t-body t-secondary">{x.role[locale]}</span>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- 05 · education -->
+  <section class="exp container section" aria-labelledby="edu-title">
+    <div class="exp__head">
+      <SectionLabel text={about.education.label[locale]} frame="05" />
+      <h2 id="edu-title" class="visually-hidden">{about.education.label[locale]}</h2>
+    </div>
+    {about.education.groups.map((g) => (
+      <div class="edu__group">
+        <h3 class="t-label edu__heading">{g.heading[locale]}</h3>
+        <ol class="exp__list" role="list">
+          {g.items.map((x) => (
+            <li class="exp__row" data-reveal>
+              <span class="exp__when t-meta">{x.period[locale]}</span>
+              <span class="exp__org t-heading-m" lang={x.title.en === x.title.pt ? 'en' : undefined}>{x.title[locale]}</span>
+              <span class="exp__role t-body t-secondary">{x.org[locale]}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    ))}
+  </section>
+
+  <!-- 06 · kind words -->
+  <section class="words container section" aria-labelledby="words-title">
+    <div class="words__head">
+      <SectionLabel text={about.words.label[locale]} frame="06" />
+      <h2 id="words-title" class="t-heading-l">{about.words.title[locale]}</h2>
+    </div>
+    <KindWordsDrawer locale={locale} />
+  </section>
+
+  <!-- 07 · love for art -->
+  <section class="art section" aria-labelledby="art-title">
+    <div class="art__text container">
+      <div>
+        <SectionLabel text={about.art.label[locale]} frame="07" />
+        <h2 id="art-title" class="t-heading-l">{about.art.title[locale]}</h2>
+      </div>
+      <div class="art__body">
+        {about.art.body.map((p) => <p class="t-body t-pretty" data-reveal>{p[locale]}</p>)}
+      </div>
+    </div>
+    <FilmStrip locale={locale} />
+  </section>
+
+</Base>
+
+<style>
+  /* 01 */
+  .intro {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--space-12);
+    align-items: center;
+    padding-block: var(--space-12) var(--space-8);
+  }
+  .intro__text { display: grid; gap: var(--space-4); }
+  .intro__ask { font-family: var(--font-system); font-size: var(--type-body); margin-top: var(--space-2); }
+  @media (max-width: 56rem) { .intro { grid-template-columns: 1fr; } }
+
+  /* 02 */
+  .hello { display: grid; grid-template-columns: minmax(10rem, 22rem) 1fr; gap: var(--space-12); align-items: start; }
+  /* A print on the table: tilted at rest, picked up on hover (print lift). */
+  .hello__portrait { --lift-rest: -1.5deg; padding: var(--space-2); background: var(--color-paper-shade); border: var(--rule-hair); }
+  .hello__portrait :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .hello__text { display: grid; gap: var(--space-4); }
+  @media (max-width: 40rem) { .hello { grid-template-columns: 1fr; } .hello__photo { width: 70%; } }
+
+  /* 03 */
+  .craft { display: grid; gap: var(--space-8); }
+  .craft__pills { display: flex; flex-wrap: wrap; gap: var(--space-3); max-width: 72rem; }
+  .craft__tools { display: grid; gap: var(--space-3); }
+  .craft__keys { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
+  .craft__keys li { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .craft__keys li .keycap { flex: none; }
+
+  /* 04 */
+  .exp { display: grid; gap: var(--space-6); }
+  .exp__list { border-top: var(--rule-hair); }
+  .exp__row {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--space-2) var(--layout-gap);
+    align-items: baseline;
+    padding-block: var(--space-6);
+    border-bottom: var(--rule-hair);
+  }
+  .edu__group + .edu__group { margin-top: var(--space-8); }
+  .edu__heading { margin-bottom: var(--space-3); color: var(--color-graphite); }
+  @media (max-width: 48rem) {
+    .exp__row { grid-template-columns: 1fr; gap: var(--space-1); }
+  }
+
+  /* 05 */
+  .words__head { display: grid; gap: var(--space-4); margin-bottom: var(--space-12); max-width: 40rem; }
+
+  /* 06 */
+  .art__text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-8) var(--space-12); margin-bottom: var(--space-12); }
+  .art__body { display: grid; gap: var(--space-4); }
+  @media (max-width: 48rem) { .art__text { grid-template-columns: 1fr; } }
+
+</style>

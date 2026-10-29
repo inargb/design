@@ -1,0 +1,132 @@
+---
+// Menu Management: a menu is a tree. Global settings (concepts, sizes,
+// permissions) sit above and flow down; the left panel switches between
+// Items (structure) and Config (scale); the selection walks the tree while
+// the list on the right follows. All names are invented, per the brief.
+import CoverShell from './CoverShell.astro';
+interface Props { label: string; }
+const tree = [
+  { d: 0, t: 'Harbor Burger', k: 'concept' },
+  { d: 1, t: 'Burgers', k: 'category' },
+  { d: 2, t: 'Classic Burger', k: 'item' },
+  { d: 3, t: 'Toppings', k: 'set' },
+  { d: 4, t: 'Pickles', k: 'option' },
+  { d: 2, t: 'Double Burger', k: 'item' },
+  { d: 1, t: 'Sides', k: 'category' },
+  { d: 2, t: 'Fries', k: 'item' },
+];
+---
+
+<CoverShell bg="#1f2b2a" ink="#efe7da" label={Astro.props.label}>
+  <div class="menu">
+    <div class="menu__global">
+      <span class="menu__tag">global</span>
+      <span>concepts</span><span>sizes</span><span>permissions</span>
+    </div>
+    <div class="menu__flow" aria-hidden="true"><i></i><i></i><i></i></div>
+
+    <div class="menu__panel">
+      <div class="menu__tabs"><span>Items</span><span>Config</span><i class="menu__tabmark"></i></div>
+      <ol class="menu__tree">
+        {tree.map((r, i) => (
+          <li style={`--d:${r.d};--i:${i}`} data-k={r.k}><b></b>{r.t}</li>
+        ))}
+      </ol>
+      <i class="menu__sel" aria-hidden="true"></i>
+    </div>
+
+    <div class="menu__list">
+      {Array.from({ length: 7 }, (_, i) => (
+        <div class="menu__row" style={`--i:${i}`}><i></i><i></i><i></i></div>
+      ))}
+    </div>
+  </div>
+</CoverShell>
+
+<style>
+  .menu { position: absolute; inset: 0; padding: 4.5cqw 5cqw; font-size: 1.55cqw; }
+  .menu__global {
+    display: flex;
+    gap: 2.2cqw;
+    align-items: center;
+    padding-bottom: 1.6cqw;
+    border-bottom: 0.15cqw dashed rgb(239 231 218 / 0.45);
+    color: rgb(239 231 218 / 0.85);
+  }
+  .menu__tag { padding: 0.35cqw 1cqw; background: #f3cf1c; color: #1c1a17; font-weight: 500; }
+  .menu__flow { position: absolute; left: 13cqw; top: 9.2cqw; display: flex; gap: 11cqw; }
+  .menu__flow i {
+    width: 0.15cqw;
+    height: 4.6cqw;
+    background: linear-gradient(#f3cf1c 50%, transparent 50%) 0 0 / 100% 1.2cqw;
+    animation: flow 1.8s linear infinite;
+  }
+  @keyframes flow { to { background-position: 0 1.2cqw; } }
+
+  .menu__panel {
+    position: absolute;
+    left: 5cqw;
+    top: 14.5cqw;
+    width: 36cqw;
+    bottom: 5cqw;
+    padding: 1.6cqw;
+    border: 0.15cqw solid rgb(239 231 218 / 0.6);
+  }
+  .menu__tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 1.8cqw; border: 0.15cqw solid #efe7da; }
+  .menu__tabs span { position: relative; z-index: 1; text-align: center; padding: 0.6cqw 0; mix-blend-mode: difference; }
+  .menu__tabmark { position: absolute; inset: 0 50% 0 0; background: #efe7da; animation: tabs 8s var(--ease-settle) infinite; }
+  @keyframes tabs { 0%, 45% { inset: 0 50% 0 0; } 50%, 95% { inset: 0 0 0 50%; } 100% { inset: 0 50% 0 0; } }
+
+  .menu__tree { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.2cqw; }
+  .menu__tree li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1cqw;
+    height: 3cqw;
+    padding-left: calc(var(--d) * 2.4cqw);
+    white-space: nowrap;
+  }
+  .menu__tree b { width: 1.2cqw; height: 1.2cqw; border: 0.15cqw solid currentColor; flex: none; }
+  .menu__tree li[data-k='concept'] b { background: #f3cf1c; border-color: #f3cf1c; }
+  .menu__tree li[data-k='category'] b { border-radius: 0.2cqw; }
+  .menu__tree li[data-k='item'] b { border-radius: 50%; }
+  .menu__tree li[data-k='set'] b { rotate: 45deg; scale: 0.85; }
+  .menu__tree li[data-k='option'] b { width: 0.8cqw; height: 0.8cqw; border-radius: 50%; background: currentColor; }
+  .menu__tree li[data-k='set'], .menu__tree li[data-k='option'] { opacity: 0.7; }
+
+  /* Selection bar walks down the tree. */
+  .menu__sel {
+    position: absolute;
+    left: 0.8cqw;
+    right: 0.8cqw;
+    top: calc(1.6cqw + 4.6cqw + 3.2cqw * 2);
+    height: 3cqw;
+    border-left: 0.5cqw solid #f3cf1c;
+    background: rgb(243 207 28 / 0.14);
+    animation: walk 8s steps(1) infinite;
+  }
+  @keyframes walk {
+    0% { translate: 0 0; }
+    25% { translate: 0 calc(3.2cqw * 3); }
+    50% { translate: 0 calc(3.2cqw * 5); }
+    75% { translate: 0 calc(3.2cqw * -1); }
+  }
+
+  .menu__list { position: absolute; left: 45cqw; right: 5cqw; top: 14.5cqw; display: grid; gap: 1cqw; }
+  .menu__row {
+    display: grid;
+    grid-template-columns: 1.4cqw 1fr 7cqw;
+    gap: 1.4cqw;
+    align-items: center;
+    height: 3.6cqw;
+    padding: 0 1.2cqw;
+    border-bottom: 0.1cqw solid rgb(239 231 218 / 0.25);
+    animation: rowfocus 8s steps(1) infinite;
+    animation-delay: calc(var(--i) * -1.14s);
+  }
+  .menu__row i { height: 1cqw; background: rgb(239 231 218 / 0.5); }
+  .menu__row i:first-child { height: 1.4cqw; background: none; border: 0.15cqw solid rgb(239 231 218 / 0.6); }
+  .menu__row i:nth-child(2) { width: calc(55% + var(--i) * 4%); }
+  @keyframes rowfocus { 0%, 85% { background: transparent; } 86%, 100% { background: rgb(243 207 28 / 0.14); } }
+</style>
