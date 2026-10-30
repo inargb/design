@@ -71,6 +71,15 @@ function init(root: HTMLElement) {
   // own place, then "mess it up again".
   const tidyBtn = root.querySelector<HTMLButtonElement>('[data-tidy]')!;
   const tidyText = tidyBtn.querySelector<HTMLElement>('[data-tidy-text]')!;
+  // A toast at the bottom of the screen, for a few seconds.
+  const toast = root.querySelector<HTMLElement>('[data-shelf-toast]')!;
+  let toastTimer = 0;
+  function say(text: string) {
+    toast.textContent = text;
+    requestAnimationFrame(() => toast.classList.add('is-on'));
+    clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => toast.classList.remove('is-on'), 3200);
+  }
   const isTidy = () => items.every((i) => { const w = state.get(i)!; return w.kind === 'slot' && w.slot === Number(i.dataset.home); });
   const refresh = (announce?: string) => {
     if (announce) live.textContent = announce;
@@ -83,7 +92,8 @@ function init(root: HTMLElement) {
       state.set(it, tidy ? { kind: 'slot', slot: Number(it.dataset.home) } : { kind: 'pile' });
       window.setTimeout(() => place(it), motionOn() ? i * 110 : 0);
     });
-    refresh(tidy ? s.lazy : undefined);
+    refresh();
+    if (tidy) window.setTimeout(() => say(s.lazy), motionOn() ? items.length * 110 : 0);
   });
 
   const nameOf = (it: HTMLElement) => (it.firstElementChild as HTMLElement).getAttribute('aria-label') ?? '';
@@ -155,6 +165,8 @@ function init(root: HTMLElement) {
           state.set(it, { kind: 'slot', slot: best });
           place(it);
           refresh(fill(s.placed, { name: nameOf(it), n: putAwayCount(), total: items.length }));
+          // Everything put away by hand: a thank-you.
+          if (putAwayCount() === items.length) say(s.done);
           return;
         }
       }

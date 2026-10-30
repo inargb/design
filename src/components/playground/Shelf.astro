@@ -61,6 +61,7 @@ const ratioOf = (o: (typeof pg.objects)[number]) =>
     </button>
   </div>
   <p class="visually-hidden" aria-live="polite" data-shelf-live></p>
+  <p class="shelf__toast" role="status" aria-live="polite" data-shelf-toast></p>
 </div>
 
 <style>
@@ -146,6 +147,29 @@ const ratioOf = (o: (typeof pg.objects)[number]) =>
   .shelf__tidy:hover { background: var(--color-ink); color: var(--color-paper); }
   .shelf__tidy span:last-child { display: inline-block; transition: rotate var(--duration-settle) var(--ease-settle); }
   .shelf__tidy:hover span:last-child { rotate: -180deg; }
+
+  /* A word from the shelf: a white card with an ink frame and a hard
+     shadow, at the bottom of the screen for a few seconds. */
+  .shelf__toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--space-8) + env(safe-area-inset-bottom));
+    z-index: 60;
+    max-width: calc(100vw - 2 * var(--layout-gutter));
+    padding: var(--space-3) var(--space-6);
+    translate: -50% 0.75rem;
+    border: var(--rule-ink);
+    background: #fff;
+    box-shadow: 6px 6px 0 var(--color-ink);
+    color: var(--color-ink);
+    font-family: var(--font-system);
+    font-size: var(--type-body-s);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-settle) var(--ease-soft), translate var(--duration-settle) var(--ease-settle);
+  }
+  .shelf__toast:empty { display: none; }
+  .shelf__toast.is-on { opacity: 1; translate: -50% 0; }
 
   .shelf__note {
     position: absolute;
