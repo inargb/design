@@ -50,7 +50,7 @@ export const playground = {
   ] as [number, number][],
   objects: [
     // The three DVDs: one object, overlapping on the shelf; they fan out on hover.
-    { id: 'dvds', src: lalaland, stack: [lalaland, harry, amelie], size: 0.3, home: 4, pile: [0.13, 0.34, -3], name: l('My top 3 romances: La La Land, When Harry Met Sally…, Amélie', 'Meus 3 romances favoritos: La La Land, Harry & Sally, Amélie'), note: l('my top 3 romances', 'meus 3 romances favoritos'), action: { kind: 'link', href: 'https://letterboxd.com/beekid/' } },
+    { id: 'dvds', src: lalaland, stack: [lalaland, harry, amelie], size: 0.348, home: 4, pile: [0.13, 0.34, -3], name: l('My top 3 romances: La La Land, When Harry Met Sally…, Amélie', 'Meus 3 romances favoritos: La La Land, Harry & Sally, Amélie'), note: l('my top 3 romances', 'meus 3 romances favoritos'), action: { kind: 'link', href: 'https://letterboxd.com/beekid/' } },
     { id: 'camera', src: camera, size: 0.23, home: 2, pile: [0.22, 0.6, 4], name: l('Yashica camera', 'Câmera Yashica'), note: l('dad’s old Yashica. click to see the film.', 'a Yashica antiga do meu pai. clique para ver o filme.'), action: { kind: 'film' } },
     { id: 'vogue', src: vogue, size: 0.17, home: 7, pile: [0.74, 0.64, -3], name: l('Vogue', 'Vogue'), note: l('Vogue', 'Vogue'), action: { kind: 'note' } },
     { id: 'popeye', src: popeye, size: 0.17, home: 6, pile: [0.12, 0.86, -2], name: l('Popeye magazine', 'Revista Popeye'), note: l('Popeye magazine', 'revista Popeye'), action: { kind: 'note' } },
