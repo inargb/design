@@ -6,6 +6,8 @@
 // Every visit starts with the things scattered around the shelf, waiting
 // to be put away (on narrow screens, with no room beside it, it starts tidy).
 
+import { motionOn } from './prefs';
+
 type Where = { kind: 'pile' } | { kind: 'slot'; slot: number } | { kind: 'free'; fx: number; fy: number };
 export type ShelfOpen = { id: string; action: { kind: string; href?: string } };
 
@@ -65,7 +67,24 @@ function init(root: HTMLElement) {
   const layout = () => items.forEach(place);
 
   const putAwayCount = () => items.filter((i) => state.get(i)!.kind === 'slot').length;
-  const refresh = (announce?: string) => { if (announce) live.textContent = announce; };
+  // The switch under the shelf reads "tidy up" until everything is in its
+  // own place, then "mess it up again".
+  const tidyBtn = root.querySelector<HTMLButtonElement>('[data-tidy]')!;
+  const tidyText = tidyBtn.querySelector<HTMLElement>('[data-tidy-text]')!;
+  const isTidy = () => items.every((i) => { const w = state.get(i)!; return w.kind === 'slot' && w.slot === Number(i.dataset.home); });
+  const refresh = (announce?: string) => {
+    if (announce) live.textContent = announce;
+    tidyText.textContent = isTidy() ? tidyBtn.dataset.messLabel! : tidyBtn.dataset.tidyLabel!;
+  };
+  tidyBtn.addEventListener('click', () => {
+    const tidy = !isTidy();
+    // One by one, so it reads as someone putting things away (or not).
+    items.forEach((it, i) => {
+      state.set(it, tidy ? { kind: 'slot', slot: Number(it.dataset.home) } : { kind: 'pile' });
+      window.setTimeout(() => place(it), motionOn() ? i * 110 : 0);
+    });
+    refresh(tidy ? s.lazy : undefined);
+  });
 
   const nameOf = (it: HTMLElement) => (it.firstElementChild as HTMLElement).getAttribute('aria-label') ?? '';
   const fill = (tpl: string, vars: Record<string, string | number>) => tpl.replace(/\{(\w+)\}/g, (_, k) => String(vars[k]));
@@ -155,6 +174,7 @@ function init(root: HTMLElement) {
     btn.addEventListener('mouseleave', () => { if (document.activeElement !== btn) hideNote(); });
   });
 
+  refresh();
   const ro = new ResizeObserver(layout);
   ro.observe(stage);
   const settle = () => requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove('is-settling')));

@@ -54,6 +54,12 @@ const ratioOf = (o: (typeof pg.objects)[number]) =>
     </ul>
     <p class="shelf__note" data-note-bubble aria-hidden="true"></p>
   </div>
+  <!-- Under the shelf: put everything away, or scatter it again. -->
+  <div class="shelf__bar">
+    <button type="button" class="shelf__tidy" data-tidy data-tidy-label={u.tidy[locale]} data-mess-label={u.mess[locale]}>
+      <span data-tidy-text>{u.tidy[locale]}</span> <span aria-hidden="true">↺</span>
+    </button>
+  </div>
   <p class="visually-hidden" aria-live="polite" data-shelf-live></p>
 </div>
 
@@ -120,6 +126,26 @@ const ratioOf = (o: (typeof pg.objects)[number]) =>
   .shelf.is-live .shelf__item.is-dragging .shelf__obj { transition: none; cursor: grabbing; filter: drop-shadow(6px 10px 0 rgb(29 39 51 / 0.2)); }
   .shelf.is-live .shelf__item.is-dragging { z-index: 10; }
   .shelf__obj:focus-visible { outline-offset: 4px; }
+
+  /* The tidy / mess-up switch: a small grey tab, like "back to top". */
+  .shelf__bar { display: flex; justify-content: center; margin-top: var(--space-4); }
+  .shelf__tidy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 3px var(--space-2);
+    border: 0;
+    background: var(--color-paper-deep);
+    color: var(--color-graphite);
+    font-family: var(--font-system);
+    font-size: var(--type-label);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background-color var(--duration-quick), color var(--duration-quick);
+  }
+  .shelf__tidy:hover { background: var(--color-ink); color: var(--color-paper); }
+  .shelf__tidy span:last-child { display: inline-block; transition: rotate var(--duration-settle) var(--ease-settle); }
+  .shelf__tidy:hover span:last-child { rotate: -180deg; }
 
   .shelf__note {
     position: absolute;
