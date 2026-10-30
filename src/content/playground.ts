@@ -36,6 +36,7 @@ export interface ShelfObject {
 export const playground = {
   title: l('Shelf', 'Shelf'),
   heading: l('Can you organize my shelf for me? :)', 'Você pode arrumar minha estante pra mim? :)'),
+  headingPhone: l('Snoop through my shelf :)', 'Bisbilhote minha prateleira :)'),
   intro: l(
     'Things on my shelf. Drag them into place, or click one to open it.',
     'Coisas da minha estante. Arraste para arrumar, ou clique para abrir.',

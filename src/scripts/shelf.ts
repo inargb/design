@@ -4,7 +4,7 @@
 //              link or its note) via an `ina:shelf-open` event
 //   hover / focus → shows the object's note
 // Every visit starts with the things scattered around the shelf, waiting
-// to be put away (on narrow screens, with no room beside it, it starts tidy).
+// to be put away. On phones it's always tidy and the things don't move.
 
 import { motionOn } from './prefs';
 
@@ -25,8 +25,12 @@ function init(root: HTMLElement) {
   const items = Array.from(root.querySelectorAll<HTMLElement>('.shelf__item'));
 
   const state = new Map<HTMLElement, Where>();
-  const roomy = stage.getBoundingClientRect().width > img.getBoundingClientRect().width * 1.8;
-  items.forEach((it) => state.set(it, roomy ? { kind: 'pile' } : { kind: 'slot', slot: Number(it.dataset.home) }));
+  // Phones: the shelf is just looked at, always tidy and centred (no
+  // dragging, no tidy switch). Wider screens start with things scattered.
+  const phone = window.matchMedia('(max-width: 40rem)');
+  const tidyAll = () => items.forEach((it) => state.set(it, { kind: 'slot', slot: Number(it.dataset.home) }));
+  items.forEach((it) => state.set(it, phone.matches ? { kind: 'slot', slot: Number(it.dataset.home) } : { kind: 'pile' }));
+  phone.addEventListener('change', () => { if (phone.matches) { tidyAll(); layout(); refresh(); } });
 
   // First placement happens out of sight (no gliding in from the corner);
   // then the objects just fade in. See .is-settling in Shelf.astro.
@@ -126,7 +130,7 @@ function init(root: HTMLElement) {
     let startX = 0, startY = 0, moved = false, dragging = false, offX = 0, offY = 0;
 
     btn.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0) return;
+      if (e.button !== 0 || phone.matches) return;
       const r = btn.getBoundingClientRect();
       startX = e.clientX; startY = e.clientY;
       offX = e.clientX - r.left; offY = e.clientY - r.top;

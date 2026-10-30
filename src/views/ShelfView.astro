@@ -16,7 +16,7 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
 
 <Base locale={locale} route="shelf" altHref={href('shelf', other)} pageId="shelf" title={pg.title[locale]} description={pg.intro[locale]}>
   <section class="pg" aria-labelledby="pg-title">
-    <h1 id="pg-title" class="pg__title">{pg.heading[locale]}</h1>
+    <h1 id="pg-title" class="pg__title"><span class="pg__wide">{pg.heading[locale]}</span><span class="pg__phone">{pg.headingPhone[locale]}</span></h1>
     <div class="pg__shelf">
       <Shelf locale={locale} />
     </div>
@@ -45,6 +45,12 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
     font-weight: 400;
     letter-spacing: 0.01em;
     color: var(--color-graphite-soft);
+  }
+  /* Phones get a different ask: there's nothing to tidy there. */
+  .pg__phone { display: none; }
+  @media (max-width: 40rem) {
+    .pg__wide { display: none; }
+    .pg__phone { display: inline; }
   }
   /* Things can be dragged anywhere on the page: nothing clips them. */
   .pg, .pg__shelf { overflow: visible; }

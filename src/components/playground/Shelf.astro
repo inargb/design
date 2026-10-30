@@ -130,6 +130,7 @@ const ratioOf = (o: (typeof pg.objects)[number]) =>
 
   /* The tidy / mess-up switch: a small grey tab, like "back to top". */
   .shelf__bar { display: flex; justify-content: center; margin-top: var(--space-4); }
+  @media (max-width: 40rem) { .shelf__bar { display: none; } }
   .shelf__tidy {
     display: inline-flex;
     align-items: center;
