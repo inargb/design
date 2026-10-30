@@ -51,7 +51,7 @@ const f = pg.film;
       <ol class="filmv__track" role="list" data-film-track>
         {photos.map((ph) => (
           <li class="filmv__frame">
-            <Image src={ph.src} alt={ph.alt[locale]} widths={[480, 960]} sizes="40vh" loading="lazy" draggable="false" />
+            <Image src={ph.src} alt={ph.alt[locale]} widths={[480, 960]} sizes="40vh" loading="eager" decoding="async" draggable="false" />
           </li>
         ))}
         <li class="filmv__tail" aria-hidden="true"></li>
@@ -136,6 +136,7 @@ const f = pg.film;
     left: 0;
     display: flex;
     flex-direction: row-reverse;
+    width: max-content;  /* the whole roll, not just the window's width */
     gap: calc(var(--band) * 0.6);
     height: 100%;
     padding: var(--band) calc(var(--band) * 0.6);
