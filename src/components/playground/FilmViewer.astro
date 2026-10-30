@@ -1,9 +1,11 @@
 ---
 // The camera's roll of film, in a full-screen overlay (a modal <dialog>:
-// focus stays inside, Esc closes) on light paper. A drawn 35mm canister
+// focus stays inside, Esc closes) over the dimmed shelf. A hand-drawn 35mm canister
 // sits on the left; on opening, the film slides out of its slot and the
 // photos come with it. Scrolling (wheel, trackpad), dragging, swiping or
 // the arrow keys pull more film out, or wind it back in.
+import '@fontsource/caveat/600.css';
+import '@fontsource/caveat/700.css';
 import { Image } from 'astro:assets';
 import type { Locale } from '../../i18n/config';
 import { photos } from '../../content/photos';
@@ -19,31 +21,36 @@ const f = pg.film;
   <p class="visually-hidden">{f.hint[locale]}</p>
 
   <div class="filmv__stage">
-    <!-- The canister, drawn: cap, black body, yellow label, the slot. -->
-    <svg class="filmv__can" viewBox="0 0 200 300" aria-hidden="true">
-      <defs>
-        <linearGradient id="can-body" x1="0" x2="1">
-          <stop offset="0" stop-color="#0d0c0b" />
-          <stop offset="0.55" stop-color="#2b2926" />
-          <stop offset="0.7" stop-color="#3a3733" />
-          <stop offset="1" stop-color="#0d0c0b" />
-        </linearGradient>
-        <linearGradient id="can-rim" x1="0" x2="1">
-          <stop offset="0" stop-color="#1a1917" />
-          <stop offset="0.6" stop-color="#4a4743" />
-          <stop offset="1" stop-color="#1a1917" />
-        </linearGradient>
-      </defs>
-      <rect class="filmv__knob" x="66" y="2" width="68" height="30" rx="7" />
-      <rect x="18" y="26" width="164" height="270" rx="16" fill="url(#can-body)" />
-      <rect x="18" y="26" width="164" height="22" rx="10" fill="url(#can-rim)" />
-      <rect x="18" y="274" width="164" height="22" rx="10" fill="url(#can-rim)" />
-      <rect x="34" y="88" width="44" height="170" rx="2" fill="#f2b01c" />
-      <text x="40" y="76" fill="#fbfbf9" font-size="20" font-weight="600" font-family="IBM Plex Mono, monospace">C-41</text>
-      <text x="0" y="0" transform="translate(62 100) rotate(90)" fill="#8a5a00" font-size="9" letter-spacing="1.5" font-family="IBM Plex Mono, monospace">NOTES</text>
-      <text x="0" y="0" transform="translate(118 74) rotate(90)" fill="#fbfbf9" font-size="30" letter-spacing="2" font-family="IBM Plex Mono, monospace">COLOR 400</text>
-      <text x="0" y="0" transform="translate(95 92) rotate(90)" fill="#d8d6d2" font-size="10" letter-spacing="0.5" font-family="IBM Plex Mono, monospace">color negative film</text>
-      <rect x="172" y="68" width="12" height="204" rx="2" fill="#050505" />
+    <!-- Hand-drawn look: shapes wobble (displacement) and their fills break
+         up like crayon (grain), via the #sketch filter below. -->
+    <svg class="filmv__defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <filter id="sketch" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="wobble" />
+        <feDisplacementMap in="SourceGraphic" in2="wobble" scale="5" xChannelSelector="R" yChannelSelector="G" result="drawn" />
+        <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="1" seed="9" result="grain" />
+        <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.62" result="crayon" />
+        <feComposite in="drawn" in2="crayon" operator="in" />
+      </filter>
+    </svg>
+
+    <!-- The canister, drawn by hand: cap, mustard body, dark side band, slot. -->
+    <svg class="filmv__can" viewBox="0 0 220 320" aria-hidden="true">
+      <g filter="url(#sketch)" stroke="#141210" stroke-width="5" stroke-linejoin="round">
+        <rect class="filmv__knob" x="82" y="8" width="58" height="28" rx="5" />
+        <rect x="28" y="30" width="166" height="26" rx="9" fill="#2a2826" />
+        <rect x="34" y="52" width="154" height="222" fill="#f0b443" />
+        <rect x="34" y="52" width="26" height="222" fill="#2a2826" />
+        <rect x="28" y="270" width="166" height="28" rx="9" fill="#2a2826" />
+        <rect x="186" y="66" width="13" height="196" rx="2" fill="#141210" />
+      </g>
+      <!-- Rotated 90°, each line's letters stand to the right of its x. -->
+      <g filter="url(#sketch)" fill="#141210" stroke="none" font-family="Caveat, cursive">
+        <text transform="translate(52 64) rotate(90)" font-size="17" font-weight="700" fill="#f0b443">200</text>
+        <text transform="translate(52 238) rotate(90)" font-size="15" font-weight="700" fill="#f0b443">36</text>
+        <text transform="translate(98 74) rotate(90)" font-size="72" font-weight="700">200</text>
+        <text transform="translate(158 74) rotate(90)" font-size="19" font-weight="700">PHOTO FILM</text>
+        <text transform="translate(70 74) rotate(90)" font-size="15" font-weight="600">35 mm color print film</text>
+      </g>
     </svg>
 
     <!-- The film coming out of the slot: first photo first. -->
@@ -76,8 +83,8 @@ const f = pg.film;
     overflow: hidden;
   }
   .filmv[open] { display: grid; place-items: center; }
-  /* Light paper over the shelf, like the iPod's screen. */
-  .filmv::backdrop { background: rgb(250 250 248 / 0.9); backdrop-filter: blur(3px); }
+  /* The same dimmed, blurred shelf behind it as the iPod's. */
+  .filmv::backdrop { background: rgb(29 39 51 / 0.55); backdrop-filter: blur(2px); }
   .filmv__close {
     position: absolute;
     top: var(--space-4);
@@ -87,13 +94,13 @@ const f = pg.film;
     padding: 0 var(--space-3);
     border: 0;
     background: none;
-    color: var(--color-ink);
+    color: #fff;
     font-family: var(--font-system);
     font-size: var(--type-caption);
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
-  .filmv__close:hover { color: var(--color-accent); }
+  .filmv__close:hover { color: var(--color-highlight); }
 
   .filmv__stage {
     display: flex;
@@ -101,16 +108,16 @@ const f = pg.film;
     width: 100%;
     padding-left: max(var(--layout-gutter), 6vw);
   }
+  .filmv__defs { position: absolute; width: 0; height: 0; }
   .filmv__can {
     position: relative;
     z-index: 2;
     flex: none;
     height: var(--can-h);
     width: auto;
-    filter: drop-shadow(4px 8px 12px rgb(29 39 51 / 0.25));
   }
   /* The knob's ridges turn as the film moves (set by the script). */
-  .filmv__knob { fill: #1c1b19; stroke: #3d3a36; stroke-width: 3; stroke-dasharray: 3 5; stroke-dashoffset: var(--turn, 0); }
+  .filmv__knob { fill: #4a4744; stroke-dasharray: 6 4; stroke-dashoffset: var(--turn, 0); }
 
   /* The window the film shows through: it starts at the slot. */
   .filmv__window {
@@ -131,6 +138,7 @@ const f = pg.film;
   /* The strip: black film base, sprocket holes along both edges; the first
      photo leads (rightmost), so it's the first out of the canister. */
   .filmv__track {
+    isolation: isolate;
     position: absolute;
     top: 0;
     left: 0;
@@ -140,19 +148,30 @@ const f = pg.film;
     gap: calc(var(--band) * 0.6);
     height: 100%;
     padding: var(--band) calc(var(--band) * 0.6);
-    background-color: #141210;
-    background-image:
-      linear-gradient(180deg, rgb(255 255 255 / 0.08), transparent 30%, transparent 70%, rgb(0 0 0 / 0.18)),
-      linear-gradient(90deg, var(--hole) 0 46%, transparent 46%),
-      linear-gradient(90deg, var(--hole) 0 46%, transparent 46%);
-    background-size: 100% 100%, calc(var(--band) * 1.25) calc(var(--band) * 0.5), calc(var(--band) * 1.25) calc(var(--band) * 0.5);
-    background-position: 0 0, 0 calc(var(--band) * 0.25), 0 calc(100% - var(--band) * 0.25);
-    background-repeat: no-repeat, repeat-x, repeat-x;
-    --hole: #f7f6f2;
     will-change: transform;
     transform: translate3d(calc(var(--p, 0px) - 100%), 0, 0);
   }
+  /* The film itself, drawn in crayon behind the photos: a dark band with
+     rows of holes, wobbly at the edges (same #sketch filter). */
+  .filmv__track::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    --hole: #f7f6f2;
+    background-color: #1c1a18;
+    background-image:
+      linear-gradient(90deg, var(--hole) 0 46%, transparent 46%),
+      linear-gradient(90deg, var(--hole) 0 46%, transparent 46%);
+    background-size: calc(var(--band) * 1.25) calc(var(--band) * 0.5), calc(var(--band) * 1.25) calc(var(--band) * 0.5);
+    background-position: 0 calc(var(--band) * 0.25), 0 calc(100% - var(--band) * 0.25);
+    background-repeat: repeat-x, repeat-x;
+    border: 4px solid #141210;
+    border-radius: 3px;
+    filter: url(#sketch);
+  }
   .filmv__frame { position: relative; flex: none; height: 100%; }
+  .filmv__frame :global(img) { outline: 3px solid #141210; }
   .filmv__frame :global(img) { height: 100%; width: auto; border-radius: 2px; pointer-events: none; }
   /* A short leader at the very end, so the last frame clears the slot. */
   .filmv__tail { flex: none; width: calc(var(--can-h) * 0.25); }
