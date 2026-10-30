@@ -52,6 +52,9 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
     .pg__wide { display: none; }
     .pg__phone { display: inline; }
   }
+  /* Set by scripts/shelf.ts when there's no room to scatter things. */
+  :global(html.shelf-look) .pg__wide { display: none; }
+  :global(html.shelf-look) .pg__phone { display: inline; }
   /* Things can be dragged anywhere on the page: nothing clips them. */
   .pg, .pg__shelf { overflow: visible; }
 </style>

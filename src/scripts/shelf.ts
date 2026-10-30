@@ -4,7 +4,8 @@
 //              link or its note) via an `ina:shelf-open` event
 //   hover / focus → shows the object's note
 // Every visit starts with the things scattered around the shelf, waiting
-// to be put away. On phones it's always tidy and the things don't move.
+// to be put away; where there's no room for that beside the shelf (phones
+// and other narrow screens) it's always tidy and the things don't move.
 
 import { motionOn } from './prefs';
 
@@ -17,7 +18,6 @@ if (root) init(root);
 function init(root: HTMLElement) {
   const stage = root.querySelector<HTMLElement>('[data-stage]')!;
   const img = root.querySelector<HTMLImageElement>('[data-shelf-img]')!;
-  const pile = root.querySelector<HTMLElement>('[data-pile]')!;
   const live = root.querySelector<HTMLElement>('[data-shelf-live]')!;
   const bubble = root.querySelector<HTMLElement>('[data-note-bubble]')!;
   const slots: [number, number][] = JSON.parse(root.dataset.slots!);
@@ -25,12 +25,34 @@ function init(root: HTMLElement) {
   const items = Array.from(root.querySelectorAll<HTMLElement>('.shelf__item'));
 
   const state = new Map<HTMLElement, Where>();
-  // Phones: the shelf is just looked at, always tidy and centred (no
-  // dragging, no tidy switch). Wider screens start with things scattered.
-  const phone = window.matchMedia('(max-width: 40rem)');
+  // Two modes. "Organize": the things start scattered in the free space
+  // beside the shelf, to be dragged onto it. "Look" (phones, and any screen
+  // too narrow for every scattered thing to sit clear of the shelf): always
+  // tidy and centred, no dragging, no tidy switch, a different ask.
+  const EDGE = 16, GAP = 14; // px from the screen edge / from the shelf
   const tidyAll = () => items.forEach((it) => state.set(it, { kind: 'slot', slot: Number(it.dataset.home) }));
-  items.forEach((it) => state.set(it, phone.matches ? { kind: 'slot', slot: Number(it.dataset.home) } : { kind: 'pile' }));
-  phone.addEventListener('change', () => { if (phone.matches) { tidyAll(); layout(); refresh(); } });
+  // Free space either side of the shelf, in stage coordinates (the page
+  // doesn't clip, so it runs to the screen edges).
+  function sides() {
+    const st = stage.getBoundingClientRect();
+    const shelfL = img.offsetLeft, shelfR = img.offsetLeft + img.offsetWidth;
+    return { L: EDGE - st.left, shelfL, shelfR, R: document.documentElement.clientWidth - EDGE - st.left };
+  }
+  function roomy() {
+    if (window.matchMedia('(max-width: 40rem)').matches) return false;
+    const { L, shelfL, shelfR, R } = sides();
+    return items.every((it) => {
+      const px = (JSON.parse(it.dataset.pile!) as number[])[0];
+      const w = sizeOf(it).w;
+      return px < 0.5 ? shelfL - GAP - L >= w : R - (shelfR + GAP) >= w;
+    });
+  }
+  let look = !roomy();
+  function applyMode() {
+    document.documentElement.classList.toggle('shelf-look', look);
+  }
+  items.forEach((it) => state.set(it, look ? { kind: 'slot', slot: Number(it.dataset.home) } : { kind: 'pile' }));
+  applyMode();
 
   // First placement happens out of sight (no gliding in from the corner);
   // then the objects just fade in. See .is-settling in Shelf.astro.
@@ -49,13 +71,20 @@ function init(root: HTMLElement) {
       return { x: ir.left - st.left + sx * ir.width, y: ir.top - st.top + sy * ir.height, r: wobble * 0.6 };
     }
     if (where.kind === 'free') return { x: where.fx * st.width, y: where.fy * st.height, r: 0 };
-    const pr = pile.getBoundingClientRect();
+    // Scattered: left-hand things (px < 0.5) in the space left of the shelf,
+    // the rest to its right, spread across that space but never over it.
     const [px, py, rot] = JSON.parse(it.dataset.pile!) as [number, number, number];
-    return { x: pr.left - st.left + px * pr.width, y: pr.top - st.top + py * pr.height, r: rot };
+    const { L, shelfL, shelfR, R } = sides();
+    const half = sizeOf(it).w / 2;
+    const lerp = (a: number, b: number, t: number) => (b < a ? (a + b) / 2 : a + (b - a) * t);
+    const x = px < 0.5
+      ? lerp(L + half, shelfL - GAP - half, px / 0.5)
+      : lerp(shelfR + GAP + half, R - half, (px - 0.5) / 0.5);
+    return { x, y: py * st.height, r: rot };
   }
 
   function sizeOf(it: HTMLElement) {
-    const w = Number(it.dataset.size) * img.getBoundingClientRect().width;
+    const w = Number(it.dataset.size) * img.offsetWidth;
     return { w, h: w * Number(it.dataset.ratio) };
   }
 
@@ -68,7 +97,14 @@ function init(root: HTMLElement) {
     btn.style.setProperty('--y', `${a.y - h}px`);
     btn.style.setProperty('--r', `${a.r}deg`);
   }
-  const layout = () => items.forEach(place);
+  // On resize: re-check the mode; going into "look" puts everything away.
+  const layout = () => {
+    const was = look;
+    look = !roomy();
+    if (look && !was) { tidyAll(); refresh(); }
+    if (look !== was) applyMode();
+    items.forEach(place);
+  };
 
   const putAwayCount = () => items.filter((i) => state.get(i)!.kind === 'slot').length;
   // The switch under the shelf reads "tidy up" until everything is in its
@@ -130,7 +166,7 @@ function init(root: HTMLElement) {
     let startX = 0, startY = 0, moved = false, dragging = false, offX = 0, offY = 0;
 
     btn.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0 || phone.matches) return;
+      if (e.button !== 0 || look) return;
       const r = btn.getBoundingClientRect();
       startX = e.clientX; startY = e.clientY;
       offX = e.clientX - r.left; offY = e.clientY - r.top;
