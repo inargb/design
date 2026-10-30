@@ -62,15 +62,16 @@ public/covers/             project covers (stills and videos)
 ## Shelf
 
 `/shelf` (+ `/pt-br/shelf`; the old `/playground` addresses redirect) is the shelf from inasilva.com on one
-screen-high page, with the top bar and no footer. The shelf starts tidy and
-centred; objects can be dragged off and back. A click (or Enter) opens one:
+screen-high page, with the top bar and no footer, under "Can you organize my shelf
+for me? :)". The things start scattered around the shelf (tidy on phones) and can
+be dragged anywhere, onto the shelf or off the page's edges. A click (or Enter) opens one:
 
 - the camera → a roll of film with the About page's art note (`components/playground/FilmViewer.astro`)
 - the iPod → a working iPod classic (`components/playground/IPod.astro`): Music, Extras (photos),
   Settings (shuffle, repeat, about), Shuffle Songs, Backlight, Now Playing. Songs play as Apple
   Music's official 30-second previews (no ads, nothing hosted here), with a "Listen on Spotify" link
   under the iPod for the full song; songs without a preview are greyed out and skipped
-- the DVDs → Inaiá's Letterboxd profile in a new tab; magazines, shoes and the plant → their note
+- the three DVDs (one stack that fans out on hover) → Inaiá's Letterboxd profile; the passport → her travel YouTube; magazines, shoes and the plant → their note
 
 Objects, links and the iPod's songs live in `src/content/playground.ts`. A song's `preview`
 is the `previewUrl` from the iTunes Search API (itunes.apple.com/search?term=…&entity=song).

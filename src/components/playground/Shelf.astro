@@ -12,6 +12,12 @@ interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const u = pg.ui;
 const strings = Object.fromEntries(Object.entries(u).map(([k, v]) => [k, v[locale]]));
+// A stack of covers: each cover is COVER of the group's width, the next one
+// STEP further right (they overlap); height comes from the tallest cover.
+const COVER = 0.56;
+const STEP = (1 - COVER) / 2;
+const ratioOf = (o: (typeof pg.objects)[number]) =>
+  o.stack ? Math.max(...o.stack.map((c) => c.height / c.width)) * COVER : o.src.height / o.src.width;
 ---
 
 <div class="shelf" data-shelf data-slots={JSON.stringify(pg.slots)} data-strings={JSON.stringify(strings)}>
@@ -21,7 +27,7 @@ const strings = Object.fromEntries(Object.entries(u).map(([k, v]) => [k, v[local
     <div class="shelf__pile" data-pile></div>
     <ul class="shelf__objects" role="list" aria-describedby="shelf-help">
       {pg.objects.map((o) => (
-        <li class="shelf__item" data-id={o.id} data-size={o.size} data-home={o.home} data-pile={JSON.stringify(o.pile)} data-ratio={o.src.height / o.src.width}>
+        <li class="shelf__item" data-id={o.id} data-size={o.size} data-home={o.home} data-pile={JSON.stringify(o.pile)} data-ratio={ratioOf(o)}>
           <button
             type="button"
             class="shelf__obj"
@@ -31,7 +37,15 @@ const strings = Object.fromEntries(Object.entries(u).map(([k, v]) => [k, v[local
             aria-haspopup={o.action.kind === 'film' || o.action.kind === 'ipod' ? 'dialog' : undefined}
             data-note={o.note[locale]}
           >
-            <Image src={o.src} alt="" widths={[160, 320]} sizes="160px" draggable="false" />
+            {o.stack ? (
+              <span class="shelf__stack" style={`--cover:${COVER * 100}%;--step:${STEP * 100}%;aspect-ratio:${1 / ratioOf(o)}`}>
+                {o.stack.map((c, i) => (
+                  <Image class="shelf__cover" src={c} alt="" widths={[160, 320]} sizes="120px" draggable="false" style={`--i:${i}`} />
+                ))}
+              </span>
+            ) : (
+              <Image src={o.src} alt="" widths={[160, 320]} sizes="160px" draggable="false" />
+            )}
           </button>
         </li>
       ))}
@@ -60,6 +74,22 @@ const strings = Object.fromEntries(Object.entries(u).map(([k, v]) => [k, v[local
   .shelf__objects { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-4); }
   .shelf__obj { width: 5rem; padding: 0; border: 0; background: none; touch-action: none; cursor: pointer; }
   .shelf__obj :global(img) { width: 100%; height: auto; pointer-events: none; user-select: none; }
+
+  /* A stack (the DVDs): covers overlap, bottoms on the shelf; on hover or
+     focus they fan out to the right so each shows in full, then close up. */
+  .shelf__stack { position: relative; display: block; width: 100%; }
+  .shelf__obj :global(.shelf__cover) {
+    position: absolute;
+    bottom: 0;
+    left: calc(var(--i) * var(--step));
+    width: var(--cover);
+    box-shadow: 1px 0 3px rgb(29 39 51 / 0.18);
+    transition: left 520ms cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+  .shelf__obj:is(:hover, :focus-visible) :global(.shelf__cover) { left: calc(var(--i) * (var(--cover) + 4%)); }
+  .shelf__item[data-id='dvds'] { --tip: 0deg; }
+  .shelf__item.is-dragging .shelf__obj :global(.shelf__cover) { left: calc(var(--i) * var(--step)); }
+  @media (prefers-reduced-motion: reduce) { .shelf__obj :global(.shelf__cover) { transition: none; } }
 
   /* JS on: objects float over the stage, positioned by the script. */
   .shelf.is-live .shelf__objects { position: absolute; inset: 0; margin: 0; display: block; pointer-events: none; }

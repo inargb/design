@@ -3,7 +3,8 @@
 //   click / tap / Enter without dragging → opens the object (an overlay, a
 //              link or its note) via an `ina:shelf-open` event
 //   hover / focus → shows the object's note
-// The shelf starts tidy on every visit.
+// Every visit starts with the things scattered around the shelf, waiting
+// to be put away (on narrow screens, with no room beside it, it starts tidy).
 
 type Where = { kind: 'pile' } | { kind: 'slot'; slot: number } | { kind: 'free'; fx: number; fy: number };
 export type ShelfOpen = { id: string; action: { kind: string; href?: string } };
@@ -22,8 +23,8 @@ function init(root: HTMLElement) {
   const items = Array.from(root.querySelectorAll<HTMLElement>('.shelf__item'));
 
   const state = new Map<HTMLElement, Where>();
-  // Every visit starts tidy: each object in its own place.
-  items.forEach((it) => state.set(it, { kind: 'slot', slot: Number(it.dataset.home) }));
+  const roomy = stage.getBoundingClientRect().width > img.getBoundingClientRect().width * 1.8;
+  items.forEach((it) => state.set(it, roomy ? { kind: 'pile' } : { kind: 'slot', slot: Number(it.dataset.home) }));
 
   // First placement happens out of sight (no gliding in from the corner);
   // then the objects just fade in. See .is-settling in Shelf.astro.
@@ -139,7 +140,7 @@ function init(root: HTMLElement) {
         }
       }
       const wasSlot = state.get(it)!.kind === 'slot';
-      state.set(it, { kind: 'free', fx: (cx - st.left) / st.width, fy: Math.min(1, (by - st.top) / st.height) });
+      state.set(it, { kind: 'free', fx: (cx - st.left) / st.width, fy: (by - st.top) / st.height });
       place(it);
       refresh(wasSlot ? fill(s.removed, { name: nameOf(it) }) : undefined);
     };

@@ -16,7 +16,7 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
 
 <Base locale={locale} route="shelf" altHref={href('shelf', other)} pageId="shelf" title={pg.title[locale]} description={pg.intro[locale]}>
   <section class="pg" aria-labelledby="pg-title">
-    <h1 id="pg-title" class="visually-hidden">{pg.title[locale]}</h1>
+    <h1 id="pg-title" class="pg__title">{pg.heading[locale]}</h1>
     <div class="pg__shelf">
       <Shelf locale={locale} />
     </div>
@@ -26,16 +26,26 @@ const other: Locale = locale === 'en' ? 'pt' : 'en';
 </Base>
 
 <style>
-  /* Only the top bar here: no footer, and on desktop the page is exactly one
-     screen high. */
+  /* Only the top bar here: no footer; the page is at least one screen high. */
   :global(body:has(.pg) .footer) { display: none; }
   .pg {
     display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--space-4);
     min-height: calc(100svh - var(--nav-height));
-    padding-block: var(--space-8);
+    padding-block: var(--space-12) var(--space-8);
   }
   .pg__shelf { display: grid; align-content: center; }
-  @media (min-width: 64.0625rem) {
-    .pg { height: calc(100svh - var(--nav-height)); overflow: hidden; }
+  /* The ask, in the site's mono, mid grey, above the shelf. */
+  .pg__title {
+    justify-self: center;
+    text-align: center;
+    font-family: var(--font-system);
+    font-size: var(--type-heading-s);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    color: var(--color-graphite-soft);
   }
+  /* Things can be dragged anywhere on the page: nothing clips them. */
+  .pg, .pg__shelf { overflow: visible; }
 </style>

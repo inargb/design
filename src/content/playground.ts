@@ -13,6 +13,7 @@ import vogue from '../assets/shelf/vogue.jpg';
 import ipod from '../assets/shelf/ipod.png';
 import sneakers from '../assets/shelf/sneakers.png';
 import plant from '../assets/shelf/plant.png';
+import passport from '../assets/shelf/passport.png';
 
 const l = (en: string, pt: string): L10n => ({ en, pt });
 
@@ -26,13 +27,15 @@ export interface ShelfObject {
   name: L10n;
   note: L10n;
   size: number;            // width as a fraction of the shelf photo width
-  home: number;            // the slot "tidy up for me" puts it in (0–8, top-left → bottom-right)
-  pile: [number, number, number]; // x, y (centre-bottom, fraction of pile) + rotation
+  home: number;            // its own slot on the shelf (0–8, top-left → bottom-right)
+  pile: [number, number, number]; // where it starts, around the shelf: x, y (centre-bottom, fraction of the stage) + rotation
   action: ShelfAction;
+  stack?: ImageMetadata[];  // several covers that sit, move and open as one
 }
 
 export const playground = {
   title: l('Shelf', 'Shelf'),
+  heading: l('Can you organize my shelf for me? :)', 'Você pode arrumar minha estante pra mim? :)'),
   intro: l(
     'Things on my shelf. Drag them into place, or click one to open it.',
     'Coisas da minha estante. Arraste para arrumar, ou clique para abrir.',
@@ -46,20 +49,20 @@ export const playground = {
     [0.27, 0.84], [0.52, 0.84], [0.76, 0.84],
   ] as [number, number][],
   objects: [
-    { id: 'lalaland', src: lalaland, size: 0.17, home: 4, pile: [0.14, 0.34, -6], name: l('La La Land', 'La La Land'), note: l('La La Land (2016)', 'La La Land (2016)'), action: { kind: 'link', href: 'https://letterboxd.com/beekid/' } },
-    { id: 'harry', src: harry, size: 0.17, home: 3, pile: [0.38, 0.3, 4], name: l('When Harry Met Sally…', 'Harry & Sally'), note: l('When Harry Met Sally… (1989)', 'Harry & Sally: Feitos um para o Outro (1989)'), action: { kind: 'link', href: 'https://letterboxd.com/beekid/' } },
-    { id: 'camera', src: camera, size: 0.23, home: 2, pile: [0.66, 0.22, -3], name: l('Yashica camera', 'Câmera Yashica'), note: l('dad’s old Yashica. click to see the film.', 'a Yashica antiga do meu pai. clique para ver o filme.'), action: { kind: 'film' } },
-    { id: 'vogue', src: vogue, size: 0.17, home: 7, pile: [0.85, 0.38, 5], name: l('Vogue', 'Vogue'), note: l('Vogue', 'Vogue'), action: { kind: 'note' } },
-    { id: 'amelie', src: amelie, size: 0.16, home: 5, pile: [0.24, 0.7, 3], name: l('Amélie', 'O Fabuloso Destino de Amélie Poulain'), note: l('Amélie (2001)', 'O Fabuloso Destino de Amélie Poulain (2001)'), action: { kind: 'link', href: 'https://letterboxd.com/beekid/' } },
-    { id: 'popeye', src: popeye, size: 0.17, home: 6, pile: [0.5, 0.64, -4], name: l('Popeye magazine', 'Revista Popeye'), note: l('Popeye magazine', 'revista Popeye'), action: { kind: 'note' } },
-    { id: 'ipod', src: ipod, size: 0.13, home: 1, pile: [0.76, 0.66, 6], name: l('iPod classic', 'iPod clássico'), note: l('iPod classic. click to turn it on.', 'iPod clássico. clique para ligar.'), action: { kind: 'ipod' } },
-    { id: 'sneakers', src: sneakers, size: 0.25, home: 8, pile: [0.3, 0.98, -2], name: l('Shoes', 'Sapatos'), note: l('Onitsuka Tiger shoes', 'sapatos Onitsuka Tiger'), action: { kind: 'note' } },
-    { id: 'plant', src: plant, size: 0.23, home: 0, pile: [0.72, 0.99, 0], name: l('A plant', 'Uma planta'), note: l('a plant. it just likes the light.', 'uma planta. ela só gosta da luz.'), action: { kind: 'note' } },
+    // The three DVDs: one object, overlapping on the shelf; they fan out on hover.
+    { id: 'dvds', src: lalaland, stack: [lalaland, harry, amelie], size: 0.3, home: 4, pile: [0.13, 0.34, -3], name: l('My top 3 romances: La La Land, When Harry Met Sally…, Amélie', 'Meus 3 romances favoritos: La La Land, Harry & Sally, Amélie'), note: l('my top 3 romances', 'meus 3 romances favoritos'), action: { kind: 'link', href: 'https://letterboxd.com/beekid/' } },
+    { id: 'camera', src: camera, size: 0.23, home: 2, pile: [0.22, 0.6, 4], name: l('Yashica camera', 'Câmera Yashica'), note: l('dad’s old Yashica. click to see the film.', 'a Yashica antiga do meu pai. clique para ver o filme.'), action: { kind: 'film' } },
+    { id: 'vogue', src: vogue, size: 0.17, home: 7, pile: [0.74, 0.64, -3], name: l('Vogue', 'Vogue'), note: l('Vogue', 'Vogue'), action: { kind: 'note' } },
+    { id: 'popeye', src: popeye, size: 0.17, home: 6, pile: [0.12, 0.86, -2], name: l('Popeye magazine', 'Revista Popeye'), note: l('Popeye magazine', 'revista Popeye'), action: { kind: 'note' } },
+    { id: 'ipod', src: ipod, size: 0.13, home: 1, pile: [0.82, 0.3, 5], name: l('iPod classic', 'iPod clássico'), note: l('iPod classic. click to turn it on.', 'iPod clássico. clique para ligar.'), action: { kind: 'ipod' } },
+    { id: 'sneakers', src: sneakers, size: 0.25, home: 8, pile: [0.82, 0.96, -4], name: l('Shoes', 'Sapatos'), note: l('Onitsuka Tiger shoes', 'sapatos Onitsuka Tiger'), action: { kind: 'note' } },
+    { id: 'passport', src: passport, size: 0.1, home: 3, pile: [0.25, 0.94, 7], name: l('Passport', 'Passaporte'), note: l('I love to travel', 'amo viajar'), action: { kind: 'link', href: 'https://www.youtube.com/@inamkv' } },
+    { id: 'plant', src: plant, size: 0.23, home: 0, pile: [0.87, 0.62, 0], name: l('A plant', 'Uma planta'), note: l('a plant. it just likes the light.', 'uma planta. ela só gosta da luz.'), action: { kind: 'note' } },
   ] as ShelfObject[],
   ui: {
     help: l(
-      'Drag things onto the shelf. Click or press Enter on an item to open it; “tidy up for me” puts everything away.',
-      'Arraste as coisas para a estante. Clique ou aperte Enter em um item para abrir; “arruma pra mim” guarda tudo.',
+      'Drag the things around the shelf onto it. Click or press Enter on one to open it.',
+      'Arraste as coisas em volta da estante para dentro dela. Clique ou aperte Enter em uma para abrir.',
     ),
     tidy: l('tidy up for me', 'arruma pra mim'),
     mess: l('mess it up again', 'bagunçar de novo'),
