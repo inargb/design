@@ -15,9 +15,9 @@ const strings = Object.fromEntries(Object.entries(u).map(([k, v]) => [k, v[local
 // A stack of covers: each cover is COVER of the group's width, the next one
 // STEP further right (they overlap); on hover each moves FAN along instead,
 // so they stand apart. Height comes from the tallest cover.
-const COVER = 0.483;
+const COVER = 0.402;
 const STEP = (1 - COVER) / 2;
-const FAN = 0.517;
+const FAN = 0.431;
 const ratioOf = (o: (typeof pg.objects)[number]) =>
   o.stack ? Math.max(...o.stack.map((c) => c.height / c.width)) * COVER : o.src.height / o.src.width;
 ---
