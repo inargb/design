@@ -101,6 +101,8 @@ const parts = (q: string) => q.split(/\[\[|\]\]/).map((text, i) => ({ text, key:
 </Base>
 
 <style>
+  /* Lets the dog-ear's size animate. */
+  @property --fold { syntax: '<length>'; inherits: true; initial-value: 2rem; }
   .intro {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 14rem;
@@ -118,7 +120,27 @@ const parts = (q: string) => q.split(/\[\[|\]\]/).map((text, i) => ({ text, key:
     rotate: -2.5deg;
     transition: rotate 520ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity var(--duration-slow) var(--ease-soft);
   }
-  .intro__portrait:hover { rotate: 2deg; }
+  .intro__portrait:hover { rotate: 2deg; --fold: 2.6rem; }
+  /* A dog-eared corner: the bottom-right corner is cut away and its flap,
+     the paper's pale back, lies folded over the photo. It folds a little
+     further on hover. */
+  .intro__portrait {
+    --fold: 2rem;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--fold)), calc(100% - var(--fold)) 100%, 0 100%);
+    transition: rotate 520ms cubic-bezier(0.34, 1.56, 0.64, 1), --fold 520ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity var(--duration-slow) var(--ease-soft);
+  }
+  .intro__portrait::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: var(--fold);
+    height: var(--fold);
+    background: linear-gradient(to top left, transparent 50%, #e9e7e1 50%, #fbfaf6 80%, #f1efe9);
+    filter: drop-shadow(-2px -2px 3px rgb(29 39 51 / 0.28));
+    pointer-events: none;
+  }
   @media (prefers-reduced-motion: reduce) { .intro__portrait { transition: opacity var(--duration-slow) var(--ease-soft); } }
   .intro__portrait :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
   @media (min-width: 64.0625rem) { .intro { padding-top: var(--space-24); } }
