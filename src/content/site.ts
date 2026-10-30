@@ -11,7 +11,7 @@ export const site = {
     // Each language opens its own resume, kept on Google Drive (edit it
     // there and the site follows).
     resume: {
-      en: 'https://drive.google.com/file/d/1eGH0zvPnD-E9mp2cACl2dMnhMv_HlxKZ/view',
+      en: 'https://drive.google.com/file/d/1miBuwR-TKOShBivabfqMsKO-y2s6D1Km/view',
       pt: 'https://drive.google.com/file/d/1gXMu1hnaAE2WaqIbyM6UyTFFYaD0Hi7i/view',
     } as L10n,
     linkedin: 'https://www.linkedin.com/in/inaia-silva/',
