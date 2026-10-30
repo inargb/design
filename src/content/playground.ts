@@ -46,7 +46,7 @@ export const playground = {
   slots: [
     [0.25, 0.1], [0.5, 0.1], [0.75, 0.1],
     [0.2, 0.46], [0.5, 0.46], [0.75, 0.46],   // left spot nudged out: the DVD stack is wide
-    [0.27, 0.84], [0.52, 0.84], [0.76, 0.865],  // the shoes sit a touch lower, nearer the front
+    [0.27, 0.84], [0.52, 0.84], [0.76, 0.84],
   ] as [number, number][],
   objects: [
     // The three DVDs: one object, overlapping on the shelf; they fan out on hover.
