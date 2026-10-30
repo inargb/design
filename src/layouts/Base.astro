@@ -27,6 +27,9 @@ interface Props {
 const { locale, title, description, route, altHref, pageId } = Astro.props;
 const root = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const fullTitle = title ? `${title} · ${site.name}` : site.title[locale];
+// Tab: "inaiá silva_portfolio" on the home page; elsewhere the page's own
+// name first, lowercase: "about_inaiá silva", "systems portal_inaiá silva".
+const tabTitle = title ? `${title.toLocaleLowerCase(locale === 'pt' ? 'pt-BR' : 'en')}_inaiá silva` : 'inaiá silva_portfolio';
 const desc = description ?? site.description[locale];
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -36,7 +39,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{fullTitle}</title>
+    <title>{tabTitle}</title>
     <meta name="description" content={desc} />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang={locale === 'en' ? 'pt-BR' : 'en'} href={new URL(altHref, Astro.site)} />
