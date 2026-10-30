@@ -66,7 +66,7 @@ screen-high page, with the top bar and no footer, under "Can you organize my she
 for me? :)". The things start scattered around the shelf (tidy on phones) and can
 be dragged anywhere, onto the shelf or off the page's edges. A click (or Enter) opens one:
 
-- the camera → a roll of film with the About page's art note (`components/playground/FilmViewer.astro`)
+- the camera → a drawn film canister on light paper; scrolling pulls the roll out, photo by photo (`components/playground/FilmViewer.astro`)
 - the iPod → a working iPod classic (`components/playground/IPod.astro`): Music, Extras (photos),
   Settings (shuffle, repeat, about), Shuffle Songs, Backlight, Now Playing. Songs play as Apple
   Music's official 30-second previews (no ads, nothing hosted here), with a "Listen on Spotify" link

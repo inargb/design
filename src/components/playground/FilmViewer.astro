@@ -1,158 +1,226 @@
 ---
 // The camera's roll of film, in a full-screen overlay (a modal <dialog>:
-// focus stays inside, Esc closes). The strip scrolls sideways: wheel,
-// trackpad, drag, arrow keys or swipe. Opened by the shelf's camera.
+// focus stays inside, Esc closes) on light paper. A drawn 35mm canister
+// sits on the left; on opening, the film slides out of its slot and the
+// photos come with it. Scrolling (wheel, trackpad), dragging, swiping or
+// the arrow keys pull more film out, or wind it back in.
 import { Image } from 'astro:assets';
 import type { Locale } from '../../i18n/config';
 import { photos } from '../../content/photos';
 import { playground as pg } from '../../content/playground';
-import { about } from '../../content/about';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const f = pg.film;
-const art = about.art;
 ---
 
-<dialog class="filmv" aria-labelledby="filmv-title" data-film-dialog>
-  <div class="filmv__top">
-    <p id="filmv-title" class="filmv__title">{f.title[locale]} <span class="filmv__hint">{f.hint[locale]}</span></p>
-    <button class="filmv__close" type="button" data-film-close>{f.close[locale]} <span aria-hidden="true">✕</span></button>
-  </div>
-  <div class="filmv__text">
-    <h2 class="filmv__heading">{art.title[locale]}</h2>
-    <div class="filmv__body">{art.body.map((p) => <p>{p[locale]}</p>)}</div>
-  </div>
-  <div class="filmv__strip" tabindex="0" role="region" aria-label={f.title[locale]} data-film-strip>
-    <ol class="filmv__track" role="list">
-      {photos.map((ph, i) => (
-        <li class="filmv__frame">
-          <Image src={ph.src} alt={ph.alt[locale]} widths={[600, 1200]} sizes="(max-width: 40rem) 80vw, 46vh" loading="lazy" draggable="false" />
-          <span class="filmv__no" aria-hidden="true">{String(i + 1).padStart(2, '0')}A</span>
-        </li>
-      ))}
-    </ol>
+<dialog class="filmv" aria-label={f.title[locale]} data-film-dialog>
+  <button class="filmv__close" type="button" data-film-close>{f.close[locale]} <span aria-hidden="true">✕</span></button>
+  <p class="visually-hidden">{f.hint[locale]}</p>
+
+  <div class="filmv__stage">
+    <!-- The canister, drawn: cap, black body, yellow label, the slot. -->
+    <svg class="filmv__can" viewBox="0 0 200 300" aria-hidden="true">
+      <defs>
+        <linearGradient id="can-body" x1="0" x2="1">
+          <stop offset="0" stop-color="#0d0c0b" />
+          <stop offset="0.55" stop-color="#2b2926" />
+          <stop offset="0.7" stop-color="#3a3733" />
+          <stop offset="1" stop-color="#0d0c0b" />
+        </linearGradient>
+        <linearGradient id="can-rim" x1="0" x2="1">
+          <stop offset="0" stop-color="#1a1917" />
+          <stop offset="0.6" stop-color="#4a4743" />
+          <stop offset="1" stop-color="#1a1917" />
+        </linearGradient>
+      </defs>
+      <rect class="filmv__knob" x="66" y="2" width="68" height="30" rx="7" />
+      <rect x="18" y="26" width="164" height="270" rx="16" fill="url(#can-body)" />
+      <rect x="18" y="26" width="164" height="22" rx="10" fill="url(#can-rim)" />
+      <rect x="18" y="274" width="164" height="22" rx="10" fill="url(#can-rim)" />
+      <rect x="34" y="88" width="44" height="170" rx="2" fill="#f2b01c" />
+      <text x="40" y="76" fill="#fbfbf9" font-size="20" font-weight="600" font-family="IBM Plex Mono, monospace">C-41</text>
+      <text x="0" y="0" transform="translate(62 100) rotate(90)" fill="#8a5a00" font-size="9" letter-spacing="1.5" font-family="IBM Plex Mono, monospace">NOTES</text>
+      <text x="0" y="0" transform="translate(118 74) rotate(90)" fill="#fbfbf9" font-size="30" letter-spacing="2" font-family="IBM Plex Mono, monospace">COLOR 400</text>
+      <text x="0" y="0" transform="translate(95 92) rotate(90)" fill="#d8d6d2" font-size="10" letter-spacing="0.5" font-family="IBM Plex Mono, monospace">color negative film</text>
+      <rect x="172" y="68" width="12" height="204" rx="2" fill="#050505" />
+    </svg>
+
+    <!-- The film coming out of the slot: first photo first. -->
+    <div class="filmv__window" tabindex="0" role="region" aria-label={f.title[locale]} data-film-window>
+      <ol class="filmv__track" role="list" data-film-track>
+        {photos.map((ph) => (
+          <li class="filmv__frame">
+            <Image src={ph.src} alt={ph.alt[locale]} widths={[480, 960]} sizes="40vh" loading="lazy" draggable="false" />
+          </li>
+        ))}
+        <li class="filmv__tail" aria-hidden="true"></li>
+      </ol>
+    </div>
   </div>
 </dialog>
 
 <style>
   .filmv {
+    --can-h: min(60vh, 32rem);
+    --strip-h: calc(var(--can-h) * 0.66);
+    --band: calc(var(--strip-h) * 0.12);
     width: 100%;
     max-width: none;
     height: 100%;
     max-height: none;
     margin: 0;
-    padding: var(--space-6) 0;
+    padding: 0;
     border: 0;
-    background: rgb(20 18 16 / 0.96);
-    color: #f6f6f4;
+    background: transparent;
+    overflow: hidden;
   }
-  .filmv[open] { display: grid; grid-template-rows: auto auto 1fr; gap: var(--space-6); overflow-y: auto; }
-  .filmv::backdrop { background: rgb(20 18 16 / 0.6); }
-  .filmv__top { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding-inline: var(--layout-gutter); }
-  .filmv__title { font-family: var(--font-system); font-size: var(--type-caption); letter-spacing: 0.06em; text-transform: uppercase; }
-  .filmv__hint { margin-left: var(--space-3); color: rgb(246 246 244 / 0.55); text-transform: none; letter-spacing: 0.02em; }
+  .filmv[open] { display: grid; place-items: center; }
+  /* Light paper over the shelf, like the iPod's screen. */
+  .filmv::backdrop { background: rgb(250 250 248 / 0.9); backdrop-filter: blur(3px); }
   .filmv__close {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 3;
     min-height: var(--tap-min);
     padding: 0 var(--space-3);
     border: 0;
     background: none;
-    color: inherit;
+    color: var(--color-ink);
     font-family: var(--font-system);
     font-size: var(--type-caption);
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
-  .filmv__close:hover { color: #e8a33c; }
+  .filmv__close:hover { color: var(--color-accent); }
 
-  /* Why the camera: the note from the About page, above the film. */
-  .filmv__text {
-    display: grid;
-    grid-template-columns: minmax(0, 20rem) minmax(0, 38rem);
-    gap: var(--space-4) var(--space-12);
-    padding-inline: var(--layout-gutter);
+  .filmv__stage {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    padding-left: max(var(--layout-gutter), 6vw);
   }
-  .filmv__heading { font-family: var(--font-title); font-size: var(--type-heading-m); font-weight: 500; line-height: 1.25; letter-spacing: -0.02em; text-wrap: balance; }
-  .filmv__body { display: grid; gap: var(--space-2); font-size: var(--type-body-s); line-height: 1.55; color: rgb(246 246 244 / 0.75); text-wrap: pretty; }
-  @media (max-width: 48rem) { .filmv__text { grid-template-columns: 1fr; } }
+  .filmv__can {
+    position: relative;
+    z-index: 2;
+    flex: none;
+    height: var(--can-h);
+    width: auto;
+    filter: drop-shadow(4px 8px 12px rgb(29 39 51 / 0.25));
+  }
+  /* The knob's ridges turn as the film moves (set by the script). */
+  .filmv__knob { fill: #1c1b19; stroke: #3d3a36; stroke-width: 3; stroke-dasharray: 3 5; stroke-dashoffset: var(--turn, 0); }
 
-  /* The film: black base, sprocket holes along both edges, frames in a row. */
-  .filmv__strip {
-    align-self: center;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-    padding-block: 2.25rem;
-    background-color: #141210;
-    background-image:
-      radial-gradient(circle, #fbfbf9 0 3.5px, transparent 4px),
-      radial-gradient(circle, #fbfbf9 0 3.5px, transparent 4px);
-    background-size: 24px 24px, 24px 24px;
-    background-position: 0 6px, 0 calc(100% - 6px);
-    background-repeat: repeat-x;
-    background-attachment: local;
+  /* The window the film shows through: it starts at the slot. */
+  .filmv__window {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    height: var(--strip-h);
+    margin-top: calc(var(--can-h) * 0.235);
+    margin-left: calc(var(--can-h) * -0.04);
+    overflow: hidden;
     cursor: grab;
+    touch-action: pan-y;
     user-select: none;
   }
-  .filmv__strip::-webkit-scrollbar { display: none; }
-  .filmv__strip.is-dragging { cursor: grabbing; scroll-snap-type: none; }
-  .filmv__strip:focus-visible { outline: 2px solid #e8a33c; outline-offset: -2px; }
-  .filmv__track { display: flex; gap: var(--space-4); width: max-content; padding-inline: var(--space-4); }
-  .filmv__frame { position: relative; flex: none; scroll-snap-align: center; }
-  .filmv__frame :global(img) { height: min(44vh, 28rem); width: auto; pointer-events: none; }
-  .filmv__no {
+  .filmv__window.is-dragging { cursor: grabbing; }
+  .filmv__window:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
+
+  /* The strip: amber-brown base, sprocket holes along both edges; the first
+     photo leads (rightmost), so it's the first out of the canister. */
+  .filmv__track {
     position: absolute;
-    left: var(--space-2);
-    bottom: -1.6rem;
-    font-family: var(--font-system);
-    font-size: 0.625rem;
-    letter-spacing: 0.1em;
-    color: #e8a33c;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    gap: calc(var(--band) * 0.6);
+    height: 100%;
+    padding: var(--band) calc(var(--band) * 0.6);
+    background-color: #7a3216;
+    background-image:
+      linear-gradient(180deg, rgb(255 255 255 / 0.08), transparent 30%, transparent 70%, rgb(0 0 0 / 0.18)),
+      linear-gradient(90deg, var(--hole) 0 46%, transparent 46%),
+      linear-gradient(90deg, var(--hole) 0 46%, transparent 46%);
+    background-size: 100% 100%, calc(var(--band) * 1.25) calc(var(--band) * 0.5), calc(var(--band) * 1.25) calc(var(--band) * 0.5);
+    background-position: 0 0, 0 calc(var(--band) * 0.25), 0 calc(100% - var(--band) * 0.25);
+    background-repeat: no-repeat, repeat-x, repeat-x;
+    --hole: #f7f6f2;
+    will-change: transform;
+    transform: translate3d(calc(var(--p, 0px) - 100%), 0, 0);
   }
+  .filmv__frame { position: relative; flex: none; height: 100%; }
+  .filmv__frame :global(img) { height: 100%; width: auto; border-radius: 2px; pointer-events: none; }
+  /* A short leader at the very end, so the last frame clears the slot. */
+  .filmv__tail { flex: none; width: calc(var(--can-h) * 0.25); }
+
   @media (max-width: 40rem) {
-    .filmv__hint { display: none; }
-    .filmv__frame :global(img) { height: min(36vh, 20rem); }
+    .filmv { --can-h: min(36vh, 14rem); }
+    .filmv__stage { padding-left: var(--space-3); }
   }
 </style>
 
 <script>
+  import { motionOn } from '../../scripts/prefs';
+
   const dialog = document.querySelector<HTMLDialogElement>('[data-film-dialog]');
   if (dialog) {
-    const strip = dialog.querySelector<HTMLElement>('[data-film-strip]')!;
+    const win = dialog.querySelector<HTMLElement>('[data-film-window]')!;
+    const track = dialog.querySelector<HTMLElement>('[data-film-track]')!;
+    const knob = dialog.querySelector<SVGElement>('.filmv__knob')!;
+
+    // p = how much film is out of the canister, in px (0 = all wound in).
+    let p = 0, target = 0, raf = 0;
+    const max = () => track.scrollWidth;
+    const clamp = (v: number) => Math.max(0, Math.min(max(), v));
+
+    function draw() {
+      track.style.setProperty('--p', `${p}px`);
+      knob.style.setProperty('--turn', `${-p * 0.25}`);
+    }
+    function tick() {
+      const k = motionOn() ? 0.14 : 1;
+      p += (target - p) * k;
+      if (Math.abs(target - p) < 0.5) p = target;
+      draw();
+      raf = p === target ? 0 : requestAnimationFrame(tick);
+    }
+    const go = (v: number) => { target = clamp(v); if (!raf) raf = requestAnimationFrame(tick); };
+    const frameW = () => (track.querySelector('.filmv__frame') as HTMLElement | null)?.offsetWidth ?? 300;
+
     window.addEventListener('ina:shelf-open', (e) => {
       if ((e as CustomEvent).detail?.action?.kind !== 'film') return;
-      strip.scrollLeft = 0;
+      p = 0; target = 0; draw();
       dialog.showModal();
-      strip.focus();
+      win.focus({ preventScroll: true });
+      // The film slides out: the first photos come into view.
+      requestAnimationFrame(() => go(Math.min(max(), win.clientWidth * 0.85)));
     });
     dialog.querySelector('[data-film-close]')!.addEventListener('click', () => dialog.close());
-    // Click on the dark around the film closes it too.
     dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
 
-    // A vertical wheel moves the film sideways.
-    strip.addEventListener('wheel', (e) => {
-      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    // Scroll (either direction) pulls the film out or winds it back.
+    dialog.addEventListener('wheel', (e) => {
       e.preventDefault();
-      strip.scrollLeft += e.deltaY;
+      go(target + (Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX));
     }, { passive: false });
     // Arrow keys: one frame at a time.
-    strip.addEventListener('keydown', (e) => {
-      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-      e.preventDefault();
-      strip.scrollBy({ left: (e.key === 'ArrowLeft' ? -1 : 1) * strip.clientWidth * 0.6, behavior: 'smooth' });
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); go(target + frameW()); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(target - frameW()); }
     });
-    // Mouse drag (touch already scrolls natively).
-    let down = false, x0 = 0, s0 = 0;
-    strip.addEventListener('pointerdown', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      down = true; x0 = e.clientX; s0 = strip.scrollLeft;
-      strip.setPointerCapture(e.pointerId);
-      strip.classList.add('is-dragging');
+    // Drag or swipe: the film follows the pointer.
+    let down = false, x0 = 0, p0 = 0;
+    win.addEventListener('pointerdown', (e) => {
+      down = true; x0 = e.clientX; p0 = target;
+      win.setPointerCapture(e.pointerId);
+      win.classList.add('is-dragging');
     });
-    strip.addEventListener('pointermove', (e) => { if (down) strip.scrollLeft = s0 - (e.clientX - x0); });
-    const up = () => { down = false; strip.classList.remove('is-dragging'); };
-    strip.addEventListener('pointerup', up);
-    strip.addEventListener('pointercancel', up);
+    win.addEventListener('pointermove', (e) => { if (down) go(p0 + (e.clientX - x0)); });
+    const up = () => { down = false; win.classList.remove('is-dragging'); };
+    win.addEventListener('pointerup', up);
+    win.addEventListener('pointercancel', up);
   }
 </script>
