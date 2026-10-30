@@ -5,7 +5,6 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import { href, type L10n, type Locale } from '../i18n/config';
 import { about } from '../content/about';
-import { photos } from '../content/photos';
 
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -99,24 +98,6 @@ const parts = (q: string) => q.split(/\[\[|\]\]/).map((text, i) => ({ text, key:
       ))}
     </ul>
   </section>
-
-  <section class="row" aria-labelledby="art-title">
-    <h2 id="art-title" class="row__label">{about.art.label[locale]}</h2>
-    <div class="row__body">
-      <p class="art__title t-heading-m">{about.art.title[locale]}</p>
-      <div class="prose">
-        {about.art.body.map((p) => <p>{p[locale]}</p>)}
-      </div>
-    </div>
-  </section>
-
-  <section class="photos" aria-label={about.art.strip[locale]}>
-    <ul class="photos__row" role="list" tabindex="0">
-      {photos.map((ph) => (
-        <li><Image src={ph.src} alt={ph.alt[locale]} height={480} widths={[Math.round(ph.src.width * 240 / ph.src.height), Math.round(ph.src.width * 480 / ph.src.height)]} sizes={`${Math.round(ph.src.width * 240 / ph.src.height)}px`} loading="lazy" /></li>
-      ))}
-    </ul>
-  </section>
 </Base>
 
 <style>
@@ -129,7 +110,16 @@ const parts = (q: string) => q.split(/\[\[|\]\]/).map((text, i) => ({ text, key:
   }
   .intro__text { display: grid; gap: var(--space-6); }
   .intro__label { color: var(--color-graphite-soft); }
-  .intro__portrait { overflow: hidden; border-radius: var(--radius-soft); background: var(--color-paper-shade); }
+  /* A print a hair off straight; on hover it tips the other way. */
+  .intro__portrait {
+    overflow: hidden;
+    border-radius: var(--radius-soft);
+    background: var(--color-paper-shade);
+    rotate: -2.5deg;
+    transition: rotate 520ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity var(--duration-slow) var(--ease-soft);
+  }
+  .intro__portrait:hover { rotate: 2deg; }
+  @media (prefers-reduced-motion: reduce) { .intro__portrait { transition: opacity var(--duration-slow) var(--ease-soft); } }
   .intro__portrait :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
   @media (min-width: 64.0625rem) { .intro { padding-top: var(--space-24); } }
   @media (max-width: 48rem) {
@@ -236,19 +226,5 @@ const parts = (q: string) => q.split(/\[\[|\]\]/).map((text, i) => ({ text, key:
   .quote__name { color: var(--color-ink); font-weight: 600; }
   @media (prefers-reduced-motion: reduce) { .quote { transition: none; } }
 
-  .art__title { max-width: 26ch; margin-bottom: var(--space-4); }
 
-  /* Film photographs: one quiet row that scrolls sideways. */
-  .photos { margin-top: var(--space-4); }
-  .photos__row {
-    display: flex;
-    gap: var(--space-3);
-    overflow-x: auto;
-    padding-bottom: var(--space-3);
-    scroll-snap-type: x proximity;
-    scrollbar-width: thin;
-  }
-  .photos__row li { flex: none; scroll-snap-align: start; }
-  .photos__row :global(img) { height: 15rem; width: auto; border-radius: var(--radius-soft); }
-  @media (max-width: 40rem) { .photos__row :global(img) { height: 11rem; } }
 </style>
