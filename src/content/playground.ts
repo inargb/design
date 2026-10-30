@@ -46,7 +46,7 @@ export const playground = {
   slots: [
     [0.25, 0.1], [0.5, 0.1], [0.75, 0.1],
     [0.2, 0.46], [0.5, 0.46], [0.75, 0.46],   // left spot nudged out: the DVD stack is wide
-    [0.27, 0.84], [0.52, 0.84], [0.76, 0.84],
+    [0.27, 0.84], [0.52, 0.84], [0.76, 0.865],  // the shoes sit a touch lower, nearer the front
   ] as [number, number][],
   objects: [
     // The three DVDs: one object, overlapping on the shelf; they fan out on hover.
@@ -55,7 +55,7 @@ export const playground = {
     { id: 'vogue', src: vogue, size: 0.17, home: 7, pile: [0.74, 0.64, -3], name: l('Vogue', 'Vogue'), note: l('Vogue', 'Vogue'), action: { kind: 'note' } },
     { id: 'popeye', src: popeye, size: 0.17, home: 6, pile: [0.12, 0.86, -2], name: l('Popeye magazine', 'Revista Popeye'), note: l('Popeye magazine', 'revista Popeye'), action: { kind: 'note' } },
     { id: 'ipod', src: ipod, size: 0.13, home: 1, pile: [0.82, 0.3, 5], name: l('iPod classic', 'iPod clássico'), note: l('iPod classic. click to turn it on.', 'iPod clássico. clique para ligar.'), action: { kind: 'ipod' } },
-    { id: 'sneakers', src: sneakers, size: 0.25, home: 8, pile: [0.82, 0.96, -4], name: l('Shoes', 'Sapatos'), note: l('Onitsuka Tiger shoes', 'sapatos Onitsuka Tiger'), action: { kind: 'note' } },
+    { id: 'sneakers', src: sneakers, size: 0.235, home: 8, pile: [0.82, 0.96, -4], name: l('Shoes', 'Sapatos'), note: l('Onitsuka Tiger shoes', 'sapatos Onitsuka Tiger'), action: { kind: 'note' } },
     { id: 'passport', src: passport, size: 0.1, home: 3, pile: [0.25, 0.94, 7], name: l('Passport', 'Passaporte'), note: l('I love to travel', 'amo viajar'), action: { kind: 'link', href: 'https://www.youtube.com/@inamkv' } },
     { id: 'plant', src: plant, size: 0.23, home: 0, pile: [0.87, 0.62, 0], name: l('A plant', 'Uma planta'), note: l('a plant. it just likes the light.', 'uma planta. ela só gosta da luz.'), action: { kind: 'note' } },
   ] as ShelfObject[],
