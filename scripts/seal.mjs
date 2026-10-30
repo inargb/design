@@ -17,7 +17,7 @@ import { execSync } from 'node:child_process';
 const password = process.env.CASE_PASSWORD;
 if (!password) { console.error('Set CASE_PASSWORD.'); process.exit(1); }
 const ITER = 310_000;
-const base = (process.env.BASE_PATH ?? '/design').replace(/\/$/, '') + '/';
+const base = (process.env.BASE_PATH ?? '/').replace(/\/$/, '') + '/';
 const MIME = { '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.avif': 'image/avif', '.mp4': 'video/mp4', '.webm': 'video/webm', '.svg': 'image/svg+xml' };
 const b64 = (u8) => Buffer.from(u8).toString('base64');
 

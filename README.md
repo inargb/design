@@ -16,18 +16,19 @@ properties and a little TypeScript.
 
 ```bash
 npm install
-npm run dev        # http://localhost:4321/design/
+npm run dev        # http://localhost:4321/
 npm run build      # → dist/
 npm run check      # type + template checks
 ```
 
 ## Deploy
 
-Live at https://inargb.github.io/design/. `.github/workflows/deploy.yml`
-type-checks and builds every push and pull request; every push to `main`
-also deploys to GitHub Pages (a manual run from Actions → Run workflow does
-too). For a custom domain, build with `SITE_URL=https://example.com BASE_PATH=/`
-and add `public/CNAME`.
+Live at https://inasilva.com/ (`public/CNAME`; the domain is set in the repo's
+Settings → Pages). `.github/workflows/deploy.yml` type-checks and builds every
+push and pull request; every push to `main` also deploys to GitHub Pages (a
+manual run from Actions → Run workflow does too). To serve from
+`https://inargb.github.io/design/` instead, build with
+`SITE_URL=https://inargb.github.io BASE_PATH=/design` and drop `public/CNAME`.
 
 ## Where things live
 
