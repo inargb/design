@@ -10,7 +10,6 @@ import Base from '../layouts/Base.astro';
 import CaseBlocks from '../components/case/CaseBlocks.astro';
 import CaseIndex from '../components/case/CaseIndex.astro';
 import CaseSections from '../components/case/CaseSections.astro';
-import ProjectCover from '../components/ProjectCover.astro';
 import { caseHref, href, type Locale } from '../i18n/config';
 import { ui } from '../i18n/ui';
 import { site } from '../content/site';
@@ -100,9 +99,6 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
           </dl>
         </header>
 
-        <div class="case-cover">
-          <ProjectCover media={project.media} label={project.title[locale]} locale={locale} sizes="(max-width: 64rem) 100vw, 58rem" />
-        </div>
 
         {sealed ? (
           <>
@@ -203,8 +199,6 @@ const payload = sealed ? JSON.stringify({ ...sealed.crypto, body: sealed.body[lo
     .case-hero__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-4); }
   }
 
-  .case-cover { --cover-ratio: 16 / 9; overflow: hidden; margin-bottom: var(--space-16); border: var(--rule-hair); border-radius: var(--radius-soft); }
-  @media (max-width: 40rem) { .case-cover { --cover-ratio: 4 / 3; } }
 
   /* Body: the index on the left, fixed from the top of the page as the case
      scrolls (sticky); everything else on the right. One column below
